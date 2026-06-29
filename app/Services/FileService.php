@@ -27,6 +27,11 @@ class FileService
         return $this->upload($file, 'receipts');
     }
 
+    public function uploadSignature(UploadedFile $file): string
+    {
+        return $this->upload($file, 'signatures');
+    }
+
     public function delete(string $path): bool
     {
         if (Storage::disk('public')->exists($path)) {

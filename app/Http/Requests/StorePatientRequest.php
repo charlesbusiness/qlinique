@@ -36,6 +36,9 @@ class StorePatientRequest extends FormRequest
             'consent.signed_at' => ['nullable', 'date'],
             'religion' => ['nullable', 'string', 'max:255'],
             'denomination' => ['nullable', 'string', 'max:255'],
+            'signature_type' => ['nullable', 'string', 'in:typed,drawn,uploaded'],
+            'signature' => ['nullable', 'string'],
+            'signature_upload' => ['nullable', 'image', 'max:2048'],
         ];
     }
 }

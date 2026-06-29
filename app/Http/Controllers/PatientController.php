@@ -33,7 +33,8 @@ class PatientController extends Controller
     {
         $this->patientService->register(
             $request->validated(),
-            $request->file('photo')
+            $request->file('photo'),
+            $request->file('signature_upload')
         );
 
         return redirect()->route('patients.index')
@@ -56,7 +57,8 @@ class PatientController extends Controller
         $this->patientService->update(
             $patient,
             $request->validated(),
-            $request->file('photo')
+            $request->file('photo'),
+            $request->file('signature_upload')
         );
 
         return redirect()->route('patients.index')

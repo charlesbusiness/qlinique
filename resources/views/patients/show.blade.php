@@ -64,6 +64,21 @@
                 </div>
             </div>
 
+            @if ($patient->signature)
+                <div class="card mb-4">
+                    <div class="card-header"><strong>Signature</strong></div>
+                    <div class="card-body">
+                        @if ($patient->signature_type === 'typed')
+                            <div style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 2rem;">
+                                {{ $patient->signature }}
+                            </div>
+                        @elseif ($patient->signature_type === 'drawn' || $patient->signature_type === 'uploaded')
+                            <img src="{{ asset('storage/' . $patient->signature) }}" class="border rounded" style="max-height: 80px;">
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             @if ($patient->next_of_kin)
                 <div class="card mb-4">
                     <div class="card-header"><strong>Next of Kin</strong></div>

@@ -29,6 +29,8 @@ class Patient extends Model
         'consent',
         'religion',
         'denomination',
+        'signature_type',
+        'signature',
         'is_active',
         'created_by',
         'updated_by',

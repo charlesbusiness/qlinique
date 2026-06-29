@@ -85,11 +85,163 @@
             <label class="form-label">Photo</label>
             @if ($existingPhoto)
                 <div class="mb-2">
-                    <img src="{{ asset('storage/' . $existingPhoto) }}" class="rounded" style="max-height: 100px;">
+                    <img src="{{ asset('storage/' . $existingPhoto) }}" class="rounded" style="max-height: 80px;">
                 </div>
             @endif
-            <input type="file" class="form-control @error('photo') is-invalid @enderror" wire:model="photo">
+            <input type="file" class="form-control @error('photo') is-invalid @enderror" wire:model="photo" accept="image/*">
             @error('photo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            @if ($photo)
+                <div class="mt-2">
+                    <img src="{{ $photo->temporaryUrl() }}" class="rounded border" style="max-height: 80px;">
+                </div>
+            @endif
+        </div>
+
+        <hr>
+        <h5 class="mb-3">Signature</h5>
+
+        <div class="mb-3">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" wire:model.live="signature_type" value="typed" id="sig_typed" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sig_typed">Type</label>
+
+                <input type="radio" class="btn-check" wire:model.live="signature_type" value="drawn" id="sig_drawn" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sig_drawn">Draw</label>
+
+                <input type="radio" class="btn-check" wire:model.live="signature_type" value="uploaded" id="sig_upload" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sig_upload">Upload</label>
+            </div>
+        </div>
+
+        @if ($signature_type === 'typed')
+            <div class="mb-3">
+                <label class="form-label">Type Signature</label>
+                <input type="text" class="form-control @error('signature') is-invalid @enderror" wire:model="signature" placeholder="Enter full name as signature">
+                @error('signature') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                @if ($signature)
+                    <div class="mt-2 p-3 border rounded bg-light" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 2rem;">
+                        {{ $signature }}
+                    </div>
+                @endif
+            </div>
+        @elseif ($signature_type === 'uploaded')
+            <div class="mb-3">
+                <label class="form-label">Upload Signature</label>
+                <input type="file" class="form-control @error('signature_upload') is-invalid @enderror" wire:model="signature_upload" accept="image/*">
+                @error('signature_upload') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                @if ($signature_upload)
+                    <div class="mt-2">
+                        <img src="{{ $signature_upload->temporaryUrl() }}" class="border rounded" style="max-height: 80px;">
+                    </div>
+                @endif
+            </div>
+        @endif
+
+        <div wire:ignore>
+            <div class="mb-3 d-none" id="draw-signature-wrap">
+                <label class="form-label">Draw Signature</label>
+                <div class="border rounded p-1" style="background: #fff;">
+                    <canvas id="signature-canvas"
+                        class="w-100 rounded"
+                        style="height: 200px; touch-action: none; cursor: crosshair;"></canvas>
+                </div>
+                <div class="mt-2 d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="clear-signature">Clear</button>
+                </div>
+            </div>
+
+            <script>
+                (function () {
+                    var inited = false;
+                    var canvas, ctx;
+
+                    function initCanvas() {
+                        canvas = document.getElementById('signature-canvas');
+                        if (!canvas) return;
+                        ctx = canvas.getContext('2d');
+
+                        function resize() {
+                            var rect = canvas.getBoundingClientRect();
+                            if (rect.width === 0 || rect.height === 0) return;
+                            canvas.width = rect.width * (window.devicePixelRatio || 1);
+                            canvas.height = rect.height * (window.devicePixelRatio || 1);
+                            ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+                            ctx.strokeStyle = '#000';
+                            ctx.lineWidth = 2;
+                            ctx.lineCap = 'round';
+                            ctx.lineJoin = 'round';
+                        }
+
+                        function getPos(e) {
+                            var rect = canvas.getBoundingClientRect();
+                            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+                            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+                            return { x: cx - rect.left, y: cy - rect.top };
+                        }
+
+                        var drawing = false;
+
+                        function start(e) { e.preventDefault(); drawing = true; var p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
+                        function move(e) { e.preventDefault(); if (!drawing) return; var p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+                        function stop(e) {
+                            e.preventDefault();
+                            if (!drawing) return;
+                            drawing = false;
+                            ctx.closePath();
+                            Livewire.find('{{ $__livewire->getId() }}').set('signature', canvas.toDataURL('image/png'));
+                        }
+
+                        canvas.addEventListener('mousedown', start);
+                        canvas.addEventListener('mousemove', move);
+                        canvas.addEventListener('mouseup', stop);
+                        canvas.addEventListener('mouseleave', stop);
+                        canvas.addEventListener('touchstart', start, { passive: false });
+                        canvas.addEventListener('touchmove', move, { passive: false });
+                        canvas.addEventListener('touchend', stop, { passive: false });
+
+                        document.getElementById('clear-signature')?.addEventListener('click', function () {
+                            if (!canvas || !ctx) return;
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            Livewire.find('{{ $__livewire->getId() }}').set('signature', '');
+                        });
+
+                        resize();
+                        window.addEventListener('resize', resize);
+
+                        @if ($existingSignatureType === 'drawn' && $existingSignature)
+                            var img = new Image();
+                            img.onload = function () {
+                                if (canvas) { resize(); ctx.drawImage(img, 0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)); }
+                            };
+                            img.src = '{{ asset("storage/" . $existingSignature) }}';
+                        @endif
+                    }
+
+                    function toggleDraw() {
+                        var wrap = document.getElementById('draw-signature-wrap');
+                        var drawn = document.getElementById('sig_drawn');
+                        if (!wrap || !drawn) return;
+                        if (drawn.checked) {
+                            wrap.classList.remove('d-none');
+                            if (!inited) {
+                                inited = true;
+                                setTimeout(initCanvas, 50);
+                            }
+                        } else {
+                            wrap.classList.add('d-none');
+                        }
+                    }
+
+                    document.querySelectorAll('#sig_typed, #sig_drawn, #sig_upload').forEach(function (el) {
+                        el.addEventListener('change', toggleDraw);
+                    });
+
+                    if (document.getElementById('sig_drawn')?.checked) {
+                        inited = true;
+                        setTimeout(initCanvas, 50);
+                    }
+                })();
+            </script>
         </div>
 
         <hr>

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Enums\AccountType;
 use App\Models\Patient;
 use App\Services\PatientService;
+use Illuminate\Http\UploadedFile;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -31,6 +32,13 @@ class PatientForm extends Component
 
     public $existingPhoto = null;
 
+    public string $signature_type = '';
+    public string $signature = '';
+    public $signature_upload = null;
+
+    public ?string $existingSignature = null;
+    public ?string $existingSignatureType = null;
+
     protected function rules(): array
     {
         return [
@@ -46,6 +54,9 @@ class PatientForm extends Component
             'account_type' => 'required|in:individual,family,corporate',
             'religion' => 'nullable|string|max:255',
             'denomination' => 'nullable|string|max:255',
+            'signature_type' => 'nullable|in:typed,drawn,uploaded',
+            'signature' => 'nullable|string',
+            'signature_upload' => 'nullable|image|max:2048',
         ];
     }
 
@@ -67,6 +78,10 @@ class PatientForm extends Component
             $this->religion = $patient->religion ?? '';
             $this->denomination = $patient->denomination ?? '';
             $this->existingPhoto = $patient->photo_path;
+            $this->signature_type = $patient->signature_type ?? '';
+            $this->signature = $patient->signature ?? '';
+            $this->existingSignature = $patient->signature;
+            $this->existingSignatureType = $patient->signature_type;
         }
     }
 
@@ -88,19 +103,38 @@ class PatientForm extends Component
             'consent' => $this->consent,
             'religion' => $this->religion ?: null,
             'denomination' => $this->denomination ?: null,
+            'signature_type' => $this->signature_type ?: null,
+            'signature' => null,
         ];
 
         $photoFile = $this->photo?->getRealPath() ? $this->photo : null;
+        $signatureFile = null;
+
+        if ($this->signature_type === 'typed') {
+            $data['signature'] = $this->signature;
+        } elseif ($this->signature_type === 'drawn' && $this->signature && str_starts_with($this->signature, 'data:image')) {
+            $signatureFile = $this->base64ToUploadedFile($this->signature);
+        } elseif ($this->signature_type === 'uploaded' && $this->signature_upload) {
+            $signatureFile = $this->signature_upload;
+        }
 
         if ($this->patient) {
-            $patientService->update($this->patient, $data, $photoFile);
+            $patientService->update($this->patient, $data, $photoFile, $signatureFile);
             session()->flash('status', 'Patient updated successfully.');
         } else {
-            $patientService->register($data, $photoFile);
+            $patientService->register($data, $photoFile, $signatureFile);
             session()->flash('status', 'Patient registered successfully.');
         }
 
         $this->redirect(route('patients.index'), navigate: true);
+    }
+
+    private function base64ToUploadedFile(string $base64): UploadedFile
+    {
+        $decoded = base64_decode(substr($base64, strpos($base64, ',') + 1));
+        $tmpPath = tempnam(sys_get_temp_dir(), 'sig_') . '.png';
+        file_put_contents($tmpPath, $decoded);
+        return new UploadedFile($tmpPath, 'signature.png', 'image/png', null, true);
     }
 
     public function render()
