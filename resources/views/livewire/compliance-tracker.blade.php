@@ -29,30 +29,36 @@
     </div>
 
     @if ($expectedSessions > 0)
-        <p class="text-muted">Expected sessions: {{ $expectedSessions }} out of 7 days</p>
+        <p class="text-muted">
+            Expected sessions: <strong>{{ $expectedSessions }}</strong> ({{ $totalSlots }} {{ $label['plural'] }})
+        </p>
     @endif
 
-    <div class="d-flex gap-2 flex-wrap">
-        @foreach ($days as $day)
-            <div class="card text-center" style="min-width: 100px;">
-                <div class="card-header small">Day {{ $day['day'] }}</div>
-                <div class="card-body p-2">
-                    <small class="text-muted">{{ $day['date']->format('d M') }}</small>
-                    <div class="mt-2">
-                        @if ($day['status'] === 'attended')
-                            <span class="badge bg-success">Attended</span>
-                        @elseif ($day['status'] === 'missed')
-                            <span class="badge bg-danger">Missed</span>
-                        @else
-                            <span class="badge bg-secondary">Pending</span>
+    <div style="max-height: 600px; overflow-y: auto;">
+        <div class="d-flex gap-2 flex-wrap">
+            @foreach ($entries as $entry)
+                <div class="card text-center" style="min-width: 110px;">
+                    <div class="card-header small">{{ $entry['label'] }}</div>
+                    <div class="card-body p-2">
+                        <small class="text-muted">{{ $entry['date_label'] }}</small>
+                        <div class="mt-2">
+                            @if ($entry['status'] === 'attended')
+                                <span class="badge bg-success">Attended</span>
+                            @elseif ($entry['status'] === 'missed')
+                                <span class="badge bg-danger">Missed</span>
+                            @else
+                                <span class="badge bg-secondary">Pending</span>
+                            @endif
+                        </div>
+                        @if (!$entry['date']->isFuture())
+                            <div class="mt-2 d-flex gap-1 justify-content-center">
+                                <button class="btn btn-sm btn-outline-success" wire:click="markAttended({{ $entry['index'] }})">&#10003;</button>
+                                <button class="btn btn-sm btn-outline-danger" wire:click="markMissed({{ $entry['index'] }})">&#10007;</button>
+                            </div>
                         @endif
                     </div>
-                    <div class="mt-2 d-flex gap-1 justify-content-center">
-                        <button class="btn btn-sm btn-outline-success" wire:click="markAttended({{ $day['day'] - 1 }})">&#10003;</button>
-                        <button class="btn btn-sm btn-outline-danger" wire:click="markMissed({{ $day['day'] - 1 }})">&#10007;</button>
-                    </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
     </div>
 </div>

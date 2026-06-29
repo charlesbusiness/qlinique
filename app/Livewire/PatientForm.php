@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\AccountType;
+use App\Models\FamilyFile;
 use App\Models\Patient;
 use App\Services\PatientService;
 use Illuminate\Http\UploadedFile;
@@ -25,7 +26,7 @@ class PatientForm extends Component
     public $photo = null;
     public string $account_type = 'individual';
     public string $patient_type = '';
-    public ?string $account_holder_id = null;
+    public ?string $selected_family_id = null;
     public array $next_of_kin = [];
     public array $consent = [];
     public string $religion = '';
@@ -40,9 +41,16 @@ class PatientForm extends Component
     public ?string $existingSignature = null;
     public ?string $existingSignatureType = null;
 
+    public int $step = 1;
+    public bool $show_create_family = false;
+    public string $new_family_name = '';
+    public string $new_family_email = '';
+    public string $new_family_phone = '';
+    public string $new_family_address = '';
+
     protected function rules(): array
     {
-        return [
+        $rules = [
             'name' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
             'date_of_birth' => 'required|date|before:today',
@@ -60,6 +68,8 @@ class PatientForm extends Component
             'signature' => 'nullable|string',
             'signature_upload' => 'nullable|image|max:2048',
         ];
+
+        return $rules;
     }
 
     public function mount(?Patient $patient = null): void
@@ -76,6 +86,7 @@ class PatientForm extends Component
             $this->marital_status = $patient->marital_status ?? '';
             $this->account_type = $patient->account_type ?? 'individual';
             $this->patient_type = $patient->patient_type ?? '';
+            $this->selected_family_id = $patient->family_file_id ? (string) $patient->family_file_id : null;
             $this->next_of_kin = is_array($patient->next_of_kin) ? $patient->next_of_kin : [];
             $this->consent = is_array($patient->consent) ? $patient->consent : [];
             $this->religion = $patient->religion ?? '';
@@ -88,11 +99,66 @@ class PatientForm extends Component
         }
     }
 
+    public function updatedAccountType($value): void
+    {
+        if (!in_array($value, ['family', 'corporate'])) {
+            $this->selected_family_id = null;
+            $this->show_create_family = false;
+        }
+    }
+
+    public function nextStep(): void
+    {
+        $this->step++;
+    }
+
+    public function prevStep(): void
+    {
+        $this->step--;
+    }
+
+    public function toggleCreateFamily(): void
+    {
+        $this->show_create_family = !$this->show_create_family;
+        if (!$this->show_create_family) {
+            $this->new_family_name = '';
+            $this->new_family_email = '';
+            $this->new_family_phone = '';
+            $this->new_family_address = '';
+        }
+    }
+
+    public function createFamilyFile(): void
+    {
+        $this->validate([
+            'new_family_name' => 'required|string|max:255',
+            'new_family_email' => 'required|email|max:255',
+            'new_family_phone' => 'required|string|max:20',
+            'new_family_address' => 'nullable|string|max:1000',
+        ]);
+
+        $family = FamilyFile::create([
+            'name' => $this->new_family_name,
+            'email' => $this->new_family_email,
+            'phone' => $this->new_family_phone,
+            'address' => $this->new_family_address ?: null,
+            'type' => $this->account_type,
+        ]);
+
+        $this->selected_family_id = (string) $family->id;
+        $this->show_create_family = false;
+        $this->new_family_name = '';
+        $this->new_family_email = '';
+        $this->new_family_phone = '';
+        $this->new_family_address = '';
+    }
+
     public function save(PatientService $patientService): void
     {
         $this->validate();
 
         $data = [
+            'account_type' => $this->account_type,
             'name' => $this->name,
             'gender' => $this->gender,
             'date_of_birth' => $this->date_of_birth,
@@ -101,7 +167,6 @@ class PatientForm extends Component
             'address' => $this->address ?: null,
             'occupation' => $this->occupation ?: null,
             'marital_status' => $this->marital_status ?: null,
-            'account_type' => $this->account_type,
             'patient_type' => $this->patient_type ?: null,
             'next_of_kin' => $this->next_of_kin,
             'consent' => $this->consent,
@@ -110,6 +175,10 @@ class PatientForm extends Component
             'signature_type' => $this->signature_type ?: null,
             'signature' => null,
         ];
+
+        if (in_array($this->account_type, ['family', 'corporate']) && $this->selected_family_id) {
+            $data['family_file_id'] = $this->selected_family_id;
+        }
 
         $photoFile = $this->photo?->getRealPath() ? $this->photo : null;
         $signatureFile = null;
@@ -143,6 +212,12 @@ class PatientForm extends Component
 
     public function render()
     {
-        return view('livewire.patient-form');
+        $familyFiles = in_array($this->account_type, ['family', 'corporate'])
+            ? FamilyFile::where('type', $this->account_type)
+                ->orderBy('name')
+                ->get(['id', 'name', 'file_number'])
+            : collect();
+
+        return view('livewire.patient-form', compact('familyFiles'));
     }
 }

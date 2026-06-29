@@ -25,7 +25,7 @@ class Patient extends Model
         'photo_path',
         'account_type',
         'patient_type',
-        'account_holder_id',
+        'family_file_id',
         'next_of_kin',
         'consent',
         'religion',
@@ -61,14 +61,9 @@ class Patient extends Model
         return static::patientTypeOptions()[$this->patient_type] ?? null;
     }
 
-    public function accountHolder()
+    public function familyFile()
     {
-        return $this->belongsTo(Patient::class, 'account_holder_id');
-    }
-
-    public function dependants()
-    {
-        return $this->hasMany(Patient::class, 'account_holder_id');
+        return $this->belongsTo(FamilyFile::class, 'family_file_id');
     }
 
     public function createdBy()

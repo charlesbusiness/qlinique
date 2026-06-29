@@ -1,7 +1,7 @@
 <div>
     <div class="mb-4">
         <div class="d-flex gap-2">
-            @foreach ([1 => 'Patient', 2 => 'Vitals', 3 => 'History & Diagnosis', 4 => 'Labs & Treatment', 5 => 'Summary'] as $num => $label)
+            @foreach ([1 => 'Patient', 2 => 'Vitals', 3 => 'History & Diagnosis', 4 => 'Medications & Plan', 5 => 'Summary'] as $num => $label)
                 <span class="badge {{ $step >= $num ? 'bg-primary' : 'bg-secondary' }} fs-6 px-3 py-2">{{ $num }}. {{ $label }}</span>
             @endforeach
         </div>
@@ -53,44 +53,53 @@
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Temperature</label>
                     <div class="input-group">
-                        <input type="number" step="0.1" class="form-control" wire:model="vitals.temperature">
+                        <input type="number" step="0.1" class="form-control @error('vitals.temperature') is-invalid @enderror" wire:model="vitals.temperature">
                         <select class="form-select" style="max-width: 80px;" wire:model="vitals.temperature_unit">
                             <option value="celsius">°C</option>
                             <option value="fahrenheit">°F</option>
                         </select>
                     </div>
+                    @error('vitals.temperature') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Blood Pressure (Systolic) (mmHg)</label>
-                    <input type="number" class="form-control" wire:model="vitals.blood_pressure_systolic">
+                    <input type="number" class="form-control @error('vitals.blood_pressure_systolic') is-invalid @enderror" wire:model="vitals.blood_pressure_systolic">
+                    @error('vitals.blood_pressure_systolic') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Blood Pressure (Diastolic) (mmHg)</label>
-                    <input type="number" class="form-control" wire:model="vitals.blood_pressure_diastolic">
+                    <input type="number" class="form-control @error('vitals.blood_pressure_diastolic') is-invalid @enderror" wire:model="vitals.blood_pressure_diastolic">
+                    @error('vitals.blood_pressure_diastolic') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Pulse Rate (bpm)</label>
-                    <input type="number" class="form-control" wire:model="vitals.pulse_rate">
+                    <input type="number" class="form-control @error('vitals.pulse_rate') is-invalid @enderror" wire:model="vitals.pulse_rate">
+                    @error('vitals.pulse_rate') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Respiratory Rate (bpm)</label>
-                    <input type="number" class="form-control" wire:model="vitals.respiratory_rate">
+                    <input type="number" class="form-control @error('vitals.respiratory_rate') is-invalid @enderror" wire:model="vitals.respiratory_rate">
+                    @error('vitals.respiratory_rate') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Oxygen Saturation (%)</label>
-                    <input type="number" class="form-control" wire:model="vitals.oxygen_saturation">
+                    <input type="number" class="form-control @error('vitals.oxygen_saturation') is-invalid @enderror" wire:model="vitals.oxygen_saturation">
+                    @error('vitals.oxygen_saturation') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Weight (kg)</label>
-                    <input type="number" step="0.1" class="form-control" wire:model="vitals.weight">
+                    <input type="number" step="0.1" class="form-control @error('vitals.weight') is-invalid @enderror" wire:model="vitals.weight">
+                    @error('vitals.weight') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Height (cm)</label>
-                    <input type="number" step="0.1" class="form-control" wire:model="vitals.height">
+                    <input type="number" step="0.1" class="form-control @error('vitals.height') is-invalid @enderror" wire:model="vitals.height">
+                    @error('vitals.height') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">BMI</label>
-                    <input type="number" step="0.1" class="form-control" wire:model="vitals.bmi" readonly>
+                    <input type="number" step="0.1" class="form-control @error('vitals.bmi') is-invalid @enderror" wire:model="vitals.bmi" readonly>
+                    @error('vitals.bmi') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
             </div>
         @endif
@@ -115,41 +124,37 @@
                     <textarea class="form-control" wire:model="primary_diagnosis" rows="2"></textarea>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Secondary Investigation (Laboratory Investigation)</label>
+                    <label class="form-label">Secondary Investigation (Lab Tests Required)</label>
                     <textarea class="form-control" wire:model="secondary_diagnosis" rows="2"></textarea>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Recommendations</label>
-                    <textarea class="form-control" wire:model="recommendations" rows="2" placeholder="Clinic recommendations..."></textarea>
+                <div class="col-md-12 mb-3">
+                    <h5 class="mb-3">Laboratory Tests</h5>
+                    @foreach ($labTests as $i => $lab)
+                        <div class="row mb-2 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label">Test Type</label>
+                                <input type="text" class="form-control" wire:model="labTests.{{ $i }}.test_type">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Cost</label>
+                                <input type="number" step="0.01" class="form-control" wire:model="labTests.{{ $i }}.cost">
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-danger btn-sm" wire:click="removeLabTest({{ $i }})">Remove</button>
+                            </div>
+                        </div>
+                    @endforeach
+                    <button type="button" class="btn btn-outline-primary btn-sm mb-3" wire:click="addLabTest">+ Add Lab Test</button>
                 </div>
                 <div class="col-md-12 mb-3">
-                    <label class="form-label">Clinical Judgement</label>
+                    <label class="form-label">Clinical Notes</label>
                     <textarea class="form-control" wire:model="clinical_notes" rows="3"></textarea>
                 </div>
             </div>
         @endif
 
-        {{-- Step 4: Labs & Treatment Plan --}}
+        {{-- Step 4: Medications & Plan --}}
         @if ($step === 4)
-            <h5 class="mb-3">Laboratory Tests</h5>
-            @foreach ($labTests as $i => $lab)
-                <div class="row mb-2 align-items-end">
-                    <div class="col-md-5">
-                        <label class="form-label">Test Type</label>
-                        <input type="text" class="form-control" wire:model="labTests.{{ $i }}.test_type">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Cost</label>
-                        <input type="number" step="0.01" class="form-control" wire:model="labTests.{{ $i }}.cost">
-                    </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="button" class="btn btn-outline-danger btn-sm" wire:click="removeLabTest({{ $i }})">Remove</button>
-                    </div>
-                </div>
-            @endforeach
-            <button type="button" class="btn btn-outline-primary btn-sm mb-3" wire:click="addLabTest">+ Add Lab Test</button>
-
-            <hr>
             <h5 class="mb-3">Medications</h5>
             @foreach ($medications as $i => $med)
                 <div class="row mb-2 align-items-end">
@@ -183,15 +188,21 @@
             <hr>
             <div class="mb-3">
                 <label class="form-label">Treatment Plan</label>
-                <textarea class="form-control" wire:model="treatment_plan" rows="3"></textarea>
+                <div class="input-group">
+                    <input type="number" class="form-control" wire:model="treatment_plan_value" placeholder="Value">
+                    <select class="form-select" style="max-width: 160px;" wire:model="treatment_plan_type">
+                        <option value="days">Days</option>
+                        <option value="weeks">Weeks</option>
+                        <option value="months">Months</option>
+                    </select>
+                    <span class="input-group-text">
+                        {{ $treatment_plan_value ? $treatment_plan_value . ' ' . $treatment_plan_type : '—' }}
+                    </span>
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Take-Home Medication Instructions</label>
                 <textarea class="form-control" wire:model="take_home_medication" rows="2"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Treatment Schedule (e.g., 3/7, 5/7, 7/7)</label>
-                <input type="text" class="form-control" wire:model="treatment_schedule" placeholder="3/7">
             </div>
         @endif
 
@@ -223,6 +234,10 @@
                         <p class="mb-1">{{ $treatment_plan }}</p>
                     @endif
 
+                    @if ($treatment_plan_value)
+                        <h6 class="mt-3">Treatment Plan</h6>
+                        <p class="mb-1">{{ $treatment_plan_value }} / {{ ['days' => 7, 'weeks' => 52, 'months' => 12][$treatment_plan_type] ?? 7 }} ({{ ucfirst($treatment_plan_type) }})</p>
+                    @endif
                     <h6 class="mt-3">Medications: {{ count(array_filter($medications, fn($m) => !empty($m['drug_name']))) }}</h6>
                     <h6>Lab Tests: {{ count(array_filter($labTests, fn($l) => !empty($l['test_type']))) }}</h6>
                 </div>

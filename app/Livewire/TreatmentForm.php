@@ -18,11 +18,11 @@ class TreatmentForm extends Component
     public string $previous_treatment_history = '';
     public string $primary_diagnosis = '';
     public string $secondary_diagnosis = '';
-    public string $recommendations = '';
     public string $diagnosis_notes = '';
     public string $treatment_plan = '';
+    public string $treatment_plan_value = '';
+    public string $treatment_plan_type = 'days';
     public string $take_home_medication = '';
-    public string $treatment_schedule = '';
 
     public array $vitals = [
         'temperature' => null,
@@ -43,6 +43,27 @@ class TreatmentForm extends Component
 
     public int $step = 1;
 
+    private function temperatureRule(): array
+    {
+        return [
+            'nullable',
+            'numeric',
+            function ($attribute, $value, $fail) {
+                if ($value === null) return;
+                $unit = $this->vitals['temperature_unit'] ?? 'celsius';
+                if ($unit === 'fahrenheit') {
+                    if ($value < 93 || $value > 108) {
+                        $fail('Temperature must be between 93°F and 108°F.');
+                    }
+                } else {
+                    if ($value < 34 || $value > 43) {
+                        $fail('Temperature must be between 34°C and 43°C.');
+                    }
+                }
+            },
+        ];
+    }
+
     protected function rules(): array
     {
         return [
@@ -50,6 +71,17 @@ class TreatmentForm extends Component
             'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,other',
             'other_category' => 'required_if:category,other|string|max:255',
             'visit_date' => 'required|date',
+
+            'vitals.temperature' => $this->temperatureRule(),
+            'vitals.temperature_unit' => 'nullable|in:celsius,fahrenheit',
+            'vitals.blood_pressure_systolic' => 'nullable|numeric|min:60|max:250',
+            'vitals.blood_pressure_diastolic' => 'nullable|numeric|min:30|max:150',
+            'vitals.pulse_rate' => 'nullable|numeric|min:30|max:250',
+            'vitals.respiratory_rate' => 'nullable|numeric|min:5|max:60',
+            'vitals.weight' => 'nullable|numeric|min:0.5|max:500',
+            'vitals.height' => 'nullable|numeric|min:10|max:300',
+            'vitals.oxygen_saturation' => 'nullable|numeric|min:50|max:100',
+            'vitals.bmi' => 'nullable|numeric|min:5|max:80',
         ];
     }
 
@@ -75,6 +107,31 @@ class TreatmentForm extends Component
 
     public function nextStep(): void
     {
+        $stepRules = [
+            1 => [
+                'patientId' => 'required|exists:patients,id',
+                'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,other',
+                'other_category' => 'required_if:category,other|string|max:255',
+                'visit_date' => 'required|date',
+            ],
+            2 => [
+                'vitals.temperature' => $this->temperatureRule(),
+                'vitals.temperature_unit' => 'nullable|in:celsius,fahrenheit',
+                'vitals.blood_pressure_systolic' => 'nullable|numeric|min:60|max:250',
+                'vitals.blood_pressure_diastolic' => 'nullable|numeric|min:30|max:150',
+                'vitals.pulse_rate' => 'nullable|numeric|min:30|max:250',
+                'vitals.respiratory_rate' => 'nullable|numeric|min:5|max:60',
+                'vitals.weight' => 'nullable|numeric|min:0.5|max:500',
+                'vitals.height' => 'nullable|numeric|min:10|max:300',
+                'vitals.oxygen_saturation' => 'nullable|numeric|min:50|max:100',
+                'vitals.bmi' => 'nullable|numeric|min:5|max:80',
+            ],
+        ];
+
+        if (isset($stepRules[$this->step])) {
+            $this->validate($stepRules[$this->step]);
+        }
+
         $this->step++;
     }
 
@@ -130,11 +187,12 @@ class TreatmentForm extends Component
             'previous_treatment_history' => $this->previous_treatment_history ?: null,
             'primary_diagnosis' => $this->primary_diagnosis ?: null,
             'secondary_diagnosis' => $this->secondary_diagnosis ?: null,
-            'recommendations' => $this->recommendations ?: null,
             'diagnosis_notes' => $this->diagnosis_notes ?: null,
             'treatment_plan' => $this->treatment_plan ?: null,
+            'treatment_schedule' => $this->treatment_plan_value
+                ? $this->treatment_plan_value . '/' . $this->treatment_plan_type
+                : null,
             'take_home_medication' => $this->take_home_medication ?: null,
-            'treatment_schedule' => $this->treatment_schedule ?: null,
             'vitals' => array_filter($this->vitals, fn($v) => !is_null($v)),
             'medications' => array_filter($this->medications, fn($m) => !empty($m['drug_name'])),
             'lab_tests' => array_filter($this->labTests, fn($l) => !empty($l['test_type'])),

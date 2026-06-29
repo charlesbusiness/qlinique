@@ -18,7 +18,7 @@ class PatientController extends Controller
         $search = $request->get('search');
         $accountType = $request->get('account_type');
 
-        $patients = Patient::with('accountHolder')
+        $patients = Patient::with('familyFile')
             ->when($search, fn($q) => $q->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('file_number', 'like', "%{$search}%")
@@ -50,7 +50,7 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
-        $patient->load('accountHolder', 'dependants', 'treatmentCharts');
+        $patient->load('familyFile', 'treatmentCharts');
         return view('patients.show', compact('patient'));
     }
 

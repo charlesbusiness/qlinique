@@ -38,7 +38,7 @@
                         <th>Phone</th>
                         <th>Account Type</th>
                         <th>Patient Type</th>
-                        <th>Account</th>
+                        <th>Family File</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -51,7 +51,7 @@
                             <td>{{ $patient->phone ?? '—' }}</td>
                             <td><span class="badge bg-info">{{ ucfirst($patient->account_type) }}</span></td>
                             <td>{{ $patient->patient_type_label ?? '—' }}</td>
-                            <td>{{ $patient->accountHolder?->name ?? '—' }}</td>
+                            <td>{{ $patient->familyFile?->name ?? '—' }}</td>
                             <td>
                                 <a href="{{ route('patients.show', $patient) }}" class="btn btn-sm btn-outline-primary">View</a>
                                 @if (Auth::user()->hasPermission('patients.edit'))

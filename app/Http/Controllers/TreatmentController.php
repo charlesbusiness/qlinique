@@ -17,6 +17,23 @@ class TreatmentController extends Controller
     {
         $treatments = TreatmentChart::with('patient')
             ->when($request->input('status') === 'active', fn($q) => $q->where('is_completed', false))
+            ->when($pending = $request->input('pending'), function($q) use ($pending) {
+                $q->where('is_completed', false)
+                  ->whereNotNull('treatment_schedule')
+                  ->whereDoesntHave('complianceLogs', function($cq) use ($pending) {
+                      $cq->where('status', 'attended');
+                      match ($pending) {
+                          'today' => $cq->whereDate('date', today()),
+                          'week' => $cq->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()]),
+                          'month' => $cq->whereBetween('date', [now()->startOfMonth(), now()->endOfMonth()]),
+                      };
+                  });
+            })
+            ->when($search = $request->input('search'), fn($q) => $q->whereHas('patient', fn($pq) => $pq
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('file_number', 'like', "%{$search}%")
+            ))
             ->latest()
             ->paginate(15);
 

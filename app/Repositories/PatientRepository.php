@@ -26,18 +26,18 @@ class PatientRepository extends BaseRepository
             ->paginate(15);
     }
 
-    public function familyMembers(int $accountHolderId)
+    public function familyMembers(int $familyFileId)
     {
         return $this->model
-            ->where('account_holder_id', $accountHolderId)
-            ->orWhere('id', $accountHolderId)
+            ->where('family_file_id', $familyFileId)
+            ->orWhereHas('familyFile', fn($q) => $q->where('id', $familyFileId))
             ->get();
     }
 
-    public function corporateMembers(int $accountHolderId)
+    public function corporateMembers(int $familyFileId)
     {
         return $this->model
-            ->where('account_holder_id', $accountHolderId)
+            ->where('family_file_id', $familyFileId)
             ->get();
     }
 }

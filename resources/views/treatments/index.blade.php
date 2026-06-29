@@ -14,12 +14,29 @@
 
     <div class="card">
         <div class="card-header">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <form method="GET" class="d-flex gap-2 flex-grow-1" style="max-width: 400px;">
+                    @if (request('status')) <input type="hidden" name="status" value="{{ request('status') }}"> @endif
+                    @if (request('pending')) <input type="hidden" name="pending" value="{{ request('pending') }}"> @endif
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name, phone or file number..." value="{{ request('search') }}">
+                    <button class="btn btn-sm btn-outline-primary">Search</button>
+                </form>
+            </div>
             <ul class="nav nav-pills">
                 <li class="nav-item">
-                    <a class="nav-link {{ request('status') !== 'active' ? 'active' : '' }}" href="{{ route('treatments.index') }}">All</a>
+                    <a class="nav-link {{ !request('status') && !request('pending') ? 'active' : '' }}" href="{{ route('treatments.index') }}">All</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request('status') === 'active' ? 'active' : '' }}" href="{{ route('treatments.index', ['status' => 'active']) }}">Active</a>
+                    <a class="nav-link {{ request('status') === 'active' && !request('pending') ? 'active' : '' }}" href="{{ route('treatments.index', ['status' => 'active']) }}">Active</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request('pending') === 'today' ? 'active' : '' }}" href="{{ route('treatments.index', ['pending' => 'today']) }}">Pending Today</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request('pending') === 'week' ? 'active' : '' }}" href="{{ route('treatments.index', ['pending' => 'week']) }}">Pending This Week</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request('pending') === 'month' ? 'active' : '' }}" href="{{ route('treatments.index', ['pending' => 'month']) }}">Pending This Month</a>
                 </li>
             </ul>
         </div>

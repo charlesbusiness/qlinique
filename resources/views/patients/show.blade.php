@@ -31,16 +31,8 @@
             <div class="card mb-4">
                 <div class="card-header"><strong>Account Info</strong></div>
                 <div class="card-body">
-                    @if ($patient->accountHolder)
-                        <p class="mb-1"><strong>Account Holder:</strong> {{ $patient->accountHolder->name }}</p>
-                    @endif
-                    @if ($patient->dependants->count() > 0)
-                        <p class="mb-1"><strong>Dependants:</strong></p>
-                        <ul>
-                            @foreach ($patient->dependants as $dep)
-                                <li>{{ $dep->name }} ({{ $dep->file_number }})</li>
-                            @endforeach
-                        </ul>
+                    @if ($patient->familyFile)
+                        <p class="mb-1"><strong>{{ ucfirst($patient->account_type) }} File:</strong> {{ $patient->familyFile->name }} ({{ $patient->familyFile->file_number }})</p>
                     @endif
                 </div>
             </div>

@@ -25,7 +25,7 @@ class StorePatientRequest extends FormRequest
             'photo' => ['nullable', 'image', 'max:2048'],
             'account_type' => ['required', 'string', 'in:individual,family,corporate'],
             'patient_type' => ['nullable', 'string', 'in:admission,outpatient,outreach'],
-            'account_holder_id' => ['nullable', 'exists:patients,id'],
+            'family_file_id' => ['nullable', 'exists:family_files,id'],
             'next_of_kin' => ['nullable', 'array'],
             'next_of_kin.name' => ['nullable', 'string', 'max:255'],
             'next_of_kin.relationship' => ['nullable', 'string', 'max:255'],
