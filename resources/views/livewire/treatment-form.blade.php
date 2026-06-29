@@ -24,12 +24,20 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Category</label>
-                    <select class="form-select @error('category') is-invalid @enderror" wire:model="category">
-                        <option value="checkup">Checkup</option>
-                        <option value="treatment">Treatment</option>
-                        <option value="emergency">Emergency / Accident</option>
+                    <select class="form-select @error('category') is-invalid @enderror" wire:model.live="category">
+                        @foreach (\App\Enums\TreatmentCategory::options() as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                     @error('category') <div class="invalid-feedback">{{ $message }}</div> @enderror
+
+                    @if ($category === 'other')
+                        <div class="mt-2">
+                            <label class="form-label">Specify Category</label>
+                            <input type="text" class="form-control @error('other_category') is-invalid @enderror" wire:model="other_category" placeholder="Please specify...">
+                            @error('other_category') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    @endif
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Visit Date</label>
@@ -181,7 +189,11 @@
                 <div class="card-body">
                     <h6>Patient & Visit</h6>
                     <p class="mb-1"><strong>Patient ID:</strong> {{ $patientId }}</p>
-                    <p class="mb-1"><strong>Category:</strong> {{ ucfirst($category) }}</p>
+                    <p class="mb-1"><strong>Category:</strong> {{ \App\Enums\TreatmentCategory::tryFrom($category)?->label() ?? $category }}
+                        @if ($category === 'other' && $other_category)
+                            — {{ $other_category }}
+                        @endif
+                    </p>
                     <p class="mb-1"><strong>Visit Date:</strong> {{ $visit_date }}</p>
 
                     @if ($presenting_complaint)

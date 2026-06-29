@@ -62,6 +62,17 @@
                 </select>
                 @error('account_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Patient Type</label>
+                <select class="form-select @error('patient_type') is-invalid @enderror" wire:model="patient_type">
+                    <option value="">Select...</option>
+                    @foreach (\App\Models\Patient::patientTypeOptions() as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('patient_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
         </div>
 
         <div class="mb-3">

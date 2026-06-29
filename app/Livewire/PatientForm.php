@@ -24,6 +24,7 @@ class PatientForm extends Component
     public string $marital_status = '';
     public $photo = null;
     public string $account_type = 'individual';
+    public string $patient_type = '';
     public ?string $account_holder_id = null;
     public array $next_of_kin = [];
     public array $consent = [];
@@ -52,6 +53,7 @@ class PatientForm extends Component
             'marital_status' => 'nullable|string|max:50',
             'photo' => 'nullable|image|max:2048',
             'account_type' => 'required|in:individual,family,corporate',
+            'patient_type' => 'nullable|in:admission,outpatient,outreach',
             'religion' => 'nullable|string|max:255',
             'denomination' => 'nullable|string|max:255',
             'signature_type' => 'nullable|in:typed,drawn,uploaded',
@@ -73,6 +75,7 @@ class PatientForm extends Component
             $this->occupation = $patient->occupation ?? '';
             $this->marital_status = $patient->marital_status ?? '';
             $this->account_type = $patient->account_type ?? 'individual';
+            $this->patient_type = $patient->patient_type ?? '';
             $this->next_of_kin = is_array($patient->next_of_kin) ? $patient->next_of_kin : [];
             $this->consent = is_array($patient->consent) ? $patient->consent : [];
             $this->religion = $patient->religion ?? '';
@@ -99,6 +102,7 @@ class PatientForm extends Component
             'occupation' => $this->occupation ?: null,
             'marital_status' => $this->marital_status ?: null,
             'account_type' => $this->account_type,
+            'patient_type' => $this->patient_type ?: null,
             'next_of_kin' => $this->next_of_kin,
             'consent' => $this->consent,
             'religion' => $this->religion ?: null,

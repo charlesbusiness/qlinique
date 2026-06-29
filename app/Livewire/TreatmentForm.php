@@ -10,6 +10,7 @@ class TreatmentForm extends Component
 {
     public ?int $patientId = null;
     public string $category = 'checkup';
+    public string $other_category = '';
     public string $visit_date = '';
     public string $presenting_complaint = '';
     public string $symptoms = '';
@@ -43,7 +44,8 @@ class TreatmentForm extends Component
     {
         return [
             'patientId' => 'required|exists:patients,id',
-            'category' => 'required|in:checkup,treatment,emergency',
+            'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,other',
+            'other_category' => 'required_if:category,other|string|max:255',
             'visit_date' => 'required|date',
         ];
     }
@@ -103,6 +105,7 @@ class TreatmentForm extends Component
         $data = [
             'patient_id' => $this->patientId,
             'category' => $this->category,
+            'other_category' => $this->other_category ?: null,
             'visit_date' => $this->visit_date,
             'presenting_complaint' => $this->presenting_complaint ?: null,
             'symptoms' => $this->symptoms ?: null,

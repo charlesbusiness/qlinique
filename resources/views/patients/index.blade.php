@@ -31,6 +31,7 @@
                         <th>Gender</th>
                         <th>Phone</th>
                         <th>Account Type</th>
+                        <th>Patient Type</th>
                         <th>Account</th>
                         <th>Actions</th>
                     </tr>
@@ -43,6 +44,7 @@
                             <td>{{ ucfirst($patient->gender) }}</td>
                             <td>{{ $patient->phone ?? '—' }}</td>
                             <td><span class="badge bg-info">{{ ucfirst($patient->account_type) }}</span></td>
+                            <td>{{ $patient->patient_type_label ?? '—' }}</td>
                             <td>{{ $patient->accountHolder?->name ?? '—' }}</td>
                             <td>
                                 <a href="{{ route('patients.show', $patient) }}" class="btn btn-sm btn-outline-primary">View</a>
@@ -52,7 +54,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center text-muted py-4">No patients found.</td></tr>
+                        <tr><td colspan="8" class="text-center text-muted py-4">No patients found.</td></tr>
                     @endforelse
                 </tbody>
             </table>

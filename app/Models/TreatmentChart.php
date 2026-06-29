@@ -15,6 +15,7 @@ class TreatmentChart extends Model
     protected $fillable = [
         'patient_id',
         'category',
+        'other_category',
         'visit_date',
         'presenting_complaint',
         'symptoms',

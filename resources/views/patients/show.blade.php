@@ -57,6 +57,7 @@
                         <div class="col-md-6 mb-2"><strong>Email:</strong> {{ $patient->email ?? '—' }}</div>
                         <div class="col-md-6 mb-2"><strong>Occupation:</strong> {{ $patient->occupation ?? '—' }}</div>
                         <div class="col-md-6 mb-2"><strong>Marital Status:</strong> {{ $patient->marital_status ?? '—' }}</div>
+                        <div class="col-md-6 mb-2"><strong>Patient Type:</strong> {{ $patient->patient_type_label ?? '—' }}</div>
                         <div class="col-12 mb-2"><strong>Address:</strong> {{ $patient->address ?? '—' }}</div>
                         <div class="col-md-6 mb-2"><strong>Religion:</strong> {{ $patient->religion ?? '—' }}</div>
                         <div class="col-md-6 mb-2"><strong>Denomination:</strong> {{ $patient->denomination ?? '—' }}</div>

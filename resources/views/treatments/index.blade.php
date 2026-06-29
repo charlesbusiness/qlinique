@@ -43,7 +43,12 @@
                         <tr>
                             <td>{{ $treatment->id }}</td>
                             <td>{{ $treatment->patient->name ?? '—' }}</td>
-                            <td><span class="badge bg-warning">{{ ucfirst($treatment->category) }}</span></td>
+                            <td>
+                                <span class="badge bg-warning">{{ \App\Enums\TreatmentCategory::tryFrom($treatment->category)?->label() ?? ucfirst($treatment->category) }}</span>
+                                @if ($treatment->category === 'other' && $treatment->other_category)
+                                    <br><small class="text-muted">{{ $treatment->other_category }}</small>
+                                @endif
+                            </td>
                             <td>{{ $treatment->visit_date->format('d M Y') }}</td>
                             <td>{{ Str::limit($treatment->primary_diagnosis, 40) ?? '—' }}</td>
                             <td>

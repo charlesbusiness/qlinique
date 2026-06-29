@@ -24,6 +24,7 @@ class Patient extends Model
         'marital_status',
         'photo_path',
         'account_type',
+        'patient_type',
         'account_holder_id',
         'next_of_kin',
         'consent',
@@ -44,6 +45,20 @@ class Patient extends Model
             'consent' => 'array',
             'is_active' => 'boolean',
         ];
+    }
+
+    public static function patientTypeOptions(): array
+    {
+        return [
+            'admission' => 'Full Admission',
+            'outpatient' => 'Out-patient',
+            'outreach' => 'Outreach (Home Service)',
+        ];
+    }
+
+    public function getPatientTypeLabelAttribute(): ?string
+    {
+        return static::patientTypeOptions()[$this->patient_type] ?? null;
     }
 
     public function accountHolder()

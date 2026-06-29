@@ -17,7 +17,11 @@
                 <div class="card-header"><strong>Visit Info</strong></div>
                 <div class="card-body">
                     <p class="mb-1"><strong>Patient:</strong> {{ $treatment->patient->name }} ({{ $treatment->patient->file_number }})</p>
-                    <p class="mb-1"><strong>Category:</strong> <span class="badge bg-warning">{{ ucfirst($treatment->category) }}</span></p>
+                    <p class="mb-1"><strong>Category:</strong> <span class="badge bg-warning">{{ \App\Enums\TreatmentCategory::tryFrom($treatment->category)?->label() ?? ucfirst($treatment->category) }}</span>
+                        @if ($treatment->category === 'other' && $treatment->other_category)
+                            — {{ $treatment->other_category }}
+                        @endif
+                    </p>
                     <p class="mb-1"><strong>Visit Date:</strong> {{ $treatment->visit_date->format('d M Y') }}</p>
                     <p class="mb-1"><strong>Schedule:</strong> {{ $treatment->treatment_schedule ?? '—' }}</p>
                     <p class="mb-0"><strong>Status:</strong>
