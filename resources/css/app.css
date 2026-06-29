@@ -1,0 +1,53 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+    --bs-primary: #0d5e32;
+    --bs-primary-rgb: 13, 94, 50;
+    --bs-link-color-rgb: 13, 94, 50;
+}
+
+.btn-primary {
+    --bs-btn-bg: #0d5e32;
+    --bs-btn-border-color: #0d5e32;
+    --bs-btn-hover-bg: #0a4d29;
+    --bs-btn-hover-border-color: #094023;
+    --bs-btn-active-bg: #094023;
+    --bs-btn-active-border-color: #07351d;
+    --bs-btn-disabled-bg: #0d5e32;
+    --bs-btn-disabled-border-color: #0d5e32;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: #0d5e32;
+    --bs-btn-border-color: #0d5e32;
+    --bs-btn-hover-bg: #0d5e32;
+    --bs-btn-hover-border-color: #0d5e32;
+    --bs-btn-active-bg: #0d5e32;
+    --bs-btn-active-border-color: #0d5e32;
+}
+
+/* Offcanvas navbar: render inline on md+ screens, overlay on small */
+@media (min-width: 768px) {
+    .navbar .offcanvas {
+        position: static;
+        z-index: auto;
+        visibility: visible;
+        transform: none;
+        background: transparent;
+        border: none;
+        width: auto;
+        flex-grow: 1;
+    }
+    .navbar .offcanvas .offcanvas-header {
+        display: none;
+    }
+    .navbar .offcanvas .offcanvas-body {
+        display: flex;
+        align-items: center;
+        overflow: visible;
+        padding: 0;
+    }
+    .navbar .navbar-toggler {
+        display: none;
+    }
+}
