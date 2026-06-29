@@ -1,59 +1,88 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><strong style="font-size: 2rem;">Klinical</strong></p>
+
+<p align="center">Clinical Facility Management System</p>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+A complete electronic health record (EHR) and clinic management system built for
+clinics in low-resource settings. Manages patients, treatment charts, antenatal
+care, billing, compliance tracking, and reporting.
 </p>
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Patient Management
+- Patient registration with auto-generated file numbers (`FAC-YYYY-NNNNN`)
+- Support for Individual, Family, and Corporate account types
+- Next-of-kin and consent tracking, patient photo uploads
+- Search by name, file number, or phone
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Treatment Charts
+- Per-visit charts categorized as Checkup, Treatment, or Emergency
+- Vitals recording (temperature, BP, pulse, respiratory rate, weight, height, BMI, SpO₂)
+- Primary and secondary diagnoses with clinical notes
+- Lab test prescriptions with findings and attachments
+- Medication management with dosage, quantity, and cost calculation
+- First aid tracking and treatment schedules (e.g. `3/7`, `5/7`, `7/7`)
 
-## Learning Laravel
+### Antenatal Care
+- Antenatal records with EDD, gestation weeks, obstetric history, and risk levels
+- Partograph management (cervical dilation, fetal heart rate, labour progress)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Compliance Monitoring
+- Daily attendance tracking (attended / missed / excused)
+- Compliance percentage calculation and missed-session alerts
+- Compliance reports with >75% threshold identification
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Billing & Finance
+- Invoice generation with auto-numbering (`INV-YYYY-NNNNN`)
+- Payment recording (cash, card, mobile money, bank transfer)
+- Auto-generated receipt numbers and balance tracking
 
-## Laravel Sponsors
+### Reports
+- Daily reports (new patients, treatments, emergencies, revenue)
+- Treatment reports (by category and completion stats)
+- Compliance reports (active treatments, compliant vs. non-compliant)
+- Financial reports (total invoiced, collected, outstanding)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### User Management & Security
+- Role-based access control with 6 roles: Super Admin, Matron, Doctor, Nurse, Receptionist, Accountant
+- Permission matrix via `config/permissions.php`
+- Forced password change on first login
+- Full audit trail on all major entities
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Technology Stack
 
-## Contributing
+| Layer | Technology |
+|---|---|
+| Backend | PHP 8.2, Laravel 12 |
+| Frontend | Blade, Bootstrap 5, Livewire 4 |
+| Database | MySQL |
+| Build | Vite |
+| Auth | Laravel Breeze |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# Install dependencies and run migrations
+composer run setup
 
-## Security Vulnerabilities
+# Configure your database in .env, then create a super admin
+php artisan make:super-user
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Start development server
+composer run dev
+```
+
+The `setup` script runs `composer install`, creates `.env` from `.env.example`, generates an app key, and runs migrations.
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
