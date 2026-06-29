@@ -18,6 +18,7 @@ class TreatmentForm extends Component
     public string $previous_treatment_history = '';
     public string $primary_diagnosis = '';
     public string $secondary_diagnosis = '';
+    public string $recommendations = '';
     public string $diagnosis_notes = '';
     public string $treatment_plan = '';
     public string $take_home_medication = '';
@@ -25,6 +26,7 @@ class TreatmentForm extends Component
 
     public array $vitals = [
         'temperature' => null,
+        'temperature_unit' => 'celsius',
         'blood_pressure_systolic' => null,
         'blood_pressure_diastolic' => null,
         'pulse_rate' => null,
@@ -32,6 +34,7 @@ class TreatmentForm extends Component
         'weight' => null,
         'height' => null,
         'oxygen_saturation' => null,
+        'bmi' => null,
     ];
 
     public array $medications = [];
@@ -48,6 +51,20 @@ class TreatmentForm extends Component
             'other_category' => 'required_if:category,other|string|max:255',
             'visit_date' => 'required|date',
         ];
+    }
+
+    public function updatedVitals($value, $key): void
+    {
+        if (in_array($key, ['weight', 'height'])) {
+            $weight = $this->vitals['weight'];
+            $height = $this->vitals['height'];
+
+            if ($weight && $height && $height > 0) {
+                $this->vitals['bmi'] = round($weight / (($height / 100) ** 2), 1);
+            } else {
+                $this->vitals['bmi'] = null;
+            }
+        }
     }
 
     public function mount(?int $patientId = null): void
@@ -113,6 +130,7 @@ class TreatmentForm extends Component
             'previous_treatment_history' => $this->previous_treatment_history ?: null,
             'primary_diagnosis' => $this->primary_diagnosis ?: null,
             'secondary_diagnosis' => $this->secondary_diagnosis ?: null,
+            'recommendations' => $this->recommendations ?: null,
             'diagnosis_notes' => $this->diagnosis_notes ?: null,
             'treatment_plan' => $this->treatment_plan ?: null,
             'take_home_medication' => $this->take_home_medication ?: null,

@@ -15,11 +15,18 @@ class PatientController extends Controller
 
     public function index(Request $request)
     {
-        $query = $request->get('search');
+        $search = $request->get('search');
+        $accountType = $request->get('account_type');
 
-        $patients = $query
-            ? $this->patientService->search($query)
-            : Patient::with('accountHolder')->latest()->paginate(15);
+        $patients = Patient::with('accountHolder')
+            ->when($search, fn($q) => $q->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('file_number', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            }))
+            ->when($accountType, fn($q) => $q->where('account_type', $accountType))
+            ->latest()
+            ->paginate(15);
 
         return view('patients.index', compact('patients'));
     }

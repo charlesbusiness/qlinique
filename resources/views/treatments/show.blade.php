@@ -40,10 +40,10 @@
                     <div class="card-body">
                         @foreach ($treatment->vitals as $vital)
                             <div class="row">
-                                <div class="col-4"><strong>Temp:</strong> {{ $vital->temperature ?? '—' }} °C</div>
-                                <div class="col-4"><strong>BP:</strong> {{ $vital->blood_pressure_systolic }}/{{ $vital->blood_pressure_diastolic }}</div>
-                                <div class="col-4"><strong>Pulse:</strong> {{ $vital->pulse_rate ?? '—' }}</div>
-                                <div class="col-4"><strong>RR:</strong> {{ $vital->respiratory_rate ?? '—' }}</div>
+                                <div class="col-4"><strong>Temp:</strong> {{ $vital->temperature ?? '—' }} {{ $vital->temperature_unit === 'fahrenheit' ? '°F' : '°C' }}</div>
+                                <div class="col-4"><strong>BP:</strong> {{ $vital->blood_pressure_systolic }}/{{ $vital->blood_pressure_diastolic }} mmHg</div>
+                                <div class="col-4"><strong>Pulse:</strong> {{ $vital->pulse_rate ?? '—' }} bpm</div>
+                                <div class="col-4"><strong>RR:</strong> {{ $vital->respiratory_rate ?? '—' }} bpm</div>
                                 <div class="col-4"><strong>SpO2:</strong> {{ $vital->oxygen_saturation ?? '—' }}%</div>
                                 <div class="col-4"><strong>Weight:</strong> {{ $vital->weight ?? '—' }} kg</div>
                                 <div class="col-4"><strong>Height:</strong> {{ $vital->height ?? '—' }} cm</div>
@@ -61,6 +61,9 @@
                 <div class="card-body">
                     <p class="mb-1"><strong>Primary:</strong> {{ $treatment->primary_diagnosis ?? '—' }}</p>
                     <p class="mb-1"><strong>Secondary:</strong> {{ $treatment->secondary_diagnosis ?? '—' }}</p>
+                    @if ($treatment->recommendations)
+                        <p class="mb-1"><strong>Recommendations:</strong> {{ $treatment->recommendations }}</p>
+                    @endif
                     <p class="mb-0"><strong>Notes:</strong> {{ $treatment->diagnosis_notes ?? '—' }}</p>
                 </div>
             </div>

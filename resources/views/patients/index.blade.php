@@ -11,8 +11,14 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <form method="GET" class="d-flex gap-2 flex-grow-1 me-3">
                 <input type="text" name="search" class="form-control" placeholder="Search by name, file no., or phone..." value="{{ request('search') }}">
+                <select name="account_type" class="form-select" style="max-width: 200px;">
+                    <option value="">All Accounts</option>
+                    @foreach (\App\Enums\AccountType::options() as $value => $label)
+                        <option value="{{ $value }}" @selected(request('account_type') === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
                 <button class="btn btn-outline-secondary" type="submit">Search</button>
-                @if(request('search'))
+                @if(request('search') || request('account_type'))
                     <a href="{{ route('patients.index') }}" class="btn btn-outline-danger">Clear</a>
                 @endif
             </form>

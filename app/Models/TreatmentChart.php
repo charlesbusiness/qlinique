@@ -24,6 +24,7 @@ class TreatmentChart extends Model
         'primary_diagnosis',
         'secondary_diagnosis',
         'diagnosis_notes',
+        'recommendations',
         'first_aid_intervention',
         'first_aid_time',
         'first_aid_outcome',

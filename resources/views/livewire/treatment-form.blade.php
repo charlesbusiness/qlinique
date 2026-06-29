@@ -51,23 +51,29 @@
         @if ($step === 2)
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Temperature (°C)</label>
-                    <input type="number" step="0.1" class="form-control" wire:model="vitals.temperature">
+                    <label class="form-label">Temperature</label>
+                    <div class="input-group">
+                        <input type="number" step="0.1" class="form-control" wire:model="vitals.temperature">
+                        <select class="form-select" style="max-width: 80px;" wire:model="vitals.temperature_unit">
+                            <option value="celsius">°C</option>
+                            <option value="fahrenheit">°F</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Blood Pressure (Systolic)</label>
+                    <label class="form-label">Blood Pressure (Systolic) (mmHg)</label>
                     <input type="number" class="form-control" wire:model="vitals.blood_pressure_systolic">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Blood Pressure (Diastolic)</label>
+                    <label class="form-label">Blood Pressure (Diastolic) (mmHg)</label>
                     <input type="number" class="form-control" wire:model="vitals.blood_pressure_diastolic">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Pulse Rate</label>
+                    <label class="form-label">Pulse Rate (bpm)</label>
                     <input type="number" class="form-control" wire:model="vitals.pulse_rate">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Respiratory Rate</label>
+                    <label class="form-label">Respiratory Rate (bpm)</label>
                     <input type="number" class="form-control" wire:model="vitals.respiratory_rate">
                 </div>
                 <div class="col-md-4 mb-3">
@@ -91,29 +97,35 @@
 
         {{-- Step 3: History & Diagnosis --}}
         @if ($step === 3)
-            <div class="mb-3">
-                <label class="form-label">Presenting Complaint</label>
-                <textarea class="form-control" wire:model="presenting_complaint" rows="2"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Symptoms</label>
-                <textarea class="form-control" wire:model="symptoms" rows="2"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Previous Treatment History</label>
-                <textarea class="form-control" wire:model="previous_treatment_history" rows="2"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Primary Diagnosis</label>
-                <textarea class="form-control" wire:model="primary_diagnosis" rows="2"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Secondary Diagnosis</label>
-                <textarea class="form-control" wire:model="secondary_diagnosis" rows="2"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Clinical Notes</label>
-                <textarea class="form-control" wire:model="clinical_notes" rows="3"></textarea>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Finding on history</label>
+                    <textarea class="form-control" wire:model="presenting_complaint" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Finding on Examination (Sign and Symptoms)</label>
+                    <textarea class="form-control" wire:model="symptoms" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Previous Treatment History</label>
+                    <textarea class="form-control" wire:model="previous_treatment_history" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Clinical Judgement </label>
+                    <textarea class="form-control" wire:model="primary_diagnosis" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Secondary Investigation (Laboratory Investigation)</label>
+                    <textarea class="form-control" wire:model="secondary_diagnosis" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Recommendations</label>
+                    <textarea class="form-control" wire:model="recommendations" rows="2" placeholder="Clinic recommendations..."></textarea>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Clinical Judgement</label>
+                    <textarea class="form-control" wire:model="clinical_notes" rows="3"></textarea>
+                </div>
             </div>
         @endif
 
