@@ -1,7 +1,7 @@
 <div>
     <div class="mb-4">
         <div class="d-flex gap-2">
-            @foreach ([1 => 'Patient', 2 => 'Vitals', 3 => 'History & Diagnosis', 4 => 'Medications & Plan', 5 => 'Summary'] as $num => $label)
+            @foreach ([1 => 'Patient', 2 => 'Vitals', 3 => 'History & Diagnosis', 4 => 'Medications & Plan', 5 => 'Consent', 6 => 'Summary'] as $num => $label)
                 <span class="badge {{ $step >= $num ? 'bg-primary' : 'bg-secondary' }} fs-6 px-3 py-2">{{ $num }}. {{ $label }}</span>
             @endforeach
         </div>
@@ -36,6 +36,23 @@
                             <label class="form-label">Specify Category</label>
                             <input type="text" class="form-control @error('other_category') is-invalid @enderror" wire:model="other_category" placeholder="Please specify...">
                             @error('other_category') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    @endif
+
+                    @php
+                        $subOptions = \App\Livewire\TreatmentForm::subCategoryOptions($category);
+                    @endphp
+                    @if ($subOptions)
+                        <div class="mt-3">
+                            <label class="form-label">Sub-category <span class="text-danger">*</span></label>
+                            @error('sub_category') <div class="text-danger small mb-1">{{ $message }}</div> @enderror
+                            @foreach ($subOptions as $value => $label)
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input @error('sub_category') is-invalid @enderror"
+                                           wire:model="sub_category" value="{{ $value }}" id="sub_{{ $value }}">
+                                    <label class="form-check-label" for="sub_{{ $value }}">{{ $label }}</label>
+                                </div>
+                            @endforeach
                         </div>
                     @endif
                 </div>
@@ -206,8 +223,172 @@
             </div>
         @endif
 
-        {{-- Step 5: Summary & Save --}}
+        {{-- Step 5: Consent --}}
         @if ($step === 5)
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Informed Consent</h5>
+                <div class="alert alert-info">
+                    <p class="mb-0"><strong>INFORMED MEDICAL CONSENT</strong></p>
+                    <p class="mb-0 mt-2">I hereby give my consent for the medical practitioners, physicians, and authorized medical staff of CORNERSTONE CAREPOINT CLINIC to perform the following medical procedure(s) or treatment(s) as required by my health condition.</p>
+                    <p class="mb-0 mt-2">I acknowledge that the nature, purpose, risks, and benefits of the procedure have been explained to me in a language I understand. I have been informed of viable alternative treatments and the risks of refusing treatment. I authorize the medical staff to perform any additional or alternative procedures deemed medically necessary. I am signing this form voluntarily, of sound mind, and have had all my questions answered.</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Name/Description of Procedure <span class="text-danger">*</span></label>
+                        <textarea class="form-control @error('consent.procedure_description') is-invalid @enderror" wire:model="consent.procedure_description" rows="2" placeholder="Describe the procedure or treatment..."></textarea>
+                        @error('consent.procedure_description') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Attending Physician <span class="text-danger">*</span></label>
+                        <select class="form-select @error('consent.attending_physician') is-invalid @enderror" wire:model="consent.attending_physician">
+                            <option value="">— Select —</option>
+                            @foreach ($staff as $s)
+                                <option value="{{ $s->name }}">{{ $s->name }} ({{ ucfirst($s->role) }})</option>
+                            @endforeach
+                        </select>
+                        @error('consent.attending_physician') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <hr>
+                <h5 class="mb-3">Signatures</h5>
+
+                {{-- Patient / Representative Signature --}}
+                <div class="card mb-3 bg-light">
+                    <div class="card-body">
+                        <h6>Patient / Authorized Representative <span class="text-danger">*</span></h6>
+                        <div class="mb-3">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" wire:model.live="consent.patient_signature_type" value="typed" id="pat_sig_typed" autocomplete="off">
+                                <label class="btn btn-outline-primary btn-sm" for="pat_sig_typed">Type</label>
+                                <input type="radio" class="btn-check" wire:model.live="consent.patient_signature_type" value="uploaded" id="pat_sig_upload" autocomplete="off">
+                                <label class="btn btn-outline-primary btn-sm" for="pat_sig_upload">Upload</label>
+                            </div>
+                        </div>
+                        @error('consent.patient_signature_type') <div class="text-danger small">{{ $message }}</div> @enderror
+
+                        @if ($consent['patient_signature_type'] === 'typed')
+                        <div class="mb-2">
+                            <label class="form-label">Type Full Name</label>
+                            <input type="text" class="form-control @error('consent.patient_signature') is-invalid @enderror" wire:model="consent.patient_signature" placeholder="e.g. John Doe">
+                            @error('consent.patient_signature') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            @if ($consent['patient_signature'])
+                            <div class="mt-2 p-2 border rounded bg-white" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.5rem;">
+                                {{ $consent['patient_signature'] }}
+                            </div>
+                            @endif
+                        </div>
+                        @elseif ($consent['patient_signature_type'] === 'uploaded')
+                        <div class="mb-2">
+                            <label class="form-label">Upload Signature Image</label>
+                            <input type="file" class="form-control @error('consent_upload_patient') is-invalid @enderror" wire:model="consent_upload_patient" accept="image/*">
+                            @error('consent_upload_patient') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            @if ($consent_upload_patient)
+                            <div class="mt-2">
+                                <img src="{{ $consent_upload_patient->temporaryUrl() }}" class="border rounded" style="max-height: 60px;">
+                            </div>
+                            @endif
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Witness Signature --}}
+                <div class="card mb-3 bg-light">
+                    <div class="card-body">
+                        <h6>Witness <span class="text-danger">*</span></h6>
+                        <div class="mb-2">
+                            <label class="form-label">Witness Full Name</label>
+                            <input type="text" class="form-control @error('consent.witness_name') is-invalid @enderror" wire:model="consent.witness_name" placeholder="e.g. Jane Smith">
+                            @error('consent.witness_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" wire:model.live="consent.witness_signature_type" value="typed" id="wit_sig_typed" autocomplete="off">
+                                <label class="btn btn-outline-primary btn-sm" for="wit_sig_typed">Type</label>
+                                <input type="radio" class="btn-check" wire:model.live="consent.witness_signature_type" value="uploaded" id="wit_sig_upload" autocomplete="off">
+                                <label class="btn btn-outline-primary btn-sm" for="wit_sig_upload">Upload</label>
+                            </div>
+                        </div>
+                        @error('consent.witness_signature_type') <div class="text-danger small">{{ $message }}</div> @enderror
+
+                        @if ($consent['witness_signature_type'] === 'typed')
+                        <div class="mb-2">
+                            <label class="form-label">Type Full Name</label>
+                            <input type="text" class="form-control @error('consent.witness_signature') is-invalid @enderror" wire:model="consent.witness_signature" placeholder="e.g. Jane Smith">
+                            @error('consent.witness_signature') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            @if ($consent['witness_signature'])
+                            <div class="mt-2 p-2 border rounded bg-white" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.5rem;">
+                                {{ $consent['witness_signature'] }}
+                            </div>
+                            @endif
+                        </div>
+                        @elseif ($consent['witness_signature_type'] === 'uploaded')
+                        <div class="mb-2">
+                            <label class="form-label">Upload Signature Image</label>
+                            <input type="file" class="form-control @error('consent_upload_witness') is-invalid @enderror" wire:model="consent_upload_witness" accept="image/*">
+                            @error('consent_upload_witness') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            @if ($consent_upload_witness)
+                            <div class="mt-2">
+                                <img src="{{ $consent_upload_witness->temporaryUrl() }}" class="border rounded" style="max-height: 60px;">
+                            </div>
+                            @endif
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Physician Signature --}}
+                <div class="card mb-3 bg-light">
+                    <div class="card-body">
+                        <h6>Physician / Healthcare Provider <span class="text-danger">*</span></h6>
+                        <div class="mb-3">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" wire:model.live="consent.physician_signature_type" value="typed" id="doc_sig_typed" autocomplete="off">
+                                <label class="btn btn-outline-primary btn-sm" for="doc_sig_typed">Type</label>
+                                <input type="radio" class="btn-check" wire:model.live="consent.physician_signature_type" value="uploaded" id="doc_sig_upload" autocomplete="off">
+                                <label class="btn btn-outline-primary btn-sm" for="doc_sig_upload">Upload</label>
+                            </div>
+                        </div>
+                        @error('consent.physician_signature_type') <div class="text-danger small">{{ $message }}</div> @enderror
+
+                        @if ($consent['physician_signature_type'] === 'typed')
+                        <div class="mb-2">
+                            <label class="form-label">Type Full Name</label>
+                            <input type="text" class="form-control @error('consent.physician_signature') is-invalid @enderror" wire:model="consent.physician_signature" placeholder="e.g. Dr. John Doe">
+                            @error('consent.physician_signature') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="form-text mt-1">I confirm that I have explained the nature, purpose, risks, and benefits of the aforementioned procedure to the patient and have answered any questions raised.</div>
+                            @if ($consent['physician_signature'])
+                            <div class="mt-2 p-2 border rounded bg-white" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.5rem;">
+                                {{ $consent['physician_signature'] }}
+                            </div>
+                            @endif
+                        </div>
+                        @elseif ($consent['physician_signature_type'] === 'uploaded')
+                        <div class="mb-2">
+                            <label class="form-label">Upload Signature Image</label>
+                            <input type="file" class="form-control @error('consent_upload_physician') is-invalid @enderror" wire:model="consent_upload_physician" accept="image/*">
+                            @error('consent_upload_physician') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            @if ($consent_upload_physician)
+                            <div class="mt-2">
+                                <img src="{{ $consent_upload_physician->temporaryUrl() }}" class="border rounded" style="max-height: 60px;">
+                            </div>
+                            @endif
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Step 6: Summary & Save --}}
+        @if ($step === 6)
             <div class="card mb-3">
                 <div class="card-body">
                     <h6>Patient & Visit</h6>
@@ -215,6 +396,8 @@
                     <p class="mb-1"><strong>Category:</strong> {{ \App\Enums\TreatmentCategory::tryFrom($category)?->label() ?? $category }}
                         @if ($category === 'other' && $other_category)
                             — {{ $other_category }}
+                        @elseif ($sub_category)
+                            — {{ (\App\Livewire\TreatmentForm::subCategoryOptions($category))[$sub_category] ?? $sub_category }}
                         @endif
                     </p>
                     <p class="mb-1"><strong>Visit Date:</strong> {{ $visit_date }}</p>
@@ -242,6 +425,37 @@
                     <h6>Lab Tests: {{ count(array_filter($labTests, fn($l) => !empty($l['test_type']))) }}</h6>
                 </div>
             </div>
+
+            @if ($consent['procedure_description'])
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6>Consent</h6>
+                    <p class="mb-1"><strong>Procedure:</strong> {{ $consent['procedure_description'] }}</p>
+                    <p class="mb-1"><strong>Attending Physician:</strong> {{ $consent['attending_physician'] }}</p>
+                    <p class="mb-1"><strong>Patient Signature:</strong>
+                        @if ($consent['patient_signature_type'] === 'typed' && $consent['patient_signature'])
+                            {{ $consent['patient_signature'] }}
+                        @elseif ($consent['patient_signature_type'] === 'uploaded')
+                            <span class="badge bg-info">Uploaded</span>
+                        @endif
+                    </p>
+                    <p class="mb-1"><strong>Witness:</strong> {{ $consent['witness_name'] ?: '—' }}
+                        @if ($consent['witness_signature_type'] === 'typed' && $consent['witness_signature'])
+                            ({{ $consent['witness_signature'] }})
+                        @elseif ($consent['witness_signature_type'] === 'uploaded')
+                            <span class="badge bg-info">Uploaded</span>
+                        @endif
+                    </p>
+                    <p class="mb-0"><strong>Physician Signature:</strong>
+                        @if ($consent['physician_signature_type'] === 'typed' && $consent['physician_signature'])
+                            {{ $consent['physician_signature'] }}
+                        @elseif ($consent['physician_signature_type'] === 'uploaded')
+                            <span class="badge bg-info">Uploaded</span>
+                        @endif
+                    </p>
+                </div>
+            </div>
+            @endif
         @endif
 
         <div class="d-flex justify-content-between">
@@ -251,7 +465,7 @@
                 <div></div>
             @endif
 
-            @if ($step < 5)
+            @if ($step < 6)
                 <button type="button" class="btn btn-primary" wire:click="nextStep">Next</button>
             @else
                 <button type="submit" class="btn btn-success">Save Treatment Chart</button>

@@ -20,6 +20,8 @@
                     <p class="mb-1"><strong>Category:</strong> <span class="badge bg-warning">{{ \App\Enums\TreatmentCategory::tryFrom($treatment->category)?->label() ?? ucfirst($treatment->category) }}</span>
                         @if ($treatment->category === 'other' && $treatment->other_category)
                             — {{ $treatment->other_category }}
+                        @elseif ($treatment->sub_category)
+                            — {{ (\App\Livewire\TreatmentForm::subCategoryOptions($treatment->category))[$treatment->sub_category] ?? $treatment->sub_category }}
                         @endif
                     </p>
                     <p class="mb-1"><strong>Visit Date:</strong> {{ $treatment->visit_date->format('d M Y') }}</p>
@@ -132,6 +134,56 @@
             @if ($treatment->take_home_medication)
                 <p class="mb-0"><strong>Take-Home Instructions:</strong> {{ $treatment->take_home_medication }}</p>
             @endif
+        </div>
+    </div>
+
+    @if ($treatment->consent)
+    <div class="card mb-4">
+        <div class="card-header"><strong>Informed Consent</strong></div>
+        <div class="card-body">
+            <p class="mb-1"><strong>Procedure:</strong> {{ $treatment->consent['procedure_description'] ?? '—' }}</p>
+            <p class="mb-1"><strong>Attending Physician:</strong> {{ $treatment->consent['attending_physician'] ?? '—' }}</p>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <h6>Patient / Representative</h6>
+                    @if (($treatment->consent['patient_signature_type'] ?? '') === 'typed' && ($treatment->consent['patient_signature'] ?? ''))
+                        <p class="mb-1" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.3rem;">{{ $treatment->consent['patient_signature'] }}</p>
+                    @elseif (($treatment->consent['patient_signature_type'] ?? '') === 'uploaded' && ($treatment->consent['patient_signature_upload'] ?? ''))
+                        <img src="{{ asset('storage/' . $treatment->consent['patient_signature_upload']) }}" class="border rounded" style="max-height: 50px;">
+                    @else
+                        <p class="text-muted mb-1">—</p>
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h6>Witness</h6>
+                    <p class="mb-1"><strong>{{ $treatment->consent['witness_name'] ?? '—' }}</strong></p>
+                    @if (($treatment->consent['witness_signature_type'] ?? '') === 'typed' && ($treatment->consent['witness_signature'] ?? ''))
+                        <p class="mb-1" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.3rem;">{{ $treatment->consent['witness_signature'] }}</p>
+                    @elseif (($treatment->consent['witness_signature_type'] ?? '') === 'uploaded' && ($treatment->consent['witness_signature_upload'] ?? ''))
+                        <img src="{{ asset('storage/' . $treatment->consent['witness_signature_upload']) }}" class="border rounded" style="max-height: 50px;">
+                    @else
+                        <p class="text-muted mb-1">—</p>
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h6>Physician</h6>
+                    @if (($treatment->consent['physician_signature_type'] ?? '') === 'typed' && ($treatment->consent['physician_signature'] ?? ''))
+                        <p class="mb-1" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.3rem;">{{ $treatment->consent['physician_signature'] }}</p>
+                    @elseif (($treatment->consent['physician_signature_type'] ?? '') === 'uploaded' && ($treatment->consent['physician_signature_upload'] ?? ''))
+                        <img src="{{ asset('storage/' . $treatment->consent['physician_signature_upload']) }}" class="border rounded" style="max-height: 50px;">
+                    @else
+                        <p class="text-muted mb-1">—</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <div class="card">
+        <div class="card-body">
+            @livewire('document-upload', ['documentable' => $treatment], key('treatment-docs-' . $treatment->id))
         </div>
     </div>
 </x-app-layout>

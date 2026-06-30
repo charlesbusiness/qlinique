@@ -55,6 +55,10 @@ Route::middleware('auth')->group(function () {
             'destroy' => 'permission:patients.delete',
         ]);
 
+        Route::get('family-files', function () {
+            return view('family-files.index');
+        })->middleware('permission:patients.view')->name('family-files.index');
+
         Route::resource('treatments', TreatmentController::class)->middleware([
             'index' => 'permission:treatments.view',
             'show' => 'permission:treatments.view',

@@ -9,6 +9,7 @@ enum TreatmentCategory: string
     case Emergency = 'emergency';
     case Antenatal = 'antenatal';
     case Consultancy = 'consultancy';
+    case EnrollmentTreatmentManagement = 'enrollment_treatment_management';
     case Other = 'other';
 
     public function label(): string
@@ -19,6 +20,7 @@ enum TreatmentCategory: string
             self::Emergency => 'Emergency / Accident',
             self::Antenatal => 'Antenatal',
             self::Consultancy => 'Consultancy / Counselling',
+            self::EnrollmentTreatmentManagement => 'Enrollment and treatment Management',
             self::Other => 'Other',
         };
     }

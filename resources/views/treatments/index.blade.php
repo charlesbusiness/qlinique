@@ -64,6 +64,8 @@
                                 <span class="badge bg-warning">{{ \App\Enums\TreatmentCategory::tryFrom($treatment->category)?->label() ?? ucfirst($treatment->category) }}</span>
                                 @if ($treatment->category === 'other' && $treatment->other_category)
                                     <br><small class="text-muted">{{ $treatment->other_category }}</small>
+                                @elseif ($treatment->sub_category)
+                                    <br><small class="text-muted">{{ (\App\Livewire\TreatmentForm::subCategoryOptions($treatment->category))[$treatment->sub_category] ?? $treatment->sub_category }}</small>
                                 @endif
                             </td>
                             <td>{{ $treatment->visit_date->format('d M Y') }}</td>

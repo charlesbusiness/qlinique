@@ -31,9 +31,11 @@ class PatientController extends Controller
         return view('patients.index', compact('patients'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('patients.create');
+        return view('patients.create', [
+            'familyFileId' => $request->integer('family_file_id') ?: null,
+        ]);
     }
 
     public function store(StorePatientRequest $request)

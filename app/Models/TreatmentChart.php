@@ -16,6 +16,7 @@ class TreatmentChart extends Model
         'patient_id',
         'category',
         'other_category',
+        'sub_category',
         'visit_date',
         'presenting_complaint',
         'symptoms',
@@ -31,6 +32,7 @@ class TreatmentChart extends Model
         'treatment_plan',
         'take_home_medication',
         'treatment_schedule',
+        'consent',
         'is_completed',
         'created_by',
         'updated_by',
@@ -42,6 +44,7 @@ class TreatmentChart extends Model
             'visit_date' => 'date',
             'first_aid_time' => 'datetime',
             'is_completed' => 'boolean',
+            'consent' => 'array',
         ];
     }
 
@@ -73,5 +76,10 @@ class TreatmentChart extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
     }
 }

@@ -44,7 +44,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 mb-2"><strong>Gender:</strong> {{ ucfirst($patient->gender) }}</div>
-                        <div class="col-md-6 mb-2"><strong>DOB:</strong> {{ $patient->date_of_birth->format('d M Y') }}</div>
+                        <div class="col-md-6 mb-2"><strong>Age:</strong> {{ $patient->date_of_birth?->age ?? '—' }}</div>
                         <div class="col-md-6 mb-2"><strong>Phone:</strong> {{ $patient->phone ?? '—' }}</div>
                         <div class="col-md-6 mb-2"><strong>Email:</strong> {{ $patient->email ?? '—' }}</div>
                         <div class="col-md-6 mb-2"><strong>Occupation:</strong> {{ $patient->occupation ?? '—' }}</div>
@@ -85,6 +85,12 @@
                     </div>
                 </div>
             @endif
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    @livewire('document-upload', ['documentable' => $patient], key('patient-docs-' . $patient->id))
+                </div>
+            </div>
 
             <div class="card">
                 <div class="card-header d-flex justify-content-between">

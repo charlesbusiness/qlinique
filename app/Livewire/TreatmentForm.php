@@ -4,13 +4,17 @@ namespace App\Livewire;
 
 use App\Models\Patient;
 use App\Services\TreatmentService;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class TreatmentForm extends Component
 {
+    use WithFileUploads;
     public ?int $patientId = null;
     public string $category = 'checkup';
     public string $other_category = '';
+    public string $sub_category = '';
     public string $visit_date = '';
     public string $presenting_complaint = '';
     public string $symptoms = '';
@@ -41,6 +45,22 @@ class TreatmentForm extends Component
 
     public array $labTests = [];
 
+    public array $consent = [
+        'procedure_description' => '',
+        'attending_physician' => '',
+        'patient_signature_type' => '',
+        'patient_signature' => '',
+        'witness_name' => '',
+        'witness_signature_type' => '',
+        'witness_signature' => '',
+        'physician_signature_type' => '',
+        'physician_signature' => '',
+    ];
+
+    public $consent_upload_patient = null;
+    public $consent_upload_witness = null;
+    public $consent_upload_physician = null;
+
     public int $step = 1;
 
     private function temperatureRule(): array
@@ -68,8 +88,9 @@ class TreatmentForm extends Component
     {
         return [
             'patientId' => 'required|exists:patients,id',
-            'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,other',
+            'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,enrollment_treatment_management,other',
             'other_category' => 'required_if:category,other|string|max:255',
+            'sub_category' => 'nullable|required_if:category,checkup,treatment,enrollment_treatment_management|in:annual_comprehensive,periodic,employment,traveling,mild_ailments,palliative_care,home_based_care,age_related_care,hypertension,diabetes,hypertension_diabetes,therapeutic_care_asthma',
             'visit_date' => 'required|date',
 
             'vitals.temperature' => $this->temperatureRule(),
@@ -82,7 +103,22 @@ class TreatmentForm extends Component
             'vitals.height' => 'nullable|numeric|min:10|max:300',
             'vitals.oxygen_saturation' => 'nullable|numeric|min:50|max:100',
             'vitals.bmi' => 'nullable|numeric|min:5|max:80',
+
+            'consent.procedure_description' => 'required|string|max:500',
+            'consent.attending_physician' => 'required|string|max:255',
+            'consent.patient_signature_type' => 'required|in:typed,uploaded',
+            'consent.patient_signature' => 'required_if:consent.patient_signature_type,typed|string|max:255',
+            'consent.witness_name' => 'required|string|max:255',
+            'consent.witness_signature_type' => 'required|in:typed,uploaded',
+            'consent.witness_signature' => 'required_if:consent.witness_signature_type,typed|string|max:255',
+            'consent.physician_signature_type' => 'required|in:typed,uploaded',
+            'consent.physician_signature' => 'required_if:consent.physician_signature_type,typed|string|max:255',
         ];
+    }
+
+    public function updatedCategory(): void
+    {
+        $this->sub_category = '';
     }
 
     public function updatedVitals($value, $key): void
@@ -103,6 +139,7 @@ class TreatmentForm extends Component
     {
         $this->patientId = $patientId;
         $this->visit_date = now()->format('Y-m-d');
+        $this->consent['attending_physician'] = Auth::user()?->name ?? '';
     }
 
     public function nextStep(): void
@@ -110,8 +147,9 @@ class TreatmentForm extends Component
         $stepRules = [
             1 => [
                 'patientId' => 'required|exists:patients,id',
-                'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,other',
+                'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,enrollment_treatment_management,other',
                 'other_category' => 'required_if:category,other|string|max:255',
+                'sub_category' => 'nullable|required_if:category,checkup,treatment,enrollment_treatment_management|in:annual_comprehensive,periodic,employment,traveling,mild_ailments,palliative_care,home_based_care,age_related_care,hypertension,diabetes,hypertension_diabetes,therapeutic_care_asthma',
                 'visit_date' => 'required|date',
             ],
             2 => [
@@ -126,9 +164,29 @@ class TreatmentForm extends Component
                 'vitals.oxygen_saturation' => 'nullable|numeric|min:50|max:100',
                 'vitals.bmi' => 'nullable|numeric|min:5|max:80',
             ],
+            5 => [
+                'consent.procedure_description' => 'required|string|max:500',
+                'consent.attending_physician' => 'required|string|max:255',
+                'consent.patient_signature_type' => 'required|in:typed,uploaded',
+                'consent.patient_signature' => 'required_if:consent.patient_signature_type,typed|string|max:255',
+                'consent.witness_name' => 'required|string|max:255',
+                'consent.witness_signature_type' => 'required|in:typed,uploaded',
+                'consent.witness_signature' => 'required_if:consent.witness_signature_type,typed|string|max:255',
+                'consent.physician_signature_type' => 'required|in:typed,uploaded',
+                'consent.physician_signature' => 'required_if:consent.physician_signature_type,typed|string|max:255',
+            ],
         ];
 
-        if (isset($stepRules[$this->step])) {
+        if ($this->step === 5) {
+            $this->validate(array_merge($stepRules[5], [
+                'consent_upload_patient' => $this->consent['patient_signature_type'] === 'uploaded'
+                    ? 'required|image|max:2048' : 'nullable',
+                'consent_upload_witness' => $this->consent['witness_signature_type'] === 'uploaded'
+                    ? 'required|image|max:2048' : 'nullable',
+                'consent_upload_physician' => $this->consent['physician_signature_type'] === 'uploaded'
+                    ? 'required|image|max:2048' : 'nullable',
+            ]));
+        } elseif (isset($stepRules[$this->step])) {
             $this->validate($stepRules[$this->step]);
         }
 
@@ -176,10 +234,32 @@ class TreatmentForm extends Component
     {
         $this->validate();
 
+        $consent = $this->consent;
+
+        $consent['patient_signature_upload'] = null;
+        $consent['witness_signature_upload'] = null;
+        $consent['physician_signature_upload'] = null;
+
+        if ($consent['patient_signature_type'] === 'uploaded' && $this->consent_upload_patient) {
+            $consent['patient_signature_upload'] = $this->consent_upload_patient->store('signatures', 'public');
+            $consent['patient_signature'] = null;
+        }
+
+        if ($consent['witness_signature_type'] === 'uploaded' && $this->consent_upload_witness) {
+            $consent['witness_signature_upload'] = $this->consent_upload_witness->store('signatures', 'public');
+            $consent['witness_signature'] = null;
+        }
+
+        if ($consent['physician_signature_type'] === 'uploaded' && $this->consent_upload_physician) {
+            $consent['physician_signature_upload'] = $this->consent_upload_physician->store('signatures', 'public');
+            $consent['physician_signature'] = null;
+        }
+
         $data = [
             'patient_id' => $this->patientId,
             'category' => $this->category,
             'other_category' => $this->other_category ?: null,
+            'sub_category' => $this->sub_category ?: null,
             'visit_date' => $this->visit_date,
             'presenting_complaint' => $this->presenting_complaint ?: null,
             'symptoms' => $this->symptoms ?: null,
@@ -192,6 +272,7 @@ class TreatmentForm extends Component
             'treatment_schedule' => $this->treatment_plan_value
                 ? $this->treatment_plan_value . '/' . $this->treatment_plan_type
                 : null,
+            'consent' => $consent,
             'take_home_medication' => $this->take_home_medication ?: null,
             'vitals' => array_filter($this->vitals, fn($v) => !is_null($v)),
             'medications' => array_filter($this->medications, fn($m) => !empty($m['drug_name'])),
@@ -204,10 +285,39 @@ class TreatmentForm extends Component
         $this->redirect(route('treatments.index'), navigate: true);
     }
 
+    public static function subCategoryOptions(string $category): array
+    {
+        return match ($category) {
+            'checkup' => [
+                'annual_comprehensive' => 'Annual or comprehensive screening',
+                'periodic' => 'Periodic screening',
+                'employment' => 'Employment screening',
+                'traveling' => 'Traveling screening',
+            ],
+            'treatment' => [
+                'mild_ailments' => 'Mild ailments',
+                'palliative_care' => 'Palliative care',
+                'home_based_care' => 'Home-based care support',
+                'age_related_care' => 'Age related care support',
+            ],
+            'enrollment_treatment_management' => [
+                'hypertension' => 'Hypertension',
+                'diabetes' => 'Diabetes',
+                'hypertension_diabetes' => 'Hypertension & Diabetes',
+                'therapeutic_care_asthma' => 'Therapeutic care / Asthma management',
+            ],
+            default => [],
+        };
+    }
+
     public function render()
     {
         return view('livewire.treatment-form', [
             'patients' => Patient::where('is_active', true)->orderBy('name')->get(),
+            'staff' => \App\Models\User::where('is_active', true)
+                ->whereIn('role', ['doctor', 'nurse', 'matron', 'super_admin'])
+                ->orderBy('name')
+                ->get(['id', 'name', 'role']),
         ]);
     }
 }

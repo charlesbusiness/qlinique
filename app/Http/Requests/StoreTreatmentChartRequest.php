@@ -15,8 +15,9 @@ class StoreTreatmentChartRequest extends FormRequest
     {
         return [
             'patient_id' => 'required|exists:patients,id',
-            'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,other',
+            'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,enrollment_treatment_management,other',
             'other_category' => 'required_if:category,other|string|max:255',
+            'sub_category' => 'nullable|string|max:255',
             'visit_date' => 'required|date',
             'presenting_complaint' => 'nullable|string',
             'symptoms' => 'nullable|string',

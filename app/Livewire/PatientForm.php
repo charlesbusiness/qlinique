@@ -15,9 +15,10 @@ class PatientForm extends Component
     use WithFileUploads;
 
     public ?Patient $patient = null;
+    public ?int $familyFileId = null;
     public string $name = '';
     public string $gender = '';
-    public string $date_of_birth = '';
+    public string $age = '';
     public string $phone = '';
     public string $email = '';
     public string $address = '';
@@ -25,7 +26,7 @@ class PatientForm extends Component
     public string $marital_status = '';
     public $photo = null;
     public string $account_type = 'individual';
-    public string $patient_type = '';
+    public ?string $patient_type = null;
     public ?string $selected_family_id = null;
     public array $next_of_kin = [];
     public array $consent = [];
@@ -34,7 +35,7 @@ class PatientForm extends Component
 
     public $existingPhoto = null;
 
-    public string $signature_type = '';
+    public ?string $signature_type = null;
     public string $signature = '';
     public $signature_upload = null;
 
@@ -53,7 +54,7 @@ class PatientForm extends Component
         $rules = [
             'name' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
-            'date_of_birth' => 'required|date|before:today',
+            'age' => 'required|integer|min:0|max:150',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:1000',
@@ -74,25 +75,34 @@ class PatientForm extends Component
 
     public function mount(?Patient $patient = null): void
     {
+        if ($this->familyFileId) {
+            $familyFile = FamilyFile::find($this->familyFileId);
+            if ($familyFile) {
+                $this->account_type = $familyFile->type;
+                $this->selected_family_id = (string) $familyFile->id;
+                $this->step = 2;
+            }
+        }
+
         if ($patient?->id) {
             $this->patient = $patient;
             $this->name = $patient->name ?? '';
             $this->gender = $patient->gender ?? '';
-            $this->date_of_birth = $patient->date_of_birth?->format('Y-m-d') ?? '';
+            $this->age = $patient->date_of_birth ? (string) $patient->date_of_birth->age : '';
             $this->phone = $patient->phone ?? '';
             $this->email = $patient->email ?? '';
             $this->address = $patient->address ?? '';
             $this->occupation = $patient->occupation ?? '';
             $this->marital_status = $patient->marital_status ?? '';
             $this->account_type = $patient->account_type ?? 'individual';
-            $this->patient_type = $patient->patient_type ?? '';
+            $this->patient_type = $patient->patient_type ?? null;
             $this->selected_family_id = $patient->family_file_id ? (string) $patient->family_file_id : null;
             $this->next_of_kin = is_array($patient->next_of_kin) ? $patient->next_of_kin : [];
             $this->consent = is_array($patient->consent) ? $patient->consent : [];
             $this->religion = $patient->religion ?? '';
             $this->denomination = $patient->denomination ?? '';
             $this->existingPhoto = $patient->photo_path;
-            $this->signature_type = $patient->signature_type ?? '';
+            $this->signature_type = $patient->signature_type ?? null;
             $this->signature = $patient->signature ?? '';
             $this->existingSignature = $patient->signature;
             $this->existingSignatureType = $patient->signature_type;
@@ -133,7 +143,20 @@ class PatientForm extends Component
         $this->validate([
             'new_family_name' => 'required|string|max:255',
             'new_family_email' => 'required|email|max:255',
-            'new_family_phone' => 'required|string|max:20',
+            'new_family_phone' => [
+                'required',
+                'string',
+                'max:36',
+                function ($attribute, $value, $fail) {
+                    foreach (explode(',', $value) as $num) {
+                        $num = trim($num);
+                        if (!preg_match('/^\d{1,11}$/', $num)) {
+                            $fail('Each phone number must be up to 11 digits, separated by commas.');
+                            return;
+                        }
+                    }
+                },
+            ],
             'new_family_address' => 'nullable|string|max:1000',
         ]);
 
@@ -161,7 +184,7 @@ class PatientForm extends Component
             'account_type' => $this->account_type,
             'name' => $this->name,
             'gender' => $this->gender,
-            'date_of_birth' => $this->date_of_birth,
+            'date_of_birth' => $this->age ? now()->subYears((int) $this->age)->startOfYear() : null,
             'phone' => $this->phone ?: null,
             'email' => $this->email ?: null,
             'address' => $this->address ?: null,

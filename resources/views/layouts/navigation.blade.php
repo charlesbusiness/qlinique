@@ -19,8 +19,13 @@
                 <ul class="navbar-nav mx-auto mb-2 mb-md-0">
                     @if (Auth::user()->hasPermission('patients.view'))
                     <li class="nav-item">
-                        <x-nav-link :href="route('patients.index')" :active="request()->routeIs('patients.*')">
+                        <x-nav-link :href="route('patients.index')" :active="request()->routeIs('patients.*') && !request()->routeIs('family-files.*')">
                             {{ __('Patients') }}
+                        </x-nav-link>
+                    </li>
+                    <li class="nav-item">
+                        <x-nav-link :href="route('family-files.index')" :active="request()->routeIs('family-files.*')">
+                            {{ __('Files') }}
                         </x-nav-link>
                     </li>
                     @endif

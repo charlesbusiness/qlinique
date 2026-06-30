@@ -49,7 +49,10 @@ class TreatmentController extends Controller
     public function store(StoreTreatmentChartRequest $request)
     {
         $this->treatmentService->create(
-            $request->validated() + ['other_category' => $request->input('other_category')]
+            $request->validated() + [
+                'other_category' => $request->input('other_category'),
+                'sub_category' => $request->input('sub_category'),
+            ]
         );
         return redirect()->route('treatments.index')
             ->with('status', 'Treatment chart created successfully.');

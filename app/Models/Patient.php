@@ -85,4 +85,9 @@ class Patient extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
 }

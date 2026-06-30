@@ -5,7 +5,7 @@
 
     <div class="card">
         <div class="card-body">
-            @livewire('patient-form')
+            @livewire('patient-form', ['familyFileId' => $familyFileId])
         </div>
     </div>
 </x-app-layout>
