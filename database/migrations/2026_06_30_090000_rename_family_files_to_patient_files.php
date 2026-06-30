@@ -9,34 +9,51 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::rename('family_files', 'patient_files');
+        if (Schema::hasTable('family_files')) {
+            Schema::rename('family_files', 'patient_files');
+        }
+
+        if (!Schema::hasColumn('patients', 'file_id')) {
+            Schema::table('patients', function (Blueprint $table) {
+                $table->foreignId('file_id')->nullable()->after('id');
+            });
+        }
 
         Schema::table('patient_files', function (Blueprint $table) {
             $table->string('email')->nullable()->change();
             $table->string('phone')->nullable()->change();
         });
 
-        Schema::table('patients', function (Blueprint $table) {
-            $table->foreignId('file_id')->nullable()->after('id');
-        });
-
         DB::transaction(function () {
             $individualPatients = DB::table('patients')
                 ->whereNull('family_file_id')
+                ->whereNull('file_id')
                 ->orderBy('id')
                 ->get();
 
             foreach ($individualPatients as $patient) {
-                $fileId = DB::table('patient_files')->insertGetId([
-                    'file_number' => $patient->file_number,
-                    'name' => $patient->name,
-                    'email' => $patient->email ?? '',
-                    'phone' => $patient->phone ?? '',
-                    'address' => $patient->address,
-                    'type' => 'individual',
-                    'created_at' => $patient->created_at,
-                    'updated_at' => $patient->updated_at,
-                ]);
+                if (empty($patient->file_number)) {
+                    continue;
+                }
+
+                $existingFile = DB::table('patient_files')
+                    ->where('file_number', $patient->file_number)
+                    ->first();
+
+                if ($existingFile) {
+                    $fileId = $existingFile->id;
+                } else {
+                    $fileId = DB::table('patient_files')->insertGetId([
+                        'file_number' => $patient->file_number,
+                        'name' => $patient->name,
+                        'email' => $patient->email ?? '',
+                        'phone' => $patient->phone ?? '',
+                        'address' => $patient->address,
+                        'type' => 'individual',
+                        'created_at' => $patient->created_at,
+                        'updated_at' => $patient->updated_at,
+                    ]);
+                }
 
                 DB::table('patients')
                     ->where('id', $patient->id)
@@ -45,16 +62,27 @@ return new class extends Migration
 
             DB::table('patients')
                 ->whereNotNull('family_file_id')
+                ->whereNull('file_id')
                 ->update(['file_id' => DB::raw('family_file_id')]);
         });
 
         Schema::table('patients', function (Blueprint $table) {
-            $table->dropForeign(['family_file_id']);
-            $table->dropColumn(['family_file_id', 'file_number', 'account_type']);
+            if (Schema::hasColumn('patients', 'family_file_id')) {
+                $table->dropForeign(['family_file_id']);
+                $table->dropColumn('family_file_id');
+            }
+            if (Schema::hasColumn('patients', 'file_number')) {
+                $table->dropColumn('file_number');
+            }
+            if (Schema::hasColumn('patients', 'account_type')) {
+                $table->dropColumn('account_type');
+            }
         });
 
         Schema::table('invoices', function (Blueprint $table) {
-            $table->dropColumn('account_type');
+            if (Schema::hasColumn('invoices', 'account_type')) {
+                $table->dropColumn('account_type');
+            }
         });
 
         Schema::table('patients', function (Blueprint $table) {
