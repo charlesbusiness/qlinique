@@ -199,9 +199,9 @@ class PatientForm extends Component
             'signature' => null,
         ];
 
-        if (in_array($this->account_type, ['family', 'corporate']) && $this->selected_family_id) {
-            $data['family_file_id'] = $this->selected_family_id;
-        }
+        $data['family_file_id'] = in_array($this->account_type, ['family', 'corporate']) && $this->selected_family_id
+            ? $this->selected_family_id
+            : null;
 
         $photoFile = $this->photo?->getRealPath() ? $this->photo : null;
         $signatureFile = null;

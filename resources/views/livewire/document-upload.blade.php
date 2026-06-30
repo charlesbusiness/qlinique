@@ -9,10 +9,10 @@
     @if ($showUploadForm)
         <div class="card bg-light mb-3">
             <div class="card-body">
-                <div class="mb-3" wire:ignore>
-                    <input type="file" class="form-control" wire:model="file">
+                <div class="mb-3">
+                    <input type="file" class="form-control @error('file') is-invalid @enderror" x-on:change="$wire.upload('file', $event.target.files[0])">
+                    @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-                @error('file') <div class="text-danger small mb-3">{{ $message }}</div> @enderror
                 <div class="mb-3">
                     <textarea class="form-control @error('description') is-invalid @enderror" wire:model="description" rows="2" placeholder="Description (optional)"></textarea>
                     @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror

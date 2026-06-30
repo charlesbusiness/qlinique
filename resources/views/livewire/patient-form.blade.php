@@ -77,6 +77,58 @@
             </div>
         </div>
 
+        @if (in_array($account_type, ['family', 'corporate']))
+        <hr>
+        <h5 class="mb-3">{{ ucfirst($account_type) }} File</h5>
+
+        @if (session('family_status'))
+        <div class="alert alert-success alert-dismissible fade show">{{ session('family_status') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        @endif
+
+        @if (!$show_create_family)
+        <div class="mb-3">
+            <label class="form-label">Select Existing {{ ucfirst($account_type) }} File</label>
+            <select class="form-select" wire:model="selected_family_id">
+                <option value="">— None —</option>
+                @foreach ($familyFiles as $file)
+                <option value="{{ $file->id }}">{{ $file->file_number }} — {{ $file->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary btn-sm" wire:click="toggleCreateFamily">
+            + Create New {{ ucfirst($account_type) }} File
+        </button>
+        @else
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ ucfirst($account_type) }} Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control @error('new_family_name') is-invalid @enderror" wire:model="new_family_name" placeholder="e.g. Smith Family">
+                @error('new_family_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Email <span class="text-danger">*</span></label>
+                <input type="email" class="form-control @error('new_family_email') is-invalid @enderror" wire:model="new_family_email">
+                @error('new_family_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Phone <span class="text-danger">*</span></label>
+                <input type="text" class="form-control @error('new_family_phone') is-invalid @enderror" wire:model="new_family_phone">
+                @error('new_family_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Address</label>
+                <textarea class="form-control" wire:model="new_family_address" rows="2"></textarea>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+            <button type="button" class="btn btn-success" wire:click="createFamilyFile">Create & Use</button>
+            <button type="button" class="btn btn-outline-secondary" wire:click="toggleCreateFamily">Cancel</button>
+        </div>
+        @endif
+        @endif
+
         <div class="mb-3">
             <label class="form-label">Address</label>
             <textarea class="form-control" wire:model="address" rows="2"></textarea>
@@ -334,7 +386,7 @@
         <div class="mb-4">
             <div class="d-flex gap-2 flex-wrap">
                 @foreach ([1 => 'Account Type', 2 => 'Personal Info', 3 => 'Additional Info', 4 => 'Next of Kin & Consent', 5 => 'Summary'] as $num => $label)
-                <span class="badge {{ $step >= $num ? 'bg-primary' : 'bg-secondary' }} fs-6 px-3 py-2">{{ $num }}. {{ $label }}</span>
+                <span class="badge {{ $step >= $num ? 'bg-primary' : 'bg-secondary' }} fs-6 px-3 py-2 {{ $step === $num ? '' : 'd-none d-md-inline' }}">{{ $num }}. {{ $label }}</span>
                 @endforeach
             </div>
         </div>

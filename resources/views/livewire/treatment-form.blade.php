@@ -1,8 +1,8 @@
 <div>
     <div class="mb-4">
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
             @foreach ([1 => 'Patient', 2 => 'Vitals', 3 => 'History & Diagnosis', 4 => 'Medications & Plan', 5 => 'Consent', 6 => 'Summary'] as $num => $label)
-                <span class="badge {{ $step >= $num ? 'bg-primary' : 'bg-secondary' }} fs-6 px-3 py-2">{{ $num }}. {{ $label }}</span>
+                <span class="badge {{ $step >= $num ? 'bg-primary' : 'bg-secondary' }} fs-6 px-3 py-2 {{ $step === $num ? '' : 'd-none d-md-inline' }}">{{ $num }}. {{ $label }}</span>
             @endforeach
         </div>
     </div>

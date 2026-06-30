@@ -22,17 +22,17 @@
             <div class="card-body">
                 <h5 class="card-title">Create New {{ ucfirst($new_type) }} File</h5>
                 <div class="row">
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-6 mb-3">
                         <label class="form-label">Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control @error('new_name') is-invalid @enderror" wire:model="new_name">
                         @error('new_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-6 mb-3">
                         <label class="form-label">Email <span class="text-danger">*</span></label>
                         <input type="email" class="form-control @error('new_email') is-invalid @enderror" wire:model="new_email">
                         @error('new_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-12 mb-3">
                         <label class="form-label">Phone <span class="text-danger">*</span></label>
                         <input type="text" class="form-control @error('new_phone') is-invalid @enderror" wire:model="new_phone" placeholder="e.g. 08012345678,08087654321">
                         @error('new_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -95,28 +95,28 @@
                     <tr class="table-warning">
                         <td colspan="7" class="p-3">
                             <div class="row">
-                                <div class="col-md-3 mb-2">
+                                <div class="col-md-4 mb-2">
                                     <label class="form-label small">Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control form-control-sm @error('edit_name') is-invalid @enderror" wire:model="edit_name">
                                     @error('edit_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
-                                <div class="col-md-3 mb-2">
+                                <div class="col-md-4 mb-2">
                                     <label class="form-label small">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control form-control-sm @error('edit_email') is-invalid @enderror" wire:model="edit_email">
                                     @error('edit_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
-                                <div class="col-md-3 mb-2">
-                                    <label class="form-label small">Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control form-control-sm @error('edit_phone') is-invalid @enderror" wire:model="edit_phone">
-                                    @error('edit_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                </div>
-                                <div class="col-md-3 mb-2">
+                                <div class="col-md-4 mb-2">
                                     <label class="form-label small">Type <span class="text-danger">*</span></label>
                                     <select class="form-select form-select-sm @error('edit_type') is-invalid @enderror" wire:model="edit_type">
                                         <option value="family">Family</option>
                                         <option value="corporate">Corporate</option>
                                     </select>
                                     @error('edit_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label class="form-label small">Phone <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm @error('edit_phone') is-invalid @enderror" wire:model="edit_phone">
+                                    @error('edit_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label class="form-label small">Address</label>
