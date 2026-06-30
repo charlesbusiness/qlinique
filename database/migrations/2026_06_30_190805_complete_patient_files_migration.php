@@ -9,6 +9,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (!Schema::hasColumn('patients', 'family_file_id')) {
+            return;
+        }
+
         DB::transaction(function () {
             $individualPatients = DB::table('patients')
                 ->whereNull('family_file_id')
