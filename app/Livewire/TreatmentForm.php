@@ -313,7 +313,7 @@ class TreatmentForm extends Component
     public function render()
     {
         return view('livewire.treatment-form', [
-            'patients' => Patient::where('is_active', true)->orderBy('name')->get(),
+            'patients' => Patient::with('file')->where('is_active', true)->orderBy('name')->get(),
             'staff' => \App\Models\User::where('is_active', true)
                 ->whereIn('role', ['doctor', 'nurse', 'matron', 'super_admin'])
                 ->orderBy('name')

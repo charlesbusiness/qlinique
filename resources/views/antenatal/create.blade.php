@@ -13,7 +13,7 @@
                     <select name="patient_id" class="form-select @error('patient_id') is-invalid @enderror" required>
                         <option value="">Select patient...</option>
                         @foreach ($patients as $p)
-                            <option value="{{ $p->id }}" @selected(old('patient_id') == $p->id)>{{ $p->file_number }} — {{ $p->name }}</option>
+                            <option value="{{ $p->id }}" @selected(old('patient_id') == $p->id)>{{ $p->file?->file_number ?? 'N/A' }} — {{ $p->name }}</option>
                         @endforeach
                     </select>
                     @error('patient_id') <div class="invalid-feedback">{{ $message }}</div> @enderror

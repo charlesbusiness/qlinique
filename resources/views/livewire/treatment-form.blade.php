@@ -15,7 +15,7 @@
                 <select class="form-select @error('patientId') is-invalid @enderror" wire:model="patientId">
                     <option value="">Select patient...</option>
                     @foreach ($patients as $p)
-                        <option value="{{ $p->id }}">{{ $p->file_number }} — {{ $p->name }}</option>
+                        <option value="{{ $p->id }}">{{ $p->file?->file_number ?? 'N/A' }} — {{ $p->name }}</option>
                     @endforeach
                 </select>
                 @error('patientId') <div class="invalid-feedback">{{ $message }}</div> @enderror

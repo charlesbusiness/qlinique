@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\HasFileNumber;
 use Illuminate\Database\Eloquent\Model;
 
-class FamilyFile extends Model
+class PatientFile extends Model
 {
     use HasFileNumber;
 
@@ -20,6 +20,6 @@ class FamilyFile extends Model
 
     public function patients()
     {
-        return $this->hasMany(Patient::class, 'family_file_id');
+        return $this->hasMany(Patient::class, 'file_id');
     }
 }

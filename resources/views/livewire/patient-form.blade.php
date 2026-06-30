@@ -20,9 +20,9 @@
             </div>
 
             <div class="col-md-3 mb-3">
-                <label class="form-label">Age</label>
-                <input type="number" step="1" class="form-control @error('age') is-invalid @enderror" wire:model="age">
-                @error('age') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <label class="form-label">Date of Birth</label>
+                <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" wire:model="date_of_birth">
+                @error('date_of_birth') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -111,50 +111,50 @@
         <hr>
         <h5 class="mb-3">{{ ucfirst($account_type) }} File</h5>
 
-        @if (session('family_status'))
-        <div class="alert alert-success alert-dismissible fade show">{{ session('family_status') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        @if (session('file_status'))
+        <div class="alert alert-success alert-dismissible fade show">{{ session('file_status') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
         @endif
 
-        @if (!$show_create_family)
+        @if (!$show_create_file)
         <div class="mb-3">
             <label class="form-label">Select Existing {{ ucfirst($account_type) }} File</label>
-            <select class="form-select" wire:model="selected_family_id">
+            <select class="form-select" wire:model="selected_file_id">
                 <option value="">— None —</option>
-                @foreach ($familyFiles as $file)
+                @foreach ($patientFiles as $file)
                 <option value="{{ $file->id }}">{{ $file->file_number }} — {{ $file->name }}</option>
                 @endforeach
             </select>
         </div>
 
-        <button type="button" class="btn btn-outline-primary btn-sm" wire:click="toggleCreateFamily">
+        <button type="button" class="btn btn-outline-primary btn-sm" wire:click="toggleCreateFile">
             + Create New {{ ucfirst($account_type) }} File
         </button>
         @else
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">{{ ucfirst($account_type) }} Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('new_family_name') is-invalid @enderror" wire:model="new_family_name" placeholder="e.g. Smith Family">
-                @error('new_family_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <input type="text" class="form-control @error('new_file_name') is-invalid @enderror" wire:model="new_file_name" placeholder="e.g. Smith Family">
+                @error('new_file_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Email <span class="text-danger">*</span></label>
-                <input type="email" class="form-control @error('new_family_email') is-invalid @enderror" wire:model="new_family_email">
-                @error('new_family_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <input type="email" class="form-control @error('new_file_email') is-invalid @enderror" wire:model="new_file_email">
+                @error('new_file_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Phone <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('new_family_phone') is-invalid @enderror" wire:model="new_family_phone">
-                @error('new_family_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <input type="text" class="form-control @error('new_file_phone') is-invalid @enderror" wire:model="new_file_phone">
+                @error('new_file_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Address</label>
-                <textarea class="form-control" wire:model="new_family_address" rows="2"></textarea>
+                <textarea class="form-control" wire:model="new_file_address" rows="2"></textarea>
             </div>
         </div>
 
         <div class="d-flex gap-2 mb-3">
-            <button type="button" class="btn btn-success" wire:click="createFamilyFile">Create & Use</button>
-            <button type="button" class="btn btn-outline-secondary" wire:click="toggleCreateFamily">Cancel</button>
+            <button type="button" class="btn btn-success" wire:click="createPatientFile">Create & Use</button>
+            <button type="button" class="btn btn-outline-secondary" wire:click="toggleCreateFile">Cancel</button>
         </div>
         @endif
         @endif
@@ -167,12 +167,12 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Religion</label>
-                <input type="text" class="form-control" wire:model="religion">
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Denomination</label>
-                <input type="text" class="form-control" wire:model="denomination">
+                <select class="form-select" wire:model="religion">
+                    <option value="">Select Religion</option>
+                    <option value="Christianity">Christianity</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Others">Others</option>
+                </select>
             </div>
         </div>
 
@@ -300,7 +300,7 @@
                             if (!drawing) return;
                             drawing = false;
                             ctx.closePath();
-                            Livewire.find('{{ $__livewire->getId() }}').set('signature', canvas.toDataURL('image/png'));
+                            window.dispatchEvent(new CustomEvent('set-signature', { detail: { value: canvas.toDataURL('image/png') } }));
                         }
 
                         canvas.addEventListener('mousedown', start);
@@ -320,7 +320,7 @@
                         document.getElementById('clear-signature')?.addEventListener('click', function() {
                             if (!canvas || !ctx) return;
                             ctx.clearRect(0, 0, canvas.width, canvas.height);
-                            Livewire.find('{{ $__livewire->getId() }}').set('signature', '');
+                            window.dispatchEvent(new CustomEvent('set-signature', { detail: { value: '' } }));
                         });
 
                         resize();
@@ -396,13 +396,15 @@
         <h5 class="mb-3">Consent</h5>
 
         <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" wire:model="consent.treatment" id="consent_treatment">
-            <label class="form-check-label" for="consent_treatment">Treatment Consent</label>
+            <input class="form-check-input @error('consent.treatment') is-invalid @enderror" type="checkbox" wire:model="consent.treatment" id="consent_treatment">
+            <label class="form-check-label" for="consent_treatment">Treatment Consent <span class="text-danger">*</span></label>
+            @error('consent.treatment') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" wire:model="consent.privacy" id="consent_privacy">
-            <label class="form-check-label" for="consent_privacy">Data Privacy Consent</label>
+            <input class="form-check-input @error('consent.privacy') is-invalid @enderror" type="checkbox" wire:model="consent.privacy" id="consent_privacy">
+            <label class="form-check-label" for="consent_privacy">Data Privacy Consent <span class="text-danger">*</span></label>
+            @error('consent.privacy') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="d-flex justify-content-end gap-2">
@@ -439,50 +441,50 @@
         <hr>
         <h5 class="mb-3">{{ ucfirst($account_type) }} File</h5>
 
-        @if (session('family_status'))
-        <div class="alert alert-success alert-dismissible fade show">{{ session('family_status') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        @if (session('file_status'))
+        <div class="alert alert-success alert-dismissible fade show">{{ session('file_status') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
         @endif
 
-        @if (!$show_create_family)
+        @if (!$show_create_file)
         <div class="mb-3">
             <label class="form-label">Select Existing {{ ucfirst($account_type) }} File</label>
-            <select class="form-select" wire:model="selected_family_id">
+            <select class="form-select" wire:model="selected_file_id">
                 <option value="">— Select —</option>
-                @foreach ($familyFiles as $file)
+                @foreach ($patientFiles as $file)
                 <option value="{{ $file->id }}">{{ $file->file_number }} — {{ $file->name }}</option>
                 @endforeach
             </select>
         </div>
 
-        <button type="button" class="btn btn-outline-primary" wire:click="toggleCreateFamily">
+        <button type="button" class="btn btn-outline-primary" wire:click="toggleCreateFile">
             + Create New {{ ucfirst($account_type) }} File
         </button>
         @else
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">{{ ucfirst($account_type) }} Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('new_family_name') is-invalid @enderror" wire:model="new_family_name" placeholder="e.g. Smith Family">
-                @error('new_family_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <input type="text" class="form-control @error('new_file_name') is-invalid @enderror" wire:model="new_file_name" placeholder="e.g. Smith Family">
+                @error('new_file_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Email <span class="text-danger">*</span></label>
-                <input type="email" class="form-control @error('new_family_email') is-invalid @enderror" wire:model="new_family_email">
-                @error('new_family_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <input type="email" class="form-control @error('new_file_email') is-invalid @enderror" wire:model="new_file_email">
+                @error('new_file_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Phone <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('new_family_phone') is-invalid @enderror" wire:model="new_family_phone">
-                @error('new_family_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <input type="text" class="form-control @error('new_file_phone') is-invalid @enderror" wire:model="new_file_phone">
+                @error('new_file_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Address</label>
-                <textarea class="form-control" wire:model="new_family_address" rows="2"></textarea>
+                <textarea class="form-control" wire:model="new_file_address" rows="2"></textarea>
             </div>
         </div>
 
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-success" wire:click="createFamilyFile">Create & Continue</button>
-            <button type="button" class="btn btn-outline-secondary" wire:click="toggleCreateFamily">Cancel</button>
+            <button type="button" class="btn btn-success" wire:click="createPatientFile">Create & Continue</button>
+            <button type="button" class="btn btn-outline-secondary" wire:click="toggleCreateFile">Cancel</button>
         </div>
         @endif
         @endif
@@ -508,9 +510,9 @@
             </div>
 
             <div class="col-md-3 mb-3">
-                <label class="form-label">Age</label>
-                <input type="number" step="1" class="form-control @error('age') is-invalid @enderror" wire:model="age">
-                @error('age') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <label class="form-label">Date of Birth</label>
+                <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" wire:model="date_of_birth">
+                @error('date_of_birth') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -596,12 +598,12 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Religion</label>
-                <input type="text" class="form-control" wire:model="religion">
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Denomination</label>
-                <input type="text" class="form-control" wire:model="denomination">
+                <select class="form-select" wire:model="religion">
+                    <option value="">Select Religion</option>
+                    <option value="Christianity">Christianity</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Others">Others</option>
+                </select>
             </div>
         </div>
 
@@ -724,7 +726,7 @@
                             if (!drawing) return;
                             drawing = false;
                             ctx.closePath();
-                            Livewire.find('{{ $__livewire->getId() }}').set('signature', canvas.toDataURL('image/png'));
+                            window.dispatchEvent(new CustomEvent('set-signature', { detail: { value: canvas.toDataURL('image/png') } }));
                         }
 
                         canvas.addEventListener('mousedown', start);
@@ -744,7 +746,7 @@
                         document.getElementById('clear-signature')?.addEventListener('click', function() {
                             if (!canvas || !ctx) return;
                             ctx.clearRect(0, 0, canvas.width, canvas.height);
-                            Livewire.find('{{ $__livewire->getId() }}').set('signature', '');
+                            window.dispatchEvent(new CustomEvent('set-signature', { detail: { value: '' } }));
                         });
 
                         resize();
@@ -809,13 +811,15 @@
         <h5 class="mb-3">Consent</h5>
 
         <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" wire:model="consent.treatment" id="consent_treatment">
-            <label class="form-check-label" for="consent_treatment">Treatment Consent</label>
+            <input class="form-check-input @error('consent.treatment') is-invalid @enderror" type="checkbox" wire:model="consent.treatment" id="consent_treatment">
+            <label class="form-check-label" for="consent_treatment">Treatment Consent <span class="text-danger">*</span></label>
+            @error('consent.treatment') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" wire:model="consent.privacy" id="consent_privacy">
-            <label class="form-check-label" for="consent_privacy">Data Privacy Consent</label>
+            <input class="form-check-input @error('consent.privacy') is-invalid @enderror" type="checkbox" wire:model="consent.privacy" id="consent_privacy">
+            <label class="form-check-label" for="consent_privacy">Data Privacy Consent <span class="text-danger">*</span></label>
+            @error('consent.privacy') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
         @endif
 
@@ -834,19 +838,19 @@
             <div class="card-body">
                 <h6>Account Info</h6>
                 <p class="mb-1"><strong>Account Type:</strong> {{ ucfirst($account_type) }}</p>
-                @if (in_array($account_type, ['family', 'corporate']) && $selected_family_id)
+                @if (in_array($account_type, ['family', 'corporate']) && $selected_file_id)
                 @php
-                $family = \App\Models\FamilyFile::find($selected_family_id);
+                $file = \App\Models\PatientFile::find($selected_file_id);
                 @endphp
-                @if ($family)
-                <p class="mb-1"><strong>{{ ucfirst($account_type) }} File:</strong> {{ $family->file_number }} — {{ $family->name }}</p>
+                @if ($file)
+                <p class="mb-1"><strong>{{ ucfirst($account_type) }} File:</strong> {{ $file->file_number }} — {{ $file->name }}</p>
                 @endif
                 @endif
 
                 <h6 class="mt-3">Personal Info</h6>
                 <p class="mb-1"><strong>Name:</strong> {{ $name }}</p>
                 <p class="mb-1"><strong>Gender:</strong> {{ ucfirst($gender) }}</p>
-                <p class="mb-1"><strong>Age:</strong> {{ $age }}</p>
+                <p class="mb-1"><strong>Date of Birth:</strong> {{ $date_of_birth ?: '—' }}</p>
                 <p class="mb-1"><strong>Phone:</strong> {{ $phone ?: '—' }}</p>
                 <p class="mb-1"><strong>Email:</strong> {{ $email ?: '—' }}</p>
                 <p class="mb-1"><strong>Occupation:</strong> {{ $occupation ?: '—' }}</p>
@@ -859,10 +863,9 @@
                 <p class="mb-1"><strong>Address:</strong> {{ $address }}</p>
                 @endif
 
-                @if ($religion || $denomination)
+                @if ($religion)
                 <h6 class="mt-3">Religion</h6>
                 <p class="mb-1"><strong>Religion:</strong> {{ $religion ?: '—' }}</p>
-                <p class="mb-1"><strong>Denomination:</strong> {{ $denomination ?: '—' }}</p>
                 @endif
 
                 @if ($signature_type)
@@ -902,4 +905,12 @@
         </div>
     </form>
     @endif
+
+    @script
+    <script>
+        window.addEventListener('set-signature', (e) => {
+            $wire.set('signature', e.detail.value);
+        });
+    </script>
+    @endscript
 </div>

@@ -18,13 +18,13 @@ class PatientController extends Controller
         $search = $request->get('search');
         $accountType = $request->get('account_type');
 
-        $patients = Patient::with('familyFile')
+        $patients = Patient::with('file')
             ->when($search, fn($q) => $q->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('file_number', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhereHas('file', fn($f) => $f->where('file_number', 'like', "%{$search}%"));
             }))
-            ->when($accountType, fn($q) => $q->where('account_type', $accountType))
+            ->when($accountType, fn($q) => $q->whereHas('file', fn($f) => $f->where('type', $accountType)))
             ->latest()
             ->paginate(15);
 
@@ -34,7 +34,7 @@ class PatientController extends Controller
     public function create(Request $request)
     {
         return view('patients.create', [
-            'familyFileId' => $request->integer('family_file_id') ?: null,
+            'fileId' => $request->integer('file_id') ?: null,
         ]);
     }
 
@@ -52,7 +52,7 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
-        $patient->load('familyFile', 'treatmentCharts');
+        $patient->load('file', 'treatmentCharts');
         return view('patients.show', compact('patient'));
     }
 

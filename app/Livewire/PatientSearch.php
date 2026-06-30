@@ -27,8 +27,10 @@ class PatientSearch extends Component
         $results = [];
 
         if (strlen($this->query) > 1) {
-            $results = Patient::where('name', 'like', "%{$this->query}%")
-                ->orWhere('file_number', 'like', "%{$this->query}%")
+            $results = Patient::with('file')
+                ->where('name', 'like', "%{$this->query}%")
+                ->orWhere('phone', 'like', "%{$this->query}%")
+                ->orWhereHas('file', fn($q) => $q->where('file_number', 'like', "%{$this->query}%"))
                 ->take(10)
                 ->get();
         }

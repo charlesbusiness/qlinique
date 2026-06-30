@@ -15,7 +15,7 @@ class TreatmentController extends Controller
 
     public function index(Request $request)
     {
-        $treatments = TreatmentChart::with('patient')
+        $treatments = TreatmentChart::with('patient.file')
             ->when($request->input('status') === 'active', fn($q) => $q->where('is_completed', false))
             ->when($pending = $request->input('pending'), function($q) use ($pending) {
                 $q->where('is_completed', false)
@@ -32,7 +32,7 @@ class TreatmentController extends Controller
             ->when($search = $request->input('search'), fn($q) => $q->whereHas('patient', fn($pq) => $pq
                 ->where('name', 'like', "%{$search}%")
                 ->orWhere('phone', 'like', "%{$search}%")
-                ->orWhere('file_number', 'like', "%{$search}%")
+                ->orWhereHas('file', fn($f) => $f->where('file_number', 'like', "%{$search}%"))
             ))
             ->latest()
             ->paginate(15);
@@ -60,13 +60,13 @@ class TreatmentController extends Controller
 
     public function show(TreatmentChart $treatment)
     {
-        $treatment->load('patient', 'vitals', 'medications', 'labTests', 'complianceLogs');
+        $treatment->load('patient.file', 'vitals', 'medications', 'labTests', 'complianceLogs');
         return view('treatments.show', compact('treatment'));
     }
 
     public function compliance(TreatmentChart $treatment)
     {
-        $treatment->load('patient');
+        $treatment->load('patient.file');
         return view('treatments.compliance', compact('treatment'));
     }
 }

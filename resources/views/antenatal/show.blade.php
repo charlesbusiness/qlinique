@@ -13,7 +13,7 @@
             <div class="card mb-4">
                 <div class="card-header"><strong>Pregnancy Info</strong></div>
                 <div class="card-body">
-                    <p class="mb-1"><strong>Patient:</strong> {{ $antenatal->patient->name }} ({{ $antenatal->patient->file_number }})</p>
+                    <p class="mb-1"><strong>Patient:</strong> {{ $antenatal->patient->name }} ({{ $antenatal->patient->file?->file_number ?? '—' }})</p>
                     <p class="mb-1"><strong>EDD:</strong> {{ $antenatal->edd?->format('d M Y') ?? '—' }}</p>
                     <p class="mb-1"><strong>Gestation:</strong> {{ $antenatal->gestation_weeks ?? '—' }} weeks</p>
                     <p class="mb-0"><strong>Risk Level:</strong>

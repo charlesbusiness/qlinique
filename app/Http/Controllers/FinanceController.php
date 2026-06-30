@@ -10,18 +10,25 @@ use Illuminate\Http\Request;
 class FinanceController extends Controller
 {
     public function __construct(
-        protected FinanceService $financeService
+        protected FinanceService $financeService,
     ) {}
 
     public function invoices()
     {
-        $invoices = Invoice::with('patient')->latest()->paginate(15);
+        $invoices = Invoice::with('patient.file')
+            ->latest()
+            ->paginate(15);
+
         return view('finance.invoices', compact('invoices'));
     }
 
     public function createInvoice()
     {
-        $patients = Patient::where('is_active', true)->orderBy('name')->get();
+        $patients = Patient::with('file')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
         return view('finance.create-invoice', compact('patients'));
     }
 
@@ -34,9 +41,6 @@ class FinanceController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $patient = Patient::findOrFail($data['patient_id']);
-        $data['account_type'] = $patient->account_type;
-
         $this->financeService->generateInvoice($data);
 
         return redirect()->route('finance.invoices')
@@ -45,31 +49,31 @@ class FinanceController extends Controller
 
     public function showInvoice(Invoice $invoice)
     {
-        $invoice->load('patient', 'payments', 'treatmentChart');
+        $invoice->load('patient.file', 'payments', 'treatmentChart');
         return view('finance.show-invoice', compact('invoice'));
     }
 
     public function payments()
     {
-        $invoices = Invoice::whereIn('status', ['pending', 'partial'])
-            ->with('patient')
+        $payments = \App\Models\Payment::with('invoice.patient.file')
             ->latest()
             ->paginate(15);
 
-        return view('finance.payments', compact('invoices'));
+        return view('finance.payments', compact('payments'));
     }
 
     public function storePayment(Request $request, Invoice $invoice)
     {
         $data = $request->validate([
             'amount' => 'required|numeric|min:0.01',
-            'payment_method' => 'required|in:cash,card,mobile_money,bank_transfer',
+            'payment_method' => 'required|in:cash,transfer,chess,pos,other',
+            'reference' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
 
         $this->financeService->recordPayment($invoice, $data);
 
-        return redirect()->route('finance.invoices')
+        return redirect()->route('finance.show-invoice', $invoice)
             ->with('status', 'Payment recorded successfully.');
     }
 }

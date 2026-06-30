@@ -34,11 +34,11 @@ class DashboardController extends Controller
             : null;
 
         $recentPatients = $user->hasPermission('patients.view')
-            ? Patient::latest()->take(5)->get()
+            ? Patient::with('file')->latest()->take(5)->get()
             : collect();
 
         $recentTreatments = $user->hasPermission('treatments.view')
-            ? TreatmentChart::with('patient')->latest()->take(5)->get()
+            ? TreatmentChart::with('patient.file')->latest()->take(5)->get()
             : collect();
 
         return view('dashboard.index', compact('stats', 'compliance', 'recentPatients', 'recentTreatments'));

@@ -3,17 +3,16 @@
 namespace App\Models;
 
 use App\Traits\HasAuditTrail;
-use App\Traits\HasFileNumber;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Patient extends Model
 {
-    use HasFactory, SoftDeletes, HasFileNumber, HasAuditTrail;
+    use HasFactory, SoftDeletes, HasAuditTrail;
 
     protected $fillable = [
-        'file_number',
+        'file_id',
         'name',
         'gender',
         'date_of_birth',
@@ -25,9 +24,7 @@ class Patient extends Model
         'blood_group',
         'genotype',
         'photo_path',
-        'account_type',
         'patient_type',
-        'family_file_id',
         'next_of_kin',
         'consent',
         'religion',
@@ -63,9 +60,9 @@ class Patient extends Model
         return static::patientTypeOptions()[$this->patient_type] ?? null;
     }
 
-    public function familyFile()
+    public function file()
     {
-        return $this->belongsTo(FamilyFile::class, 'family_file_id');
+        return $this->belongsTo(PatientFile::class, 'file_id');
     }
 
     public function createdBy()

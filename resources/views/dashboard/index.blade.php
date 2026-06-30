@@ -113,9 +113,9 @@
                         <tbody>
                             @foreach ($recentPatients as $p)
                                 <tr>
-                                    <td><span class="badge bg-secondary">{{ $p->file_number }}</span></td>
+                                    <td><span class="badge bg-secondary">{{ $p->file?->file_number ?? '—' }}</span></td>
                                     <td>{{ $p->name }}</td>
-                                    <td><span class="badge bg-info">{{ ucfirst($p->account_type) }}</span></td>
+                                    <td><span class="badge bg-info">{{ ucfirst($p->file?->type ?? '—') }}</span></td>
                                 </tr>
                             @endforeach
                         </tbody>

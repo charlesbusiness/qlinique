@@ -2,9 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Enums\AccountType;
-use App\Models\FamilyFile;
+use App\Enums\FileType;
 use App\Models\Patient;
+use App\Models\PatientFile;
 use App\Services\PatientService;
 use Illuminate\Http\UploadedFile;
 use Livewire\Component;
@@ -15,10 +15,10 @@ class PatientForm extends Component
     use WithFileUploads;
 
     public ?Patient $patient = null;
-    public ?int $familyFileId = null;
+    public ?int $fileId = null;
     public string $name = '';
     public string $gender = '';
-    public string $age = '';
+    public string $date_of_birth = '';
     public string $phone = '';
     public string $email = '';
     public string $address = '';
@@ -29,11 +29,10 @@ class PatientForm extends Component
     public $photo = null;
     public string $account_type = 'individual';
     public ?string $patient_type = null;
-    public ?string $selected_family_id = null;
+    public ?string $selected_file_id = null;
     public array $next_of_kin = [];
     public array $consent = [];
     public string $religion = '';
-    public string $denomination = '';
 
     public $existingPhoto = null;
 
@@ -45,18 +44,18 @@ class PatientForm extends Component
     public ?string $existingSignatureType = null;
 
     public int $step = 1;
-    public bool $show_create_family = false;
-    public string $new_family_name = '';
-    public string $new_family_email = '';
-    public string $new_family_phone = '';
-    public string $new_family_address = '';
+    public bool $show_create_file = false;
+    public string $new_file_name = '';
+    public string $new_file_email = '';
+    public string $new_file_phone = '';
+    public string $new_file_address = '';
 
     protected function rules(): array
     {
         $rules = [
             'name' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
-            'age' => 'required|integer|min:0|max:150',
+            'date_of_birth' => 'nullable|date',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:1000',
@@ -67,11 +66,12 @@ class PatientForm extends Component
             'photo' => 'nullable|image|max:2048',
             'account_type' => 'required|in:individual,family,corporate',
             'patient_type' => 'nullable|in:admission,outpatient,outreach',
-            'religion' => 'nullable|string|max:255',
-            'denomination' => 'nullable|string|max:255',
+            'religion' => 'nullable|in:Christianity,Islam,Others',
             'signature_type' => 'nullable|in:typed,drawn,uploaded',
             'signature' => 'nullable|string',
             'signature_upload' => 'nullable|image|max:2048',
+            'consent.treatment' => 'accepted',
+            'consent.privacy' => 'accepted',
         ];
 
         return $rules;
@@ -79,11 +79,11 @@ class PatientForm extends Component
 
     public function mount(?Patient $patient = null): void
     {
-        if ($this->familyFileId) {
-            $familyFile = FamilyFile::find($this->familyFileId);
-            if ($familyFile) {
-                $this->account_type = $familyFile->type;
-                $this->selected_family_id = (string) $familyFile->id;
+        if ($this->fileId) {
+            $patientFile = PatientFile::find($this->fileId);
+            if ($patientFile) {
+                $this->account_type = $patientFile->type;
+                $this->selected_file_id = (string) $patientFile->id;
                 $this->step = 2;
             }
         }
@@ -92,7 +92,7 @@ class PatientForm extends Component
             $this->patient = $patient;
             $this->name = $patient->name ?? '';
             $this->gender = $patient->gender ?? '';
-            $this->age = $patient->date_of_birth ? (string) $patient->date_of_birth->age : '';
+            $this->date_of_birth = $patient->date_of_birth ? $patient->date_of_birth->format('Y-m-d') : '';
             $this->phone = $patient->phone ?? '';
             $this->email = $patient->email ?? '';
             $this->address = $patient->address ?? '';
@@ -100,13 +100,12 @@ class PatientForm extends Component
             $this->marital_status = $patient->marital_status ?? '';
             $this->blood_group = $patient->blood_group ?? '';
             $this->genotype = $patient->genotype ?? '';
-            $this->account_type = $patient->account_type ?? 'individual';
+            $this->account_type = $patient->file?->type ?? 'individual';
             $this->patient_type = $patient->patient_type ?? null;
-            $this->selected_family_id = $patient->family_file_id ? (string) $patient->family_file_id : null;
+            $this->selected_file_id = $patient->file_id ? (string) $patient->file_id : null;
             $this->next_of_kin = is_array($patient->next_of_kin) ? $patient->next_of_kin : [];
             $this->consent = is_array($patient->consent) ? $patient->consent : [];
             $this->religion = $patient->religion ?? '';
-            $this->denomination = $patient->denomination ?? '';
             $this->existingPhoto = $patient->photo_path;
             $this->signature_type = $patient->signature_type ?? null;
             $this->signature = $patient->signature ?? '';
@@ -118,8 +117,8 @@ class PatientForm extends Component
     public function updatedAccountType($value): void
     {
         if (!in_array($value, ['family', 'corporate'])) {
-            $this->selected_family_id = null;
-            $this->show_create_family = false;
+            $this->selected_file_id = null;
+            $this->show_create_file = false;
         }
     }
 
@@ -133,23 +132,23 @@ class PatientForm extends Component
         $this->step--;
     }
 
-    public function toggleCreateFamily(): void
+    public function toggleCreateFile(): void
     {
-        $this->show_create_family = !$this->show_create_family;
-        if (!$this->show_create_family) {
-            $this->new_family_name = '';
-            $this->new_family_email = '';
-            $this->new_family_phone = '';
-            $this->new_family_address = '';
+        $this->show_create_file = !$this->show_create_file;
+        if (!$this->show_create_file) {
+            $this->new_file_name = '';
+            $this->new_file_email = '';
+            $this->new_file_phone = '';
+            $this->new_file_address = '';
         }
     }
 
-    public function createFamilyFile(): void
+    public function createPatientFile(): void
     {
         $this->validate([
-            'new_family_name' => 'required|string|max:255',
-            'new_family_email' => 'required|email|max:255',
-            'new_family_phone' => [
+            'new_file_name' => 'required|string|max:255',
+            'new_file_email' => 'required|email|max:255',
+            'new_file_phone' => [
                 'required',
                 'string',
                 'max:36',
@@ -163,23 +162,23 @@ class PatientForm extends Component
                     }
                 },
             ],
-            'new_family_address' => 'nullable|string|max:1000',
+            'new_file_address' => 'nullable|string|max:1000',
         ]);
 
-        $family = FamilyFile::create([
-            'name' => $this->new_family_name,
-            'email' => $this->new_family_email,
-            'phone' => $this->new_family_phone,
-            'address' => $this->new_family_address ?: null,
+        $file = PatientFile::create([
+            'name' => $this->new_file_name,
+            'email' => $this->new_file_email,
+            'phone' => $this->new_file_phone,
+            'address' => $this->new_file_address ?: null,
             'type' => $this->account_type,
         ]);
 
-        $this->selected_family_id = (string) $family->id;
-        $this->show_create_family = false;
-        $this->new_family_name = '';
-        $this->new_family_email = '';
-        $this->new_family_phone = '';
-        $this->new_family_address = '';
+        $this->selected_file_id = (string) $file->id;
+        $this->show_create_file = false;
+        $this->new_file_name = '';
+        $this->new_file_email = '';
+        $this->new_file_phone = '';
+        $this->new_file_address = '';
     }
 
     public function save(PatientService $patientService): void
@@ -187,10 +186,9 @@ class PatientForm extends Component
         $this->validate();
 
         $data = [
-            'account_type' => $this->account_type,
             'name' => $this->name,
             'gender' => $this->gender,
-            'date_of_birth' => $this->age ? now()->subYears((int) $this->age)->startOfYear() : null,
+            'date_of_birth' => $this->date_of_birth ?: null,
             'phone' => $this->phone ?: null,
             'email' => $this->email ?: null,
             'address' => $this->address ?: null,
@@ -202,14 +200,15 @@ class PatientForm extends Component
             'next_of_kin' => $this->next_of_kin,
             'consent' => $this->consent,
             'religion' => $this->religion ?: null,
-            'denomination' => $this->denomination ?: null,
             'signature_type' => $this->signature_type ?: null,
             'signature' => null,
         ];
 
-        $data['family_file_id'] = in_array($this->account_type, ['family', 'corporate']) && $this->selected_family_id
-            ? $this->selected_family_id
-            : null;
+        $data['file_type'] = $this->account_type;
+
+        if (in_array($this->account_type, ['family', 'corporate']) && $this->selected_file_id) {
+            $data['file_id'] = $this->selected_file_id;
+        }
 
         $photoFile = $this->photo?->getRealPath() ? $this->photo : null;
         $signatureFile = null;
@@ -243,12 +242,12 @@ class PatientForm extends Component
 
     public function render()
     {
-        $familyFiles = in_array($this->account_type, ['family', 'corporate'])
-            ? FamilyFile::where('type', $this->account_type)
+        $patientFiles = in_array($this->account_type, ['family', 'corporate'])
+            ? PatientFile::where('type', $this->account_type)
                 ->orderBy('name')
                 ->get(['id', 'name', 'file_number'])
             : collect();
 
-        return view('livewire.patient-form', compact('familyFiles'));
+        return view('livewire.patient-form', compact('patientFiles'));
     }
 }

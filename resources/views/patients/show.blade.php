@@ -23,16 +23,18 @@
                         </div>
                     @endif
                     <h5>{{ $patient->name }}</h5>
-                    <span class="badge bg-secondary">{{ $patient->file_number }}</span>
-                    <span class="badge bg-info">{{ ucfirst($patient->account_type) }}</span>
+                    <span class="badge bg-secondary">{{ $patient->file?->file_number ?? '—' }}</span>
+                    <span class="badge bg-info">{{ ucfirst($patient->file?->type ?? '—') }}</span>
                 </div>
             </div>
 
             <div class="card mb-4">
                 <div class="card-header"><strong>Account Info</strong></div>
                 <div class="card-body">
-                    @if ($patient->familyFile)
-                        <p class="mb-1"><strong>{{ ucfirst($patient->account_type) }} File:</strong> {{ $patient->familyFile->name }} ({{ $patient->familyFile->file_number }})</p>
+                    @if ($patient->file)
+                        <p class="mb-1"><strong>{{ ucfirst($patient->file->type) }} File:</strong> {{ $patient->file->name }} ({{ $patient->file->file_number }})</p>
+                    @else
+                        <p class="mb-1 text-muted">No file assigned</p>
                     @endif
                 </div>
             </div>
@@ -54,7 +56,6 @@
                         <div class="col-md-6 mb-2"><strong>Patient Type:</strong> {{ $patient->patient_type_label ?? '—' }}</div>
                         <div class="col-12 mb-2"><strong>Address:</strong> {{ $patient->address ?? '—' }}</div>
                         <div class="col-md-6 mb-2"><strong>Religion:</strong> {{ $patient->religion ?? '—' }}</div>
-                        <div class="col-md-6 mb-2"><strong>Denomination:</strong> {{ $patient->denomination ?? '—' }}</div>
                     </div>
                 </div>
             </div>

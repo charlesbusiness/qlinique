@@ -15,7 +15,6 @@ class Invoice extends Model
         'invoice_number',
         'patient_id',
         'treatment_chart_id',
-        'account_type',
         'status',
         'amount_due',
         'amount_paid',
@@ -42,5 +41,10 @@ class Invoice extends Model
     public function isFullyPaid(): bool
     {
         return $this->balance <= 0;
+    }
+
+    public function getAccountTypeAttribute(): ?string
+    {
+        return $this->patient?->file?->type;
     }
 }

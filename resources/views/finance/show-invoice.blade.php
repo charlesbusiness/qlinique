@@ -11,8 +11,8 @@
             <div class="card mb-4">
                 <div class="card-header"><strong>Invoice Details</strong></div>
                 <div class="card-body">
-                    <p class="mb-1"><strong>Patient:</strong> {{ $invoice->patient->name }} ({{ $invoice->patient->file_number }})</p>
-                    <p class="mb-1"><strong>Account Type:</strong> <span class="badge bg-info">{{ ucfirst($invoice->account_type) }}</span></p>
+                    <p class="mb-1"><strong>Patient:</strong> {{ $invoice->patient->name }} ({{ $invoice->patient->file?->file_number ?? '—' }})</p>
+                    <p class="mb-1"><strong>Account Type:</strong> <span class="badge bg-info">{{ ucfirst($invoice->account_type ?? '—') }}</span></p>
                     <p class="mb-1"><strong>Amount Due:</strong> {{ number_format($invoice->amount_due, 2) }}</p>
                     <p class="mb-1"><strong>Amount Paid:</strong> {{ number_format($invoice->amount_paid, 2) }}</p>
                     <p class="mb-1"><strong>Balance:</strong> <strong>{{ number_format($invoice->balance, 2) }}</strong></p>

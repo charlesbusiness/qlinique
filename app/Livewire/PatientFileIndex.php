@@ -2,17 +2,16 @@
 
 namespace App\Livewire;
 
-use App\Models\FamilyFile;
+use App\Models\PatientFile;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class FamilyFileIndex extends Component
+class PatientFileIndex extends Component
 {
     use WithPagination;
 
     public string $search = '';
     public string $filterType = '';
-    public bool $showCreateForm = false;
 
     public string $new_name = '';
     public string $new_email = '';
@@ -34,7 +33,7 @@ class FamilyFileIndex extends Component
             'new_email' => 'required|email|max:255',
             'new_phone' => $this->phoneRule(),
             'new_address' => 'nullable|string|max:1000',
-            'new_type' => 'required|in:family,corporate',
+            'new_type' => 'required|in:family,corporate,individual',
         ];
     }
 
@@ -45,7 +44,7 @@ class FamilyFileIndex extends Component
             'edit_email' => 'required|email|max:255',
             'edit_phone' => $this->phoneRule(),
             'edit_address' => 'nullable|string|max:1000',
-            'edit_type' => 'required|in:family,corporate',
+            'edit_type' => 'required|in:family,corporate,individual',
         ];
     }
 
@@ -71,7 +70,7 @@ class FamilyFileIndex extends Component
     {
         $this->validate();
 
-        FamilyFile::create([
+        PatientFile::create([
             'name' => $this->new_name,
             'email' => $this->new_email,
             'phone' => $this->new_phone,
@@ -79,19 +78,22 @@ class FamilyFileIndex extends Component
             'type' => $this->new_type,
         ]);
 
-        $this->reset(['new_name', 'new_email', 'new_phone', 'new_address', 'showCreateForm']);
+        $this->reset(['new_name', 'new_email', 'new_phone', 'new_address']);
+        $this->new_type = 'family';
+        $this->dispatch('close-modal', modalId: 'createFileModal');
         session()->flash('status', 'File created successfully.');
     }
 
     public function editFile(int $id): void
     {
-        $file = FamilyFile::findOrFail($id);
+        $file = PatientFile::findOrFail($id);
         $this->editingFileId = $file->id;
         $this->edit_name = $file->name;
         $this->edit_email = $file->email;
         $this->edit_phone = $file->phone;
         $this->edit_address = $file->address ?? '';
         $this->edit_type = $file->type;
+        $this->dispatch('open-edit-modal');
     }
 
     public function cancelEdit(): void
@@ -103,7 +105,7 @@ class FamilyFileIndex extends Component
     {
         $this->validate($this->editRules());
 
-        $file = FamilyFile::findOrFail($this->editingFileId);
+        $file = PatientFile::findOrFail($this->editingFileId);
         $file->update([
             'name' => $this->edit_name,
             'email' => $this->edit_email,
@@ -113,13 +115,14 @@ class FamilyFileIndex extends Component
         ]);
 
         $this->cancelEdit();
+        $this->dispatch('close-modal', modalId: 'editFileModal');
         session()->flash('status', 'File updated successfully.');
     }
 
     public function render()
     {
-        $files = FamilyFile::withCount('patients')
-            ->with('patients:id,name,file_number,family_file_id')
+        $files = PatientFile::withCount('patients')
+            ->with('patients:id,name,file_id')
             ->when($this->search, fn($q) => $q->where(function ($q) {
                 $q->where('name', 'like', "%{$this->search}%")
                   ->orWhere('file_number', 'like', "%{$this->search}%")
@@ -130,6 +133,6 @@ class FamilyFileIndex extends Component
             ->latest()
             ->paginate(15);
 
-        return view('livewire.family-file-index', compact('files'));
+        return view('livewire.patient-file-index', compact('files'));
     }
 }

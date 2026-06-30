@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum AccountType: string
+enum FileType: string
 {
     case Individual = 'individual';
     case Family = 'family';

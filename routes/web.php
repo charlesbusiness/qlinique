@@ -3,6 +3,7 @@
 use App\Http\Controllers\AntenatalController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientFileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TreatmentController;
 use Illuminate\Http\Request;
@@ -55,9 +56,13 @@ Route::middleware('auth')->group(function () {
             'destroy' => 'permission:patients.delete',
         ]);
 
-        Route::get('family-files', function () {
-            return view('family-files.index');
-        })->middleware('permission:patients.view')->name('family-files.index');
+        Route::get('patient-files', function () {
+            return view('patient-files.index');
+        })->middleware('permission:patients.view')->name('patient-files.index');
+
+        Route::get('patient-files/{patientFile}/members', [PatientFileController::class, 'members'])
+            ->middleware('permission:patients.view')
+            ->name('patient-files.members');
 
         Route::resource('treatments', TreatmentController::class)->middleware([
             'index' => 'permission:treatments.view',
