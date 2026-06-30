@@ -24,6 +24,8 @@ class PatientForm extends Component
     public string $address = '';
     public string $occupation = '';
     public string $marital_status = '';
+    public string $blood_group = '';
+    public string $genotype = '';
     public $photo = null;
     public string $account_type = 'individual';
     public ?string $patient_type = null;
@@ -60,6 +62,8 @@ class PatientForm extends Component
             'address' => 'nullable|string|max:1000',
             'occupation' => 'nullable|string|max:255',
             'marital_status' => 'nullable|string|max:50',
+            'blood_group' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'genotype' => 'nullable|in:AA,AS,SS,AC',
             'photo' => 'nullable|image|max:2048',
             'account_type' => 'required|in:individual,family,corporate',
             'patient_type' => 'nullable|in:admission,outpatient,outreach',
@@ -94,6 +98,8 @@ class PatientForm extends Component
             $this->address = $patient->address ?? '';
             $this->occupation = $patient->occupation ?? '';
             $this->marital_status = $patient->marital_status ?? '';
+            $this->blood_group = $patient->blood_group ?? '';
+            $this->genotype = $patient->genotype ?? '';
             $this->account_type = $patient->account_type ?? 'individual';
             $this->patient_type = $patient->patient_type ?? null;
             $this->selected_family_id = $patient->family_file_id ? (string) $patient->family_file_id : null;
@@ -190,6 +196,8 @@ class PatientForm extends Component
             'address' => $this->address ?: null,
             'occupation' => $this->occupation ?: null,
             'marital_status' => $this->marital_status ?: null,
+            'blood_group' => $this->blood_group ?: null,
+            'genotype' => $this->genotype ?: null,
             'patient_type' => $this->patient_type ?: null,
             'next_of_kin' => $this->next_of_kin,
             'consent' => $this->consent,

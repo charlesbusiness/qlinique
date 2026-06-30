@@ -22,6 +22,8 @@ class Patient extends Model
         'address',
         'occupation',
         'marital_status',
+        'blood_group',
+        'genotype',
         'photo_path',
         'account_type',
         'patient_type',

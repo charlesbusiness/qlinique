@@ -27,6 +27,36 @@
         </div>
 
         <div class="row">
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Blood Group</label>
+                <select class="form-select @error('blood_group') is-invalid @enderror" wire:model="blood_group">
+                    <option value="">Select...</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+                @error('blood_group') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Genotype</label>
+                <select class="form-select @error('genotype') is-invalid @enderror" wire:model="genotype">
+                    <option value="">Select...</option>
+                    <option value="AA">AA</option>
+                    <option value="AS">AS</option>
+                    <option value="SS">SS</option>
+                    <option value="AC">AC</option>
+                </select>
+                @error('genotype') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-4 mb-3">
                 <label class="form-label">Phone</label>
                 <input type="text" class="form-control" wire:model="phone">
@@ -485,6 +515,36 @@
         </div>
 
         <div class="row">
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Blood Group</label>
+                <select class="form-select @error('blood_group') is-invalid @enderror" wire:model="blood_group">
+                    <option value="">Select...</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+                @error('blood_group') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Genotype</label>
+                <select class="form-select @error('genotype') is-invalid @enderror" wire:model="genotype">
+                    <option value="">Select...</option>
+                    <option value="AA">AA</option>
+                    <option value="AS">AS</option>
+                    <option value="SS">SS</option>
+                    <option value="AC">AC</option>
+                </select>
+                @error('genotype') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-4 mb-3">
                 <label class="form-label">Phone</label>
                 <input type="text" class="form-control" wire:model="phone">
@@ -791,6 +851,8 @@
                 <p class="mb-1"><strong>Email:</strong> {{ $email ?: '—' }}</p>
                 <p class="mb-1"><strong>Occupation:</strong> {{ $occupation ?: '—' }}</p>
                 <p class="mb-1"><strong>Marital Status:</strong> {{ $marital_status ?: '—' }}</p>
+                <p class="mb-1"><strong>Blood Group:</strong> {{ $blood_group ?: '—' }}</p>
+                <p class="mb-1"><strong>Genotype:</strong> {{ $genotype ?: '—' }}</p>
                 <p class="mb-1"><strong>Patient Type:</strong> {{ $patient_type ? \App\Models\Patient::patientTypeOptions()[$patient_type] ?? $patient_type : '—' }}</p>
 
                 @if ($address)
