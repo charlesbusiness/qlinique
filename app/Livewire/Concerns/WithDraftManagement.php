@@ -254,16 +254,22 @@ trait WithDraftManagement
     {
         $this->saveDraft();
 
+        $service = app(TreatmentService::class);
+        $chart = TreatmentChart::find($this->draftId);
+
         if ($this->isEditing) {
+            if ($chart) {
+                $chart->is_completed = false;
+                $chart->save();
+                $service->syncSchedule($chart);
+            }
             session()->flash('status', 'Treatment chart updated successfully.');
             $this->redirect(route('treatments.show', $this->treatmentId), navigate: true);
             return;
         }
 
-        $service = app(TreatmentService::class);
-        $draft = TreatmentChart::find($this->draftId);
-        if ($draft) {
-            $service->publishDraft($draft);
+        if ($chart) {
+            $service->publishDraft($chart);
         }
 
         session()->flash('status', 'Treatment chart created successfully.');

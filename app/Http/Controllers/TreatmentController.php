@@ -66,12 +66,22 @@ class TreatmentController extends Controller
 
     public function edit(TreatmentChart $treatment)
     {
+        if ($treatment->is_completed) {
+            return redirect()->route('treatments.show', $treatment)
+                ->with('error', 'Cannot edit a completed treatment.');
+        }
+
         $treatment->load('patient.file', 'vitals', 'physicalExaminations', 'rmeResults', 'labTests', 'treatmentPlanItems');
         return view('treatments.edit', compact('treatment'));
     }
 
     public function update(Request $request, TreatmentChart $treatment)
     {
+        if ($treatment->is_completed) {
+            return redirect()->route('treatments.show', $treatment)
+                ->with('error', 'Cannot edit a completed treatment.');
+        }
+
         return redirect()->route('treatments.show', $treatment)
             ->with('status', 'Treatment chart updated successfully.');
     }
@@ -80,5 +90,13 @@ class TreatmentController extends Controller
     {
         $treatment->load('patient.file');
         return view('treatments.compliance', compact('treatment'));
+    }
+
+    public function complete(TreatmentChart $treatment)
+    {
+        $this->treatmentService->complete($treatment);
+
+        return redirect()->route('treatments.show', $treatment)
+            ->with('status', 'Treatment marked as completed.');
     }
 }

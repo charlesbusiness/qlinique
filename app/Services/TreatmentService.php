@@ -132,13 +132,29 @@ class TreatmentService
         });
     }
 
+    public function syncSchedule(TreatmentChart $chart): void
+    {
+        $maxItem = $chart->treatmentPlanItems()
+            ->where('is_take_home', false)
+            ->orderByRaw('CAST(length_value AS UNSIGNED) DESC')
+            ->first();
+
+        $schedule = $maxItem?->length_display;
+
+        if ($chart->treatment_schedule !== $schedule) {
+            $this->repository->update($chart, ['treatment_schedule' => $schedule]);
+        }
+    }
+
     public function publishDraft(TreatmentChart $draft): TreatmentChart
     {
         return DB::transaction(function () use ($draft) {
+            $this->syncSchedule($draft);
+
             $this->repository->update($draft, [
                 'is_draft' => false,
-                'is_completed' => true,
             ]);
+
             return $draft->fresh();
         });
     }

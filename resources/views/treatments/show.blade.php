@@ -3,11 +3,17 @@
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="fw-semibold fs-4 text-dark mb-0">Treatment Chart — {{ $treatment->patient->name }}</h2>
             <div>
-                @if (Auth::user()->hasPermission('treatments.edit'))
+                @if (!$treatment->is_completed && Auth::user()->hasPermission('treatments.edit'))
                 <a href="{{ route('treatments.edit', $treatment) }}" class="btn btn-outline-warning btn-sm">Edit</a>
                 @endif
                 @if (Auth::user()->hasPermission('treatments.compliance'))
                 <a href="{{ route('treatments.compliance', $treatment) }}" class="btn btn-outline-info btn-sm">Compliance</a>
+                @endif
+                @if (!$treatment->is_completed && Auth::user()->hasPermission('treatments.edit'))
+                <form action="{{ route('treatments.complete', $treatment) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-success btn-sm">Mark Complete</button>
+                </form>
                 @endif
                 <a href="{{ route('treatments.index') }}" class="btn btn-outline-primary btn-sm">Back</a>
             </div>
