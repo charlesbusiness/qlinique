@@ -22,6 +22,9 @@ class TreatmentChart extends Model
         'symptoms',
         'clinical_notes',
         'previous_treatment_history',
+        'recommended_drugs',
+        'allergies',
+        'finding_on_history',
         'primary_diagnosis',
         'secondary_diagnosis',
         'diagnosis_notes',
@@ -33,7 +36,12 @@ class TreatmentChart extends Model
         'take_home_medication',
         'treatment_schedule',
         'consent',
+        'consent_enabled',
+        'medical_bill',
+        'rme_comment',
         'is_completed',
+        'is_draft',
+        'current_step',
         'created_by',
         'updated_by',
     ];
@@ -44,7 +52,10 @@ class TreatmentChart extends Model
             'visit_date' => 'date',
             'first_aid_time' => 'datetime',
             'is_completed' => 'boolean',
+            'is_draft' => 'boolean',
+            'consent_enabled' => 'boolean',
             'consent' => 'array',
+            'medical_bill' => 'array',
         ];
     }
 
@@ -81,5 +92,20 @@ class TreatmentChart extends Model
     public function documents()
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    public function physicalExaminations()
+    {
+        return $this->hasMany(PhysicalExaminationRecord::class);
+    }
+
+    public function rmeResults()
+    {
+        return $this->hasMany(RmeResult::class);
+    }
+
+    public function treatmentPlanItems()
+    {
+        return $this->hasMany(TreatmentPlanItem::class);
     }
 }

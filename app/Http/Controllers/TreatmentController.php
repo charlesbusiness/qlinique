@@ -60,8 +60,20 @@ class TreatmentController extends Controller
 
     public function show(TreatmentChart $treatment)
     {
-        $treatment->load('patient.file', 'vitals', 'medications', 'labTests', 'complianceLogs');
+        $treatment->load('patient.file', 'vitals', 'medications', 'labTests', 'complianceLogs', 'physicalExaminations', 'rmeResults', 'treatmentPlanItems');
         return view('treatments.show', compact('treatment'));
+    }
+
+    public function edit(TreatmentChart $treatment)
+    {
+        $treatment->load('patient.file', 'vitals', 'physicalExaminations', 'rmeResults', 'labTests', 'treatmentPlanItems');
+        return view('treatments.edit', compact('treatment'));
+    }
+
+    public function update(Request $request, TreatmentChart $treatment)
+    {
+        return redirect()->route('treatments.show', $treatment)
+            ->with('status', 'Treatment chart updated successfully.');
     }
 
     public function compliance(TreatmentChart $treatment)

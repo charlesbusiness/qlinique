@@ -2,7 +2,12 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\WithBilling;
+use App\Livewire\Concerns\WithConstants;
+use App\Livewire\Concerns\WithDraftManagement;
+use App\Livewire\Concerns\WithDynamicRows;
 use App\Models\Patient;
+use App\Models\TreatmentChart;
 use App\Services\TreatmentService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -11,23 +16,29 @@ use Livewire\WithFileUploads;
 class TreatmentForm extends Component
 {
     use WithFileUploads;
-    public ?int $patientId = null;
-    public string $category = 'checkup';
-    public string $other_category = '';
-    public string $sub_category = '';
-    public string $visit_date = '';
-    public string $presenting_complaint = '';
-    public string $symptoms = '';
-    public string $clinical_notes = '';
-    public string $previous_treatment_history = '';
-    public string $primary_diagnosis = '';
-    public string $secondary_diagnosis = '';
-    public string $diagnosis_notes = '';
-    public string $treatment_plan = '';
-    public string $treatment_plan_value = '';
-    public string $treatment_plan_type = 'days';
-    public string $take_home_medication = '';
+    use WithConstants;
+    use WithDraftManagement;
+    use WithDynamicRows;
+    use WithBilling;
 
+    // Draft state
+    public ?int $draftId = null;
+    public bool $isDraft = false;
+    public ?int $treatmentId = null;
+    public bool $isEditing = false;
+    public int $step = 0;
+    public bool $showCategory = false;
+    public bool $showStep1 = false;
+
+    // Step 1: Patient & History
+    public ?int $patientId = null;
+    public string $sub_category = '';
+    public string $finding_on_history = '';
+    public string $previous_treatment_history = '';
+    public string $recommended_drugs = '';
+    public string $allergies = '';
+
+    // Step 2: Vital Signs
     public array $vitals = [
         'temperature' => null,
         'temperature_unit' => 'celsius',
@@ -39,12 +50,38 @@ class TreatmentForm extends Component
         'height' => null,
         'oxygen_saturation' => null,
         'bmi' => null,
+        'comment' => '',
     ];
 
-    public array $medications = [];
+    // Step 3 & 4: Physical Examination
+    public string $anthropometryComment = '';
+    public array $heartLungsFindings = [];
+    public string $heartLungsComment = '';
+    public array $eentEyesFindings = [];
+    public array $eentEarsFindings = [];
+    public array $eentNoseFindings = [];
+    public array $eentThroatFindings = [];
+    public string $eentComment = '';
+    public array $abdominalFindings = [];
+    public string $abdominalComment = '';
+    public string $reflexFinding = '';
+    public string $reflexComment = '';
+    public array $hairFindings = [];
+    public string $hairComment = '';
+    public array $skinFindings = [];
+    public string $skinComment = '';
 
+    // Step 5: Investigation & Diagnosis
+    public array $rmeResults = [];
+    public string $rmeComment = '';
+    public string $rmeNewTest = '';
     public array $labTests = [];
+    public array $labTestUploads = [];
+    public string $primary_diagnosis = '';
 
+    // Step 6: Treatment Plan & Billing
+    public array $treatmentPlanItems = [];
+    public bool $consent_enabled = false;
     public array $consent = [
         'procedure_description' => '',
         'attending_physician' => '',
@@ -56,20 +93,120 @@ class TreatmentForm extends Component
         'physician_signature_type' => '',
         'physician_signature' => '',
     ];
-
     public $consent_upload_patient = null;
     public $consent_upload_witness = null;
     public $consent_upload_physician = null;
 
-    public int $step = 1;
+    public array $medicalBill = [
+        'registration' => 0,
+        'consultation' => 0,
+        'rapid_medical_examination' => 0,
+        'laboratory_test' => 0,
+        'admission' => 0,
+        'medical_service' => 0,
+        'logistics' => 0,
+        'maintenance' => 0,
+        'surgical_procedure' => 0,
+    ];
+    public float $billTotal = 0;
+    public float $billPaid = 0;
+    public float $billOutstanding = 0;
+    public float $previousOutstanding = 0;
+
+    public array $stepLabels = [
+        1 => 'Patient & History',
+        2 => 'Vital Signs',
+        3 => 'Physical Exam 1',
+        4 => 'Physical Exam 2',
+        5 => 'Investigation & Diagnosis',
+        6 => 'Treatment Plan',
+        7 => 'Billing',
+    ];
+
+    // ─── Lifecycle ──────────────────────────────────────────────────
+
+    public function mount(?int $patientId = null, ?int $treatmentId = null): void
+    {
+        $user = Auth::user();
+
+        if ($treatmentId) {
+            $treatment = TreatmentChart::with('vitals', 'physicalExaminations', 'rmeResults', 'labTests', 'treatmentPlanItems')->findOrFail($treatmentId);
+            $this->treatmentId = $treatmentId;
+            $this->isEditing = true;
+            $this->loadDraft($treatment);
+            $this->isDraft = false;
+            $this->showCategory = true;
+            $this->showStep1 = true;
+            $this->step = 1;
+            $this->consent['attending_physician'] = $user?->name ?? '';
+            return;
+        }
+
+        if ($user) {
+            $draft = app(TreatmentService::class)->findDraftForUser($user->id);
+            if ($draft) {
+                $this->loadDraft($draft);
+                return;
+            }
+        }
+
+        if ($patientId) {
+            $this->patientId = $patientId;
+            $this->showCategory = true;
+        }
+
+        $this->consent['attending_physician'] = $user?->name ?? '';
+    }
+
+    public function render()
+    {
+        return view('livewire.treatment-form', [
+            'patients' => Patient::with('file')->where('is_active', true)->orderBy('name')->get(),
+            'staff' => \App\Models\User::where('is_active', true)
+                ->whereIn('role', ['doctor', 'nurse', 'matron', 'super_admin'])
+                ->orderBy('name')
+                ->get(['id', 'name', 'role']),
+        ]);
+    }
+
+    // ─── Patient & Category Selection ──────────────────────────────
+
+    public function selectPatient(): void
+    {
+        if ($this->patientId) {
+            $this->showCategory = true;
+            $this->step = 1;
+        }
+    }
+
+    public function selectCategory(): void
+    {
+        if (!$this->sub_category) return;
+
+        $service = app(TreatmentService::class);
+        $draft = $service->createDraft(
+            $this->patientId,
+            'treatment',
+            $this->sub_category,
+            Auth::id()
+        );
+
+        $this->draftId = $draft->id;
+        $this->isDraft = true;
+        $this->showStep1 = true;
+        $this->step = 1;
+    }
+
+
+
+    // ─── Temperature Validation ────────────────────────────────────
 
     private function temperatureRule(): array
     {
         return [
-            'nullable',
+            'required',
             'numeric',
             function ($attribute, $value, $fail) {
-                if ($value === null) return;
                 $unit = $this->vitals['temperature_unit'] ?? 'celsius';
                 if ($unit === 'fahrenheit') {
                     if ($value < 93 || $value > 108) {
@@ -84,240 +221,85 @@ class TreatmentForm extends Component
         ];
     }
 
-    protected function rules(): array
+    // ─── Step Navigation ───────────────────────────────────────────
+
+    protected function stepRules(): array
     {
         return [
-            'patientId' => 'required|exists:patients,id',
-            'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,enrollment_treatment_management,other',
-            'other_category' => 'required_if:category,other|string|max:255',
-            'sub_category' => 'nullable|required_if:category,checkup,treatment,enrollment_treatment_management|in:annual_comprehensive,periodic,employment,traveling,mild_ailments,palliative_care,home_based_care,age_related_care,hypertension,diabetes,hypertension_diabetes,therapeutic_care_asthma',
-            'visit_date' => 'required|date',
-
-            'vitals.temperature' => $this->temperatureRule(),
-            'vitals.temperature_unit' => 'nullable|in:celsius,fahrenheit',
-            'vitals.blood_pressure_systolic' => 'nullable|numeric|min:60|max:250',
-            'vitals.blood_pressure_diastolic' => 'nullable|numeric|min:30|max:150',
-            'vitals.pulse_rate' => 'nullable|numeric|min:30|max:250',
-            'vitals.respiratory_rate' => 'nullable|numeric|min:5|max:60',
-            'vitals.weight' => 'nullable|numeric|min:0.5|max:500',
-            'vitals.height' => 'nullable|numeric|min:10|max:300',
-            'vitals.oxygen_saturation' => 'nullable|numeric|min:50|max:100',
-            'vitals.bmi' => 'nullable|numeric|min:5|max:80',
-
-            'consent.procedure_description' => 'required|string|max:500',
-            'consent.attending_physician' => 'required|string|max:255',
-            'consent.patient_signature_type' => 'required|in:typed,uploaded',
-            'consent.patient_signature' => 'required_if:consent.patient_signature_type,typed|string|max:255',
-            'consent.witness_name' => 'required|string|max:255',
-            'consent.witness_signature_type' => 'required|in:typed,uploaded',
-            'consent.witness_signature' => 'required_if:consent.witness_signature_type,typed|string|max:255',
-            'consent.physician_signature_type' => 'required|in:typed,uploaded',
-            'consent.physician_signature' => 'required_if:consent.physician_signature_type,typed|string|max:255',
+            1 => [
+                'finding_on_history' => 'required|string',
+                'previous_treatment_history' => 'required|string',
+                'recommended_drugs' => 'required|string',
+                'allergies' => 'required|string',
+            ],
+            2 => [
+                'vitals.temperature' => $this->temperatureRule(),
+                'vitals.blood_pressure_systolic' => 'required|numeric',
+                'vitals.blood_pressure_diastolic' => 'required|numeric',
+                'vitals.pulse_rate' => 'required|numeric|min:0|max:300',
+                'vitals.respiratory_rate' => 'required|numeric|min:0|max:100',
+                'vitals.oxygen_saturation' => 'required|numeric|min:0|max:100',
+                'vitals.comment' => 'nullable|string',
+            ],
+            3 => [
+                'vitals.weight' => 'required|numeric|min:0',
+                'vitals.height' => 'required|numeric|min:0',
+            ],
+            6 => [
+                'consent.procedure_description' => 'required_if:consent_enabled,true|string|max:500',
+                'consent.attending_physician' => 'required_if:consent_enabled,true|string|max:255',
+                'consent.patient_signature_type' => 'required_if:consent_enabled,true|in:typed,uploaded',
+                'consent.patient_signature' => 'required_if:consent.patient_signature_type,typed|string|max:255',
+                'consent.witness_name' => 'required_if:consent_enabled,true|string|max:255',
+                'consent.witness_signature_type' => 'required_if:consent_enabled,true|in:typed,uploaded',
+                'consent.witness_signature' => 'required_if:consent.witness_signature_type,typed|string|max:255',
+                'consent.physician_signature_type' => 'required_if:consent_enabled,true|in:typed,uploaded',
+                'consent.physician_signature' => 'required_if:consent.physician_signature_type,typed|string|max:255',
+            ],
+            7 => [],
         ];
     }
 
-    public function updatedCategory(): void
+    protected function validationAttributes(): array
     {
-        $this->sub_category = '';
-    }
-
-    public function updatedVitals($value, $key): void
-    {
-        if (in_array($key, ['weight', 'height'])) {
-            $weight = $this->vitals['weight'];
-            $height = $this->vitals['height'];
-
-            if ($weight && $height && $height > 0) {
-                $this->vitals['bmi'] = round($weight / (($height / 100) ** 2), 1);
-            } else {
-                $this->vitals['bmi'] = null;
-            }
-        }
-    }
-
-    public function mount(?int $patientId = null): void
-    {
-        $this->patientId = $patientId;
-        $this->visit_date = now()->format('Y-m-d');
-        $this->consent['attending_physician'] = Auth::user()?->name ?? '';
+        return [
+            'vitals.temperature' => 'Temperature',
+            'vitals.blood_pressure_systolic' => 'Blood Pressure Systolic',
+            'vitals.blood_pressure_diastolic' => 'Blood Pressure Diastolic',
+            'vitals.pulse_rate' => 'Pulse Rate',
+            'vitals.respiratory_rate' => 'Respiratory Rate',
+            'vitals.weight' => 'Weight',
+            'vitals.height' => 'Height',
+            'vitals.oxygen_saturation' => 'Oxygen Saturation',
+            'vitals.comment' => 'Comment',
+        ];
     }
 
     public function nextStep(): void
     {
-        $stepRules = [
-            1 => [
-                'patientId' => 'required|exists:patients,id',
-                'category' => 'required|in:checkup,treatment,emergency,antenatal,consultancy,enrollment_treatment_management,other',
-                'other_category' => 'required_if:category,other|string|max:255',
-                'sub_category' => 'nullable|required_if:category,checkup,treatment,enrollment_treatment_management|in:annual_comprehensive,periodic,employment,traveling,mild_ailments,palliative_care,home_based_care,age_related_care,hypertension,diabetes,hypertension_diabetes,therapeutic_care_asthma',
-                'visit_date' => 'required|date',
-            ],
-            2 => [
-                'vitals.temperature' => $this->temperatureRule(),
-                'vitals.temperature_unit' => 'nullable|in:celsius,fahrenheit',
-                'vitals.blood_pressure_systolic' => 'nullable|numeric|min:60|max:250',
-                'vitals.blood_pressure_diastolic' => 'nullable|numeric|min:30|max:150',
-                'vitals.pulse_rate' => 'nullable|numeric|min:30|max:250',
-                'vitals.respiratory_rate' => 'nullable|numeric|min:5|max:60',
-                'vitals.weight' => 'nullable|numeric|min:0.5|max:500',
-                'vitals.height' => 'nullable|numeric|min:10|max:300',
-                'vitals.oxygen_saturation' => 'nullable|numeric|min:50|max:100',
-                'vitals.bmi' => 'nullable|numeric|min:5|max:80',
-            ],
-            5 => [
-                'consent.procedure_description' => 'required|string|max:500',
-                'consent.attending_physician' => 'required|string|max:255',
-                'consent.patient_signature_type' => 'required|in:typed,uploaded',
-                'consent.patient_signature' => 'required_if:consent.patient_signature_type,typed|string|max:255',
-                'consent.witness_name' => 'required|string|max:255',
-                'consent.witness_signature_type' => 'required|in:typed,uploaded',
-                'consent.witness_signature' => 'required_if:consent.witness_signature_type,typed|string|max:255',
-                'consent.physician_signature_type' => 'required|in:typed,uploaded',
-                'consent.physician_signature' => 'required_if:consent.physician_signature_type,typed|string|max:255',
-            ],
-        ];
+        $rules = $this->stepRules();
+        if (isset($rules[$this->step]) && !empty($rules[$this->step])) {
+            $this->validate($rules[$this->step]);
+        }
 
-        if ($this->step === 5) {
-            $this->validate(array_merge($stepRules[5], [
-                'consent_upload_patient' => $this->consent['patient_signature_type'] === 'uploaded'
-                    ? 'required|image|max:2048' : 'nullable',
-                'consent_upload_witness' => $this->consent['witness_signature_type'] === 'uploaded'
-                    ? 'required|image|max:2048' : 'nullable',
-                'consent_upload_physician' => $this->consent['physician_signature_type'] === 'uploaded'
-                    ? 'required|image|max:2048' : 'nullable',
-            ]));
-        } elseif (isset($stepRules[$this->step])) {
-            $this->validate($stepRules[$this->step]);
+        $this->saveDraft();
+
+        if ($this->step === 7) {
+            $this->publish();
+            return;
         }
 
         $this->step++;
+
+        if (in_array($this->step, [6, 7])) {
+            $this->autoFillMedicalBill();
+        }
     }
 
     public function prevStep(): void
     {
-        $this->step--;
-    }
-
-    public function addMedication(): void
-    {
-        $this->medications[] = [
-            'drug_name' => '',
-            'quantity' => 0,
-            'unit_cost' => 0,
-            'dosage' => '',
-            'duration' => '',
-            'is_take_home' => false,
-        ];
-    }
-
-    public function removeMedication(int $index): void
-    {
-        unset($this->medications[$index]);
-        $this->medications = array_values($this->medications);
-    }
-
-    public function addLabTest(): void
-    {
-        $this->labTests[] = [
-            'test_type' => '',
-            'cost' => 0,
-        ];
-    }
-
-    public function removeLabTest(int $index): void
-    {
-        unset($this->labTests[$index]);
-        $this->labTests = array_values($this->labTests);
-    }
-
-    public function save(TreatmentService $treatmentService): void
-    {
-        $this->validate();
-
-        $consent = $this->consent;
-
-        $consent['patient_signature_upload'] = null;
-        $consent['witness_signature_upload'] = null;
-        $consent['physician_signature_upload'] = null;
-
-        if ($consent['patient_signature_type'] === 'uploaded' && $this->consent_upload_patient) {
-            $consent['patient_signature_upload'] = $this->consent_upload_patient->store('signatures', 'public');
-            $consent['patient_signature'] = null;
+        if ($this->step > 1) {
+            $this->step--;
         }
-
-        if ($consent['witness_signature_type'] === 'uploaded' && $this->consent_upload_witness) {
-            $consent['witness_signature_upload'] = $this->consent_upload_witness->store('signatures', 'public');
-            $consent['witness_signature'] = null;
-        }
-
-        if ($consent['physician_signature_type'] === 'uploaded' && $this->consent_upload_physician) {
-            $consent['physician_signature_upload'] = $this->consent_upload_physician->store('signatures', 'public');
-            $consent['physician_signature'] = null;
-        }
-
-        $data = [
-            'patient_id' => $this->patientId,
-            'category' => $this->category,
-            'other_category' => $this->other_category ?: null,
-            'sub_category' => $this->sub_category ?: null,
-            'visit_date' => $this->visit_date,
-            'presenting_complaint' => $this->presenting_complaint ?: null,
-            'symptoms' => $this->symptoms ?: null,
-            'clinical_notes' => $this->clinical_notes ?: null,
-            'previous_treatment_history' => $this->previous_treatment_history ?: null,
-            'primary_diagnosis' => $this->primary_diagnosis ?: null,
-            'secondary_diagnosis' => $this->secondary_diagnosis ?: null,
-            'diagnosis_notes' => $this->diagnosis_notes ?: null,
-            'treatment_plan' => $this->treatment_plan ?: null,
-            'treatment_schedule' => $this->treatment_plan_value
-                ? $this->treatment_plan_value . '/' . $this->treatment_plan_type
-                : null,
-            'consent' => $consent,
-            'take_home_medication' => $this->take_home_medication ?: null,
-            'vitals' => array_filter($this->vitals, fn($v) => !is_null($v)),
-            'medications' => array_filter($this->medications, fn($m) => !empty($m['drug_name'])),
-            'lab_tests' => array_filter($this->labTests, fn($l) => !empty($l['test_type'])),
-        ];
-
-        $treatmentService->create($data);
-
-        session()->flash('status', 'Treatment chart created successfully.');
-        $this->redirect(route('treatments.index'), navigate: true);
-    }
-
-    public static function subCategoryOptions(string $category): array
-    {
-        return match ($category) {
-            'checkup' => [
-                'annual_comprehensive' => 'Annual or comprehensive screening',
-                'periodic' => 'Periodic screening',
-                'employment' => 'Employment screening',
-                'traveling' => 'Traveling screening',
-            ],
-            'treatment' => [
-                'mild_ailments' => 'Mild ailments',
-                'palliative_care' => 'Palliative care',
-                'home_based_care' => 'Home-based care support',
-                'age_related_care' => 'Age related care support',
-            ],
-            'enrollment_treatment_management' => [
-                'hypertension' => 'Hypertension',
-                'diabetes' => 'Diabetes',
-                'hypertension_diabetes' => 'Hypertension & Diabetes',
-                'therapeutic_care_asthma' => 'Therapeutic care / Asthma management',
-            ],
-            default => [],
-        };
-    }
-
-    public function render()
-    {
-        return view('livewire.treatment-form', [
-            'patients' => Patient::with('file')->where('is_active', true)->orderBy('name')->get(),
-            'staff' => \App\Models\User::where('is_active', true)
-                ->whereIn('role', ['doctor', 'nurse', 'matron', 'super_admin'])
-                ->orderBy('name')
-                ->get(['id', 'name', 'role']),
-        ]);
     }
 }

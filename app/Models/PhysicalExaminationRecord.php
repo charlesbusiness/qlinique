@@ -4,27 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class LabTest extends Model
+class PhysicalExaminationRecord extends Model
 {
     protected $fillable = [
         'treatment_chart_id',
-        'test_type',
-        'sample_type',
-        'amount',
+        'section',
         'findings',
-        'attachment_path',
-        'diagnosis_notes',
-        'case_history_notes',
-        'cost',
-        'is_completed',
-        'completed_at',
+        'comment',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_completed' => 'boolean',
-            'completed_at' => 'datetime',
+            'findings' => 'array',
         ];
     }
 

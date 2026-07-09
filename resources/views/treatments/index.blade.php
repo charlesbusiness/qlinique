@@ -79,6 +79,9 @@
                             </td>
                             <td>
                                 <a href="{{ route('treatments.show', $treatment) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                @if (Auth::user()->hasPermission('treatments.edit'))
+                                <a href="{{ route('treatments.edit', $treatment) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                                @endif
                                 @if (Auth::user()->hasPermission('treatments.compliance'))
                                 <a href="{{ route('treatments.compliance', $treatment) }}" class="btn btn-sm btn-outline-info">Compliance</a>
                                 @endif

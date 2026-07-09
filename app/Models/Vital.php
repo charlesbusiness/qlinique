@@ -18,6 +18,7 @@ class Vital extends Model
         'bmi',
         'oxygen_saturation',
         'temperature_unit',
+        'comment',
         'recorded_by',
     ];
 

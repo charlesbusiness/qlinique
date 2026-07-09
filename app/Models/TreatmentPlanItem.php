@@ -4,27 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class LabTest extends Model
+class TreatmentPlanItem extends Model
 {
     protected $fillable = [
         'treatment_chart_id',
-        'test_type',
-        'sample_type',
+        'route_category',
+        'route_form',
+        'drug_name',
+        'strength',
+        'dosage',
+        'regime',
+        'length_value',
+        'length_unit',
+        'length_display',
         'amount',
-        'findings',
-        'attachment_path',
-        'diagnosis_notes',
-        'case_history_notes',
-        'cost',
-        'is_completed',
-        'completed_at',
+        'is_take_home',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_completed' => 'boolean',
-            'completed_at' => 'datetime',
+            'is_take_home' => 'boolean',
         ];
     }
 
