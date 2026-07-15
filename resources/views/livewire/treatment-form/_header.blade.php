@@ -6,11 +6,16 @@
 
 @if ($step > 0)
     <div class="mb-4">
-        <div class="d-flex gap-2 flex-wrap">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">New Treatment</h5>
+            <span class="badge bg-info">Step {{ $step }} of {{ count($stepLabels) }}</span>
+        </div>
+        <div class="progress" style="height: 6px;">
+            <div class="progress-bar" style="width: {{ ($step / count($stepLabels)) * 100 }}%"></div>
+        </div>
+        <div class="d-none d-md-flex justify-content-between mt-1">
             @foreach ($stepLabels as $num => $label)
-                <span class="badge {{ $step >= $num ? 'bg-primary' : 'bg-secondary' }} fs-6 px-3 py-2 {{ $step === $num ? '' : 'd-none d-md-inline' }}">
-                   {{ $label }}
-                </span>
+                <small class="{{ $num === $step ? 'text-primary fw-bold' : ($num < $step ? 'text-success' : 'text-muted') }}">{{ $label }}</small>
             @endforeach
         </div>
     </div>

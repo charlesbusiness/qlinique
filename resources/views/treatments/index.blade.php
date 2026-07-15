@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="d-flex justify-content-between align-items-center">
-            <h2 class="fw-semibold fs-4 text-dark mb-0">{{ __('Treatment Charts') }}</h2>
+            <h2 class="fw-semibold fs-4 text-dark mb-0">{{ __('Assessment Charts') }}</h2>
             @if (Auth::user()->hasPermission('treatments.create'))
-            <a href="{{ route('treatments.create') }}" class="btn btn-primary">+ New Treatment</a>
+            <a href="{{ route('treatments.create') }}" class="btn btn-primary">+ New Assessment</a>
             @endif
         </div>
     </x-slot>
@@ -30,6 +30,9 @@
                     <a class="nav-link {{ request('status') === 'active' && !request('pending') ? 'active' : '' }}" href="{{ route('treatments.index', ['status' => 'active']) }}">Active</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ request('publish_status') === 'draft' ? 'active' : '' }}" href="{{ route('treatments.index', ['publish_status' => 'draft']) }}">Drafts</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ request('pending') === 'today' ? 'active' : '' }}" href="{{ route('treatments.index', ['pending' => 'today']) }}">Pending Today</a>
                 </li>
                 <li class="nav-item">
@@ -51,7 +54,6 @@
                         <th>Category</th>
                         <th>Visit Date</th>
                         <th>Diagnosis</th>
-                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -65,18 +67,11 @@
                                 @if ($treatment->category === 'other' && $treatment->other_category)
                                     <br><small class="text-muted">{{ $treatment->other_category }}</small>
                                 @elseif ($treatment->sub_category)
-                                    <br><small class="text-muted">{{ (\App\Livewire\TreatmentForm::subCategoryOptions($treatment->category))[$treatment->sub_category] ?? $treatment->sub_category }}</small>
+                                    <br><small class="text-muted">{{ (\App\Livewire\TreatmentForm::assessmentSubOptions($treatment->category))[$treatment->sub_category] ?? $treatment->sub_category }}</small>
                                 @endif
                             </td>
                             <td>{{ $treatment->visit_date->format('d M Y') }}</td>
                             <td>{{ Str::limit($treatment->primary_diagnosis, 40) ?? '—' }}</td>
-                            <td>
-                                @if ($treatment->is_completed)
-                                    <span class="badge bg-success">Completed</span>
-                                @else
-                                    <span class="badge bg-primary">Active</span>
-                                @endif
-                            </td>
                             <td>
                                 <a href="{{ route('treatments.show', $treatment) }}" class="btn btn-sm btn-outline-primary">View</a>
                                 @if (!$treatment->is_completed && Auth::user()->hasPermission('treatments.edit'))
@@ -85,7 +80,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center text-muted py-4">No treatment records.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4">No treatment records.</td></tr>
                     @endforelse
                 </tbody>
             </table>

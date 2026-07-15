@@ -4,14 +4,63 @@ namespace App\Livewire\Concerns;
 
 trait WithConstants
 {
-    public static function subCategoryOptions(): array
+    public static function assessmentCategories(): array
     {
         return [
-            'mild_ailments' => 'Mild Aliments',
-            'palliative_care' => 'Palliative Care',
-            'home_based_care' => 'Home Based Care Support',
-            'age_related_care' => 'Age Related Care Support',
+            'checkup' => 'Check-up',
+            'treatment' => 'Treatment',
+            'maternal_health' => 'Maternal Health Care',
+            'enrollment_palliative' => 'Enrollment & Palliative Care',
+            'emergency_accident' => 'Emergency & Accident Management',
+            'consultancy' => 'Consultancy / Counseling / Educating',
         ];
+    }
+
+    public static function implementedCategories(): array
+    {
+        return [
+            'treatment' => 'Treatment',
+            'maternal_health' => 'Maternal Health Care',
+        ];
+    }
+
+    public static function assessmentSubOptions(string $category): array
+    {
+        return match ($category) {
+            'checkup' => [
+                'periodic_health_evaluation' => 'Periodic Health Evaluation',
+                'annual_physical' => 'Annual Physical / Medical Examination',
+                'executive_screening' => 'Executive Health Screening',
+                'comprehensive_health' => 'Comprehensive Health Evaluation',
+                'infectious_disease' => 'Infectious Disease Screening',
+                'genetic_infectious' => 'Genetics & Infectious Screening',
+                'pre_employment' => 'Pre-employment / Admission Medical Screening',
+                'standard_pre_partner' => 'Standard Pre-partner Clinical Panel',
+                'well_child' => 'Well Child Visit / Well Baby Assessment',
+            ],
+            'treatment' => [
+                'mild_ailments' => 'Mild Ailments',
+                'palliative_care' => 'Palliative Care',
+                'home_based_care' => 'Home Based Care Support',
+                'age_related_care' => 'Age Related Care Support',
+            ],
+            'maternal_health' => [
+                'antenatal_care' => 'Antenatal Care',
+                'labour_delivery' => 'Labour & Delivery',
+                'postnatal_care' => 'Postnatal Disorder Care (Postpartum Care)',
+                'infertility' => 'Infertility',
+                'pre_menopause' => 'Pre-menopause',
+            ],
+            'enrollment_palliative' => [
+                'hypertension' => 'Hypertension Management',
+                'diabetes' => 'Diabetes Management',
+                'hypertension_diabetes' => 'Hypertension & Diabetes Management',
+                'diabetes_wound' => 'Diabetes & Wound Care',
+            ],
+            'emergency_accident' => [],
+            'consultancy' => [],
+            default => [],
+        };
     }
 
     public static function routeCategories(): array

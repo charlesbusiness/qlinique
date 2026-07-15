@@ -32,7 +32,7 @@
                     @if (Auth::user()->hasPermission('treatments.view'))
                     <li class="nav-item">
                         <x-nav-link :href="route('treatments.index')" :active="request()->routeIs('treatments.*')">
-                            {{ __('Treatments') }}
+                            {{ __('Assessments') }}
                         </x-nav-link>
                     </li>
                     @endif
@@ -68,7 +68,7 @@
                             <li><a class="dropdown-item" href="{{ route('reports.daily') }}">Daily Report</a></li>
                             @endif
                             @if (Auth::user()->hasPermission('reports.treatment'))
-                            <li><a class="dropdown-item" href="{{ route('reports.treatment') }}">Treatment Report</a></li>
+                            <li><a class="dropdown-item" href="{{ route('reports.treatment') }}">Assessment Report</a></li>
                             @endif
                             @if (Auth::user()->hasPermission('reports.compliance'))
                             <li><a class="dropdown-item" href="{{ route('reports.compliance') }}">Compliance Report</a></li>

@@ -77,6 +77,10 @@ Route::middleware('auth')->group(function () {
             ->middleware('permission:treatments.compliance')->name('treatments.compliance');
         Route::post('treatments/{treatment}/complete', [TreatmentController::class, 'complete'])
             ->middleware('permission:treatments.edit')->name('treatments.complete');
+        Route::get('treatments/maternal/create', [TreatmentController::class, 'createMaternal'])
+            ->middleware('permission:treatments.create')->name('treatments.maternal.create');
+        Route::get('treatments/maternal/{treatment}/edit', [TreatmentController::class, 'editMaternal'])
+            ->middleware('permission:treatments.edit')->name('treatments.maternal.edit');
 
         Route::resource('antenatal', AntenatalController::class)->middleware([
             'index' => 'permission:antenatal.view',

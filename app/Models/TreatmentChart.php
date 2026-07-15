@@ -108,4 +108,9 @@ class TreatmentChart extends Model
     {
         return $this->hasMany(TreatmentPlanItem::class);
     }
+
+    public function maternalHealthRecord()
+    {
+        return $this->hasOne(MaternalHealthRecord::class);
+    }
 }

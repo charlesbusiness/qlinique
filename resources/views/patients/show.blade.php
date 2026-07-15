@@ -97,9 +97,9 @@
 
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
-                    <strong>Recent Treatment Charts</strong>
+                    <strong>Recent Assessments</strong>
                     @if (Auth::user()->hasPermission('treatments.create'))
-                    <a href="{{ route('treatments.create', ['patient_id' => $patient->id]) }}" class="btn btn-sm btn-primary">+ New Treatment</a>
+                    <a href="{{ route('treatments.create', ['patient_id' => $patient->id]) }}" class="btn btn-sm btn-primary">+ New Assessment</a>
                     @endif
                 </div>
                 <div class="card-body p-0">

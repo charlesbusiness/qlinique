@@ -16,7 +16,7 @@ class ReportService
         return [
             'new_patients' => Patient::whereDate('created_at', $date)->count(),
             'treatments' => TreatmentChart::whereDate('visit_date', $date)->count(),
-            'emergencies' => TreatmentChart::whereDate('visit_date', $date)->where('category', 'emergency')->count(),
+            'emergencies' => TreatmentChart::whereDate('visit_date', $date)->where('category', 'emergency_accident')->count(),
             'revenue' => Invoice::whereDate('created_at', $date)->sum('amount_paid'),
         ];
     }
@@ -33,7 +33,10 @@ class ReportService
             'by_category' => [
                 'checkup' => (clone $treatments)->where('category', 'checkup')->count(),
                 'treatment' => (clone $treatments)->where('category', 'treatment')->count(),
-                'emergency' => (clone $treatments)->where('category', 'emergency')->count(),
+                'maternal_health' => (clone $treatments)->where('category', 'maternal_health')->count(),
+                'enrollment_palliative' => (clone $treatments)->where('category', 'enrollment_palliative')->count(),
+                'emergency_accident' => (clone $treatments)->where('category', 'emergency_accident')->count(),
+                'consultancy' => (clone $treatments)->where('category', 'consultancy')->count(),
             ],
             'completed' => (clone $treatments)->where('is_completed', true)->count(),
         ];

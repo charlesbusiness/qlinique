@@ -80,6 +80,7 @@ class TreatmentService
         return TreatmentChart::where('is_draft', true)
             ->where('is_completed', false)
             ->where('created_by', $userId)
+            ->where('created_at', '>=', now()->subHours(24))
             ->latest()
             ->first();
     }

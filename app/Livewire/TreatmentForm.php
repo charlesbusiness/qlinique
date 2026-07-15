@@ -30,6 +30,10 @@ class TreatmentForm extends Component
     public bool $showCategory = false;
     public bool $showStep1 = false;
 
+    // Assessment selection
+    public string $selectedCategory = '';
+    public string $selectedSubOption = '';
+
     // Step 1: Patient & History
     public ?int $patientId = null;
     public string $sub_category = '';
@@ -142,14 +146,6 @@ class TreatmentForm extends Component
             return;
         }
 
-        if ($user) {
-            $draft = app(TreatmentService::class)->findDraftForUser($user->id);
-            if ($draft) {
-                $this->loadDraft($draft);
-                return;
-            }
-        }
-
         if ($patientId) {
             $this->patientId = $patientId;
             $this->showCategory = true;
@@ -169,7 +165,7 @@ class TreatmentForm extends Component
         ]);
     }
 
-    // ─── Patient & Category Selection ──────────────────────────────
+    // ─── Assessment Selection ────────────────────────────────────────
 
     public function selectPatient(): void
     {
@@ -179,14 +175,56 @@ class TreatmentForm extends Component
         }
     }
 
+    public function selectAssessmentCategory(string $category): void
+    {
+        if (!array_key_exists($category, self::implementedCategories())) {
+            return;
+        }
+
+        $this->selectedCategory = $category;
+        $this->selectedSubOption = '';
+
+        $subOptions = self::assessmentSubOptions($category);
+        if (empty($subOptions)) {
+            $this->sub_category = $category;
+            $this->createDraft();
+        }
+    }
+
+    public function selectAssessmentSubOption(string $subOption): void
+    {
+        $this->selectedSubOption = $subOption;
+        $this->sub_category = $subOption;
+        $this->createDraft();
+    }
+
+    public function goBackToCategories(): void
+    {
+        $this->selectedCategory = '';
+        $this->selectedSubOption = '';
+    }
+
     public function selectCategory(): void
     {
-        if (!$this->sub_category) return;
+        if (!$this->selectedCategory) return;
 
+        if ($this->selectedCategory === 'maternal_health') {
+            $this->redirect(route('treatments.maternal.create', [
+                'patient_id' => $this->patientId,
+                'sub_option' => $this->sub_category,
+            ]), navigate: true);
+            return;
+        }
+
+        $this->createDraft();
+    }
+
+    private function createDraft(): void
+    {
         $service = app(TreatmentService::class);
         $draft = $service->createDraft(
             $this->patientId,
-            'treatment',
+            $this->selectedCategory,
             $this->sub_category,
             Auth::id()
         );
@@ -196,8 +234,6 @@ class TreatmentForm extends Component
         $this->showStep1 = true;
         $this->step = 1;
     }
-
-
 
     // ─── Temperature Validation ────────────────────────────────────
 

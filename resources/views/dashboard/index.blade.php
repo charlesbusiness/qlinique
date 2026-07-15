@@ -19,7 +19,7 @@
             <div class="card bg-warning text-dark">
                 <div class="card-body">
                     <h3 class="card-title mb-0">{{ $stats['active_treatments'] }}</h3>
-                    <small>Active Treatments</small>
+                    <small>Active Assessments</small>
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@
                         <a href="{{ route('patients.create') }}" class="btn btn-outline-primary">Register Patient</a>
                         @endif
                         @if (Auth::user()->hasPermission('treatments.create'))
-                        <a href="{{ route('treatments.create') }}" class="btn btn-outline-warning">New Treatment</a>
+                        <a href="{{ route('treatments.create') }}" class="btn btn-outline-warning">New Assessment</a>
                         @endif
                         @if (Auth::user()->hasPermission('antenatal.create'))
                         <a href="{{ route('antenatal.create') }}" class="btn btn-outline-info">Antenatal Record</a>
@@ -130,7 +130,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
-                    <strong>Recent Treatments</strong>
+                    <strong>Recent Assessments</strong>
                     <a href="{{ route('treatments.index') }}" class="btn btn-sm btn-outline-secondary">View All</a>
                 </div>
                 <div class="card-body p-0">

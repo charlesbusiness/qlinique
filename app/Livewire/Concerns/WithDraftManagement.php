@@ -4,6 +4,7 @@ namespace App\Livewire\Concerns;
 
 use App\Models\TreatmentChart;
 use App\Services\TreatmentService;
+use Illuminate\Support\Facades\Auth;
 
 trait WithDraftManagement
 {
@@ -24,7 +25,7 @@ trait WithDraftManagement
         return match ($step) {
             1 => [
                 'patient_id' => $this->patientId,
-                'category' => 'treatment',
+                'category' => $this->selectedCategory,
                 'sub_category' => $this->sub_category,
                 'finding_on_history' => $this->finding_on_history ?: null,
                 'previous_treatment_history' => $this->previous_treatment_history ?: null,
@@ -139,6 +140,7 @@ trait WithDraftManagement
         $this->draftId = $draft->id;
         $this->isDraft = true;
         $this->patientId = $draft->patient_id;
+        $this->selectedCategory = $draft->category ?? '';
         $this->sub_category = $draft->sub_category ?? '';
         $this->step = $draft->current_step ?? 1;
         $this->showCategory = true;
@@ -285,6 +287,12 @@ trait WithDraftManagement
                 $service->discardDraft($draft);
             }
         }
+
+        TreatmentChart::where('is_draft', true)
+            ->where('is_completed', false)
+            ->where('created_by', Auth::id())
+            ->delete();
+
         $this->redirect(route('treatments.create'), navigate: true);
     }
 }

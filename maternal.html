@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Maternal Healthcare - Antenatal Care Form</title>
+</head>
+<body>
+
+<h1>Maternal Healthcare</h1>
+<nav>
+  <ul>
+    <li>Antenatal Care
+      <ul>
+        <li>Antenatal Registration</li>
+        <li>ANC First Contact</li>
+        <li>Route Visit</li>
+      </ul>
+    </li>
+    <li>Labour &amp; Delivery</li>
+    <li>Postnatal Disorders</li>
+    <li>Family Planning</li>
+    <li>Infertility</li>
+    <li>Pre-Menopause</li>
+  </ul>
+</nav>
+
+<hr>
+
+<!-- ==================================================== -->
+<!-- ANTENATAL REGISTRATION -->
+<!-- ==================================================== -->
+<h2>Antenatal Registration</h2>
+<form id="antenatal-registration-form">
+
+  <fieldset>
+    <legend>Bio Data</legend>
+
+    <label for="passport-photo">Passport Photograph Upload</label><br>
+    <input type="file" id="passport-photo" name="passport_photo" accept="image/*"><br><br>
+
+    <label for="patient-name">Name</label><br>
+    <input type="text" id="patient-name" name="patient_name"><br><br>
+
+    <label for="blood-group">Blood Group</label><br>
+    <select id="blood-group" name="blood_group">
+      <option value="">-- Select --</option>
+      <option value="A+">A+</option>
+      <option value="A-">A-</option>
+      <option value="B+">B+</option>
+      <option value="B-">B-</option>
+      <option value="AB+">AB+</option>
+      <option value="AB-">AB-</option>
+      <option value="O+">O+</option>
+      <option value="O-">O-</option>
+    </select><br><br>
+
+    <label for="genotype">Genotype</label><br>
+    <select id="genotype" name="genotype">
+      <option value="">-- Select --</option>
+      <option value="AA">AA</option>
+      <option value="AS">AS</option>
+      <option value="SS">SS</option>
+      <option value="AC">AC</option>
+      <option value="SC">SC</option>
+      <option value="CC">CC</option>
+    </select><br><br>
+
+    <label for="gender">Gender</label><br>
+    <select id="gender" name="gender">
+      <option value="">-- Select --</option>
+      <option value="Female">Female</option>
+      <option value="Male">Male</option>
+    </select><br><br>
+
+    <label for="reg-date">Date</label><br>
+    <input type="date" id="reg-date" name="registration_date"><br><br>
+
+    <label for="phone">Phone</label><br>
+    <input type="tel" id="phone" name="phone"><br><br>
+
+    <label for="email">Email</label><br>
+    <input type="email" id="email" name="email"><br><br>
+
+    <label for="occupation">Occupation</label><br>
+    <input type="text" id="occupation" name="occupation"><br><br>
+
+    <label for="marital-status">Marital Status</label><br>
+    <select id="marital-status" name="marital_status">
+      <option value="">-- Select --</option>
+      <option value="Single">Single</option>
+      <option value="Married">Married</option>
+      <option value="Divorced">Divorced</option>
+      <option value="Widowed">Widowed</option>
+      <option value="Separated">Separated</option>
+    </select><br><br>
+
+    <label for="religion">Religion</label><br>
+    <select id="religion" name="religion">
+      <option value="">-- Select --</option>
+      <option value="Christianity">Christianity</option>
+      <option value="Islam">Islam</option>
+      <option value="Traditional">Traditional</option>
+      <option value="Other">Other</option>
+    </select><br><br>
+
+    <label for="address">Address</label><br>
+    <textarea id="address" name="address" rows="2" cols="50"></textarea><br><br>
+
+    <label for="patient-signature">Signature</label><br>
+    <input type="text" id="patient-signature" name="patient_signature" placeholder="Signature"><br><br>
+
+    <label for="signature-name">Name</label><br>
+    <input type="text" id="signature-name" name="signature_name"><br><br>
+
+    <label for="signature-date">Date</label><br>
+    <input type="date" id="signature-date" name="signature_date"><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Next of Kin</legend>
+
+    <label for="nok-relationship">Relationship</label><br>
+    <input type="text" id="nok-relationship" name="nok_relationship"><br><br>
+
+    <label for="nok-phone">Phone</label><br>
+    <input type="tel" id="nok-phone" name="nok_phone"><br><br>
+
+    <label for="nok-address">Address</label><br>
+    <textarea id="nok-address" name="nok_address" rows="2" cols="50"></textarea><br><br>
+
+    <label><input type="checkbox" name="consent" value="Consent"> Consent</label><br>
+    <label><input type="checkbox" name="consent" value="Data Privacy Consent"> Data Privacy Consent</label><br><br>
+
+    <label for="nok-signature">Signature</label><br>
+    <input type="text" id="nok-signature" name="nok_signature"><br><br>
+
+    <label for="nok-date">Date</label><br>
+    <input type="date" id="nok-date" name="nok_date"><br><br>
+  </fieldset>
+
+</form>
+
+<hr>
+
+<!-- ==================================================== -->
+<!-- ANC FIRST CONTACT -->
+<!-- ==================================================== -->
+<h2>ANC First Contact</h2>
+<form id="anc-first-contact-form">
+
+  <fieldset>
+    <legend>1. Pregnancy Dating and Current Status</legend>
+
+    <label for="lmp">Last Menstrual Period (LMP)</label><br>
+    <input type="date" id="lmp" name="lmp"><br><br>
+
+    <label>Cycle Regularity</label><br>
+    <label><input type="radio" name="cycle_regularity" value="Regular"> Regular</label>
+    <label><input type="radio" name="cycle_regularity" value="Irregular"> Irregular</label><br><br>
+
+    <label for="edd">Expected Date of Delivery (EDD)</label><br>
+    <input type="date" id="edd" name="edd"><br><br>
+
+    <label>Current Gestation Age (CGA)</label><br>
+    <input type="number" name="cga_weeks" placeholder="Weeks" min="0">
+    <input type="number" name="cga_days" placeholder="Days" min="0" max="6"><br><br>
+
+    <label>Current Symptoms</label><br>
+    <label><input type="checkbox" name="current_symptoms" value="None"> None</label><br>
+    <label><input type="checkbox" name="current_symptoms" value="Nausea/Vomiting"> Nausea/Vomiting</label><br>
+    <label><input type="checkbox" name="current_symptoms" value="Vaginal Bleeding/Spotting"> Vaginal Bleeding/Spotting</label><br>
+    <label><input type="checkbox" name="current_symptoms" value="Abdominal Pain/Cramping"> Abdominal Pain/Cramping</label><br>
+    <label><input type="checkbox" name="current_symptoms" value="Pelvic Discharge"> Pelvic Discharge</label><br><br>
+
+    <label for="meds-since-lmp">Medications/Exposures since LMP</label><br>
+    <textarea id="meds-since-lmp" name="medications_exposures_since_lmp" rows="2" cols="50"></textarea><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>2. Obstetric History (GTPAL)</legend>
+
+    <label for="gravida">Gravida (G)</label>
+    <select id="gravida" name="gravida">
+      <option value="">--</option>
+      <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+      <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+      <option value="6+">6+</option>
+    </select><br><br>
+
+    <label for="term">Term (T) (37 weeks and above)</label>
+    <select id="term" name="term">
+      <option value="">--</option>
+      <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+      <option value="3">3</option><option value="4+">4+</option>
+    </select><br><br>
+
+    <label for="preterm">Preterm (P) (delivered 20-36 weeks)</label>
+    <select id="preterm" name="preterm">
+      <option value="">--</option>
+      <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+      <option value="3+">3+</option>
+    </select><br><br>
+
+    <label for="abortion">Abortion (A)</label>
+    <select id="abortion" name="abortion">
+      <option value="">--</option>
+      <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+      <option value="3+">3+</option>
+    </select><br><br>
+
+    <label for="living">Living (L)</label>
+    <select id="living" name="living">
+      <option value="">--</option>
+      <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+      <option value="3">3</option><option value="4+">4+</option>
+    </select><br><br>
+
+    <table border="1" cellpadding="4" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Preg #</th>
+          <th>Year</th>
+          <th>Gest. Age (Weeks)</th>
+          <th>Mode of Delivery</th>
+          <th>Birth Weight</th>
+          <th>Complications (Preeclampsia, Hemorrhage, Preterm Labour, etc.)</th>
+          <th>Neonatal Outcome / NICU?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><input type="number" name="preg1_year"></td>
+          <td><input type="number" name="preg1_gest_age"></td>
+          <td>
+            <select name="preg1_mode_of_delivery">
+              <option value="">--</option>
+              <option value="Vaginal">Vaginal</option>
+              <option value="C-Section">C-Section</option>
+            </select>
+          </td>
+          <td><input type="text" name="preg1_birth_weight"></td>
+          <td><input type="text" name="preg1_complications"></td>
+          <td><input type="text" name="preg1_neonatal_outcome"></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><input type="number" name="preg2_year"></td>
+          <td><input type="number" name="preg2_gest_age"></td>
+          <td>
+            <select name="preg2_mode_of_delivery">
+              <option value="">--</option>
+              <option value="Vaginal">Vaginal</option>
+              <option value="C-Section">C-Section</option>
+            </select>
+          </td>
+          <td><input type="text" name="preg2_birth_weight"></td>
+          <td><input type="text" name="preg2_complications"></td>
+          <td><input type="text" name="preg2_neonatal_outcome"></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><input type="number" name="preg3_year"></td>
+          <td><input type="number" name="preg3_gest_age"></td>
+          <td>
+            <select name="preg3_mode_of_delivery">
+              <option value="">--</option>
+              <option value="Vaginal">Vaginal</option>
+              <option value="C-Section">C-Section</option>
+            </select>
+          </td>
+          <td><input type="text" name="preg3_birth_weight"></td>
+          <td><input type="text" name="preg3_complications"></td>
+          <td><input type="text" name="preg3_neonatal_outcome"></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><input type="number" name="preg4_year"></td>
+          <td><input type="number" name="preg4_gest_age"></td>
+          <td>
+            <select name="preg4_mode_of_delivery">
+              <option value="">--</option>
+              <option value="Vaginal">Vaginal</option>
+              <option value="C-Section">C-Section</option>
+            </select>
+          </td>
+          <td><input type="text" name="preg4_birth_weight"></td>
+          <td><input type="text" name="preg4_complications"></td>
+          <td><input type="text" name="preg4_neonatal_outcome"></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+
+    <label>History of Prior C-Section / Uterine Surgery?</label><br>
+    <label><input type="radio" name="prior_csection" value="No"> No</label>
+    <label><input type="radio" name="prior_csection" value="Yes"> Yes</label>
+    (Specify date &amp; indication):
+    <input type="text" name="prior_csection_details"><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>3. Past Medical &amp; Surgical History</legend>
+
+    <label>Chronic Medical Conditions</label><br>
+    <label><input type="checkbox" name="chronic_conditions" value="Hypertension"> Hypertension</label><br>
+    <label><input type="checkbox" name="chronic_conditions" value="Diabetes (Type 1 or 2)"> Diabetes (Type 1 or 2)</label><br>
+    <label><input type="checkbox" name="chronic_conditions" value="Asthma / Respiratory"> Asthma / Respiratory</label><br>
+    <label><input type="checkbox" name="chronic_conditions" value="Epilepsy / Seizures"> Epilepsy / Seizures</label><br>
+    <label><input type="checkbox" name="chronic_conditions" value="Cardiac Disease"> Cardiac Disease</label><br>
+    <label><input type="checkbox" name="chronic_conditions" value="Thromboembolism/Clots"> Thromboembolism/Clots</label><br>
+    <label><input type="checkbox" name="chronic_conditions" value="Mental Health (Depression/Anxiety)"> Mental Health (Depression/Anxiety)</label><br>
+    <label><input type="checkbox" name="chronic_conditions" value="Thyroid Disorder"> Thyroid Disorder</label><br><br>
+
+    <label for="chronic-details">Details/Other</label><br>
+    <textarea id="chronic-details" name="chronic_conditions_details" rows="2" cols="50"></textarea><br><br>
+
+    <label>Infectious Disease History</label><br>
+    <label><input type="checkbox" name="infectious_disease_history" value="STI (Chlamydia/Gonorrhea)"> STI (Chlamydia/Gonorrhea)</label><br>
+    <label><input type="checkbox" name="infectious_disease_history" value="Syphilis"> Syphilis</label><br>
+    <label><input type="checkbox" name="infectious_disease_history" value="HIV"> HIV</label><br>
+    <label><input type="checkbox" name="infectious_disease_history" value="Hepatitis B/C"> Hepatitis B/C</label><br>
+    <label><input type="checkbox" name="infectious_disease_history" value="Tuberculosis"> Tuberculosis</label><br><br>
+
+    <label for="prior-surgeries">Prior Non-Obstetric Surgeries</label><br>
+    <textarea id="prior-surgeries" name="prior_non_obstetric_surgeries" rows="2" cols="50"></textarea><br><br>
+
+    <label for="allergies">Allergies (Medication &amp; Latex)</label><br>
+    <textarea id="allergies" name="allergies" rows="2" cols="50"></textarea><br><br>
+
+    <label for="current-meds">Current Medications &amp; Supplements</label><br>
+    <textarea id="current-meds" name="current_medications_supplements" rows="2" cols="50"></textarea><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>4. Family &amp; Genetic History</legend>
+
+    <label><input type="checkbox" name="family_genetic_history" value="Genetic / Inborn Errors (Cystic Fibrosis, Sickle Cell Disease/Trait, Thalassemia)"> Genetic / Inborn Errors (Cystic Fibrosis, Sickle Cell Disease/Trait, Thalassemia)</label><br>
+    <label><input type="checkbox" name="family_genetic_history" value="Congenital Heart Defects / Birth Defects"> Congenital Heart Defects / Birth Defects</label><br>
+    <label><input type="checkbox" name="family_genetic_history" value="Family History of Preeclampsia, Gestational Diabetes, or Twins"> Family History of Preeclampsia, Gestational Diabetes, or Twins</label><br><br>
+
+    <label for="family-history-notes">Notes on Family History</label><br>
+    <textarea id="family-history-notes" name="family_history_notes" rows="2" cols="50"></textarea><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>5. Social &amp; Environmental History</legend>
+
+    <label>Tobacco/Vape</label><br>
+    <label><input type="radio" name="tobacco_vape" value="Never"> Never</label>
+    <label><input type="radio" name="tobacco_vape" value="Former"> Former</label>
+    <label><input type="radio" name="tobacco_vape" value="Current"> Current</label>
+    <input type="number" name="tobacco_packs_per_day" placeholder="packs/day"><br><br>
+
+    <label>Alcohol</label><br>
+    <label><input type="radio" name="alcohol" value="No"> No</label>
+    <label><input type="radio" name="alcohol" value="Yes"> Yes</label>
+    <input type="number" name="alcohol_drinks_per_week" placeholder="drinks/week"><br><br>
+
+    <label>Recreational Drugs</label><br>
+    <label><input type="radio" name="recreational_drugs" value="No"> No</label>
+    <label><input type="radio" name="recreational_drugs" value="Yes"> Yes</label>
+    (Specify substance &amp; route):
+    <input type="text" name="recreational_drugs_details"><br><br>
+
+    <label>Support System</label><br>
+    <label><input type="radio" name="support_system" value="Strong"> Strong</label>
+    <label><input type="radio" name="support_system" value="Limited"> Limited</label>
+    <label><input type="radio" name="support_system" value="None"> None</label><br><br>
+
+    <label>Safety Screening: Do you feel safe at home?</label><br>
+    <label><input type="radio" name="safety_screening" value="Yes"> Yes</label>
+    <label><input type="radio" name="safety_screening" value="No"> No</label><br><br>
+
+    <label>Financial Stability</label><br>
+    <label><input type="radio" name="financial_stability" value="Satisfied"> Satisfied</label>
+    <label><input type="radio" name="financial_stability" value="Fear"> Fear</label>
+    <label><input type="radio" name="financial_stability" value="Unstable"> Unstable</label><br><br>
+
+    <label>Intimate Partner Violence</label><br>
+    <label><input type="radio" name="intimate_partner_violence" value="Yes"> Yes</label>
+    <label><input type="radio" name="intimate_partner_violence" value="No"> No</label>
+    if yes:
+    <input type="text" name="intimate_partner_violence_details"><br><br>
+
+    <label>Occupation &amp; Workplace (Hazard)</label><br>
+    <label><input type="radio" name="occupation_hazard" value="Stress Free"> Stress Free</label>
+    <label><input type="radio" name="occupation_hazard" value="High Stress Level"> High Stress Level</label>
+    <label><input type="radio" name="occupation_hazard" value="Sedentary Habit"> Sedentary Habit</label><br><br>
+
+    <label for="travel-history">Recent Travel History (Endemic Infectious Zones)</label><br>
+    <textarea id="travel-history" name="recent_travel_history" rows="2" cols="50"></textarea><br><br>
+
+    <label>Diet Intake</label><br>
+    <label><input type="checkbox" name="diet_intake" value="General Dietary Habit"> General Dietary Habit</label><br>
+    <label><input type="checkbox" name="diet_intake" value="Nutritional Restriction"> Nutritional Restriction</label><br>
+    <label><input type="checkbox" name="diet_intake" value="Adequate Dietary Intake"> Adequate Dietary Intake</label><br>
+    <label><input type="checkbox" name="diet_intake" value="Balance Dieting"> Balance Dieting</label><br><br>
+
+    <label>Physical Activities</label><br>
+    <label><input type="checkbox" name="physical_activities" value="Sedentary Habit"> Sedentary Habit</label><br>
+    <label><input type="checkbox" name="physical_activities" value="Frequent"> Frequent</label>
+    <label><input type="checkbox" name="physical_activities" value="Intensity"> Intensity</label><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>6. Vital Signs</legend>
+
+    <label for="temperature">Temperature</label><br>
+    <input type="number" step="0.1" id="temperature" name="temperature">
+    <select name="temperature_unit">
+      <option value="F">&deg;F</option>
+      <option value="C">&deg;C</option>
+    </select><br><br>
+
+    <label for="pulse">Pulse/Heart Rate (bpm)</label><br>
+    <input type="number" id="pulse" name="pulse_bpm"><br><br>
+
+    <label for="respiration">Respiration (bpm)</label><br>
+    <input type="number" id="respiration" name="respiration_bpm"><br><br>
+
+    <label for="bp-systolic">Blood Pressure (Systolic) (mmHg)</label><br>
+    <input type="number" id="bp-systolic" name="bp_systolic"><br><br>
+
+    <label for="bp-diastolic">Blood Pressure (Diastolic) (mmHg)</label><br>
+    <input type="number" id="bp-diastolic" name="bp_diastolic"><br><br>
+
+    <label for="vitals-comment">Comment</label><br>
+    <textarea id="vitals-comment" name="vitals_comment" rows="2" cols="50"></textarea><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Anthropometric Measure</legend>
+
+    <label for="weight">Weight</label><br>
+    <input type="number" step="0.1" id="weight" name="weight"><br><br>
+
+    <label for="height">Height</label><br>
+    <input type="number" step="0.1" id="height" name="height"><br><br>
+
+    <label for="bmi">BMI</label><br>
+    <input type="number" step="0.1" id="bmi" name="bmi"><br><br>
+
+    <label for="anthro-comment">Comment</label><br>
+    <textarea id="anthro-comment" name="anthropometric_comment" rows="2" cols="50"></textarea><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Rapid Medical Examination (RME)</legend>
+
+    <table border="1" cellpadding="4" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Result</th>
+          <th>FBS (mg/dl)</th>
+          <th>RBS (mg/dl)</th>
+          <th>PCV %</th>
+          <th>RDTA (+/-)</th>
+          <th>Amount (&#8358;)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Value</td>
+          <td><input type="number" name="rme_fbs"></td>
+          <td><input type="number" name="rme_rbs"></td>
+          <td><input type="number" name="rme_pcv"></td>
+          <td>
+            <select name="rme_rdta">
+              <option value="">--</option>
+              <option value="+">+</option>
+              <option value="-">-</option>
+            </select>
+          </td>
+          <td><input type="number" name="rme_amount"></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+
+    <label for="rme-glucose">Glucose</label>
+    <select id="rme-glucose" name="rme_glucose">
+      <option value="">--</option>
+      <option value="+">+</option>
+      <option value="++">++</option>
+      <option value="+++">+++</option>
+      <option value="-">-</option>
+    </select><br><br>
+
+    <label for="rme-protein">Protein</label>
+    <select id="rme-protein" name="rme_protein">
+      <option value="">--</option>
+      <option value="+">+</option>
+      <option value="++">++</option>
+      <option value="+++">+++</option>
+      <option value="-">-</option>
+    </select><br><br>
+
+    <label for="rme-leukocytes">Leukocytes/Nitrites</label><br>
+    <input type="text" id="rme-leukocytes" name="rme_leukocytes_nitrites"><br><br>
+
+    <label for="rme-other">Other (Specify)</label><br>
+    <input type="text" id="rme-other" name="rme_other_specify">
+    <select name="rme_other_result">
+      <option value="">--</option>
+      <option value="+">+</option>
+      <option value="++">++</option>
+      <option value="+++">+++</option>
+      <option value="-">-</option>
+    </select><br><br>
+
+    <label for="rme-comment">Comment</label><br>
+    <textarea id="rme-comment" name="rme_comment" rows="2" cols="50"></textarea><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Comprehensive Physical Examination</legend>
+
+    <fieldset>
+      <legend>1. Cardiovascular and Respiratory</legend>
+      <label><input type="checkbox" name="cardio_resp" value="lub-dub"> lub-dub</label><br>
+      <label><input type="checkbox" name="cardio_resp" value="murmur/swishing"> murmur/swishing</label><br>
+      <label><input type="checkbox" name="cardio_resp" value="arrhythmia/irregular"> arrhythmia/irregular</label><br>
+      <label><input type="checkbox" name="cardio_resp" value="crackles/fluid sound"> crackles/fluid sound</label><br>
+      <label for="cardio-resp-comment">Comment</label><br>
+      <textarea id="cardio-resp-comment" name="cardio_resp_comment" rows="2" cols="50"></textarea><br><br>
+    </fieldset>
+
+    <fieldset>
+      <legend>2. Thyroid</legend>
+      <label><input type="checkbox" name="thyroid" value="Tenderness"> Tenderness</label><br>
+      <label><input type="checkbox" name="thyroid" value="Abnormal Masses"> Abnormal Masses</label><br>
+      <label><input type="checkbox" name="thyroid" value="Pain"> Pain</label><br>
+      <label><input type="checkbox" name="thyroid" value="Inflammation"> Inflammation</label><br>
+      <label><input type="checkbox" name="thyroid" value="Ascites/Fluid Retain"> Ascites/Fluid Retain</label><br>
+      <label for="thyroid-comment">Comment</label><br>
+      <textarea id="thyroid-comment" name="thyroid_comment" rows="2" cols="50"></textarea><br><br>
+    </fieldset>
+
+    <fieldset>
+      <legend>3. Breast</legend>
+      <label><input type="checkbox" name="breast" value="Structural Change"> Structural Change</label><br>
+      <label><input type="checkbox" name="breast" value="Inverted Nipple"> Inverted Nipple</label><br>
+      <label><input type="checkbox" name="breast" value="Abnormal Masses"> Abnormal Masses</label><br>
+      <label><input type="checkbox" name="breast" value="Pain"> Pain</label><br>
+      <label for="breast-comment">Comment</label><br>
+      <textarea id="breast-comment" name="breast_comment" rows="2" cols="50"></textarea><br><br>
+    </fieldset>
+
+    <fieldset>
+      <legend>4. Extremities</legend>
+      <label><input type="checkbox" name="extremities" value="Edema (Swelling)"> Edema (Swelling)</label><br>
+      <label><input type="checkbox" name="extremities" value="Deep Vein Thrombosis (DVT)"> Deep Vein Thrombosis (DVT)</label><br>
+      <label><input type="checkbox" name="extremities" value="Risk Signs"> Risk Signs</label><br>
+      <label for="extremities-comment">Comment</label><br>
+      <textarea id="extremities-comment" name="extremities_comment" rows="2" cols="50"></textarea><br><br>
+    </fieldset>
+  </fieldset>
+
+  <fieldset>
+    <legend>Obstetric / Abdominal Examination</legend>
+
+    <fieldset>
+      <legend>Fundal Height Measurement (Symphysis-Fundal Height - SFH)</legend>
+      <p>Timing: Routinely measured at every visit starting around 20 weeks. Technique: using a non-elastic tape measure, measured from the top of the pubic bone (symphysis pubis) to the top of the uterine fundus. Clinical rule: between 20 and 36 weeks, fundal height in cm typically correlates directly to gestational age in weeks (&plusmn; 2 cm). A discrepancy triggers an ultrasound evaluation for growth issues or amniotic fluid abnormalities.</p>
+      <label for="fundal-height">Fundal Height (cm)</label><br>
+      <input type="number" step="0.1" id="fundal-height" name="fundal_height_cm"><br><br>
+    </fieldset>
+
+    <fieldset>
+      <legend>Leopold's Maneuvers (Abdominal Palpation)</legend>
+      <p>Timing: usually performed from 32 to 36 weeks onward, as the fetus grows larger. Purpose: a sequence of four manual palpations to determine fetal lie, presentation, position, and engagement.</p>
+
+      <label for="fetal-lie">Fetal Lie</label><br>
+      <select id="fetal-lie" name="fetal_lie">
+        <option value="">-- Select --</option>
+        <option value="Longitudinal">Longitudinal</option>
+        <option value="Transverse">Transverse</option>
+        <option value="Oblique">Oblique</option>
+      </select><br><br>
+
+      <label for="fetal-presentation">Presentation</label><br>
+      <select id="fetal-presentation" name="fetal_presentation">
+        <option value="">-- Select --</option>
+        <option value="Cephalic (head down)">Cephalic (head down)</option>
+        <option value="Breech (bottom down)">Breech (bottom down)</option>
+      </select><br><br>
+
+      <label for="fetal-position">Position (direction fetal back is facing)</label><br>
+      <input type="text" id="fetal-position" name="fetal_position"><br><br>
+
+      <label for="fetal-engagement">Engagement (descent into maternal pelvis)</label><br>
+      <input type="text" id="fetal-engagement" name="fetal_engagement"><br><br>
+    </fieldset>
+
+    <fieldset>
+      <legend>Fetal Heart Rate (FHR) Auscultation</legend>
+      <p>Timing: audible via handheld Doppler starting around 10-12 weeks. Normal range: 110 to 160 beats per minute (bpm). Clinical tip: the provider must simultaneously palpate the maternal radial pulse to confirm they are counting the fetal heart rhythm and not the mother's.</p>
+      <label for="fhr">Fetal Heart Rate (bpm)</label><br>
+      <input type="number" id="fhr" name="fetal_heart_rate_bpm"><br><br>
+    </fieldset>
+
+    <fieldset>
+      <legend>Pelvic &amp; Vaginal Examination</legend>
+      <p>Initial visit: may include a speculum exam for a Pap smear (if due), screening swabs for STIs, and a bimanual exam to estimate early uterine size. Third trimester (near term): digital vaginal exams are only performed closer to the estimated date of delivery (or if preterm labor is suspected) to assess cervical dilation, effacement, and fetal station. Note: avoided if the patient presents with unexplained vaginal bleeding.</p>
+      <label for="pelvic-vaginal-findings">Findings</label><br>
+      <textarea id="pelvic-vaginal-findings" name="pelvic_vaginal_findings" rows="3" cols="50"></textarea><br><br>
+    </fieldset>
+
+    <fieldset>
+      <legend>Quick Reference Summary Table</legend>
+      <table border="1" cellpadding="4" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Exam Component</th>
+            <th>When Performed</th>
+            <th>Primary Clinical Indicators</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fundal Height (SFH)</td>
+            <td>Every visit from &ge; 20 weeks</td>
+            <td>Fetal growth restriction, Macrosomia, Oligo/Polyhydramnios</td>
+          </tr>
+          <tr>
+            <td>Fetal Heart Rate</td>
+            <td>Every visit from &ge; 10-12 weeks</td>
+            <td>Fetal viability and well-being</td>
+          </tr>
+          <tr>
+            <td>Leopold's Maneuvers</td>
+            <td>Every visit from &ge; 32-34 weeks</td>
+            <td>Fetal presentation (detecting breech before labor)</td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+    </fieldset>
+  </fieldset>
+
+  <fieldset>
+    <legend>Further Investigation (Lab Test Required)</legend>
+    <table border="1" cellpadding="4" cellspacing="0">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Name of Test</th>
+          <th>Type of Sample/Specimen</th>
+          <th>Amount</th>
+          <th>Upload Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><input type="text" name="lab_test_1_name"></td>
+          <td><input type="text" name="lab_test_1_specimen"></td>
+          <td><input type="number" name="lab_test_1_amount"></td>
+          <td><input type="file" name="lab_test_1_result_upload"></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><input type="text" name="lab_test_2_name"></td>
+          <td><input type="text" name="lab_test_2_specimen"></td>
+          <td><input type="number" name="lab_test_2_amount"></td>
+          <td><input type="file" name="lab_test_2_result_upload"></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><input type="text" name="lab_test_3_name"></td>
+          <td><input type="text" name="lab_test_3_specimen"></td>
+          <td><input type="number" name="lab_test_3_amount"></td>
+          <td><input type="file" name="lab_test_3_result_upload"></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+
+    <label for="lab-comment">Comment</label><br>
+    <textarea id="lab-comment" name="lab_investigation_comment" rows="2" cols="50"></textarea><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Clinical Judgement (Diagnosis)</legend>
+    <textarea name="clinical_judgement_diagnosis" rows="3" cols="50"></textarea><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Treatment Plan</legend>
+    <p>Note: Treatment Plan is the SAME as Take Home Drugs (Plan).</p>
+
+    <table border="1" cellpadding="4" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Route of Administration</th>
+          <th>Name of Medication</th>
+          <th>Strength</th>
+          <th>Dosage Regime</th>
+          <th>Length</th>
+          <th>Amount (&#8358;)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <select name="med1_route">
+              <option value="">-- Select --</option>
+              <optgroup label="1. Oral">
+                <option value="Oral - Tablet">Tablet</option>
+                <option value="Oral - Capsule">Capsule</option>
+                <option value="Oral - Syrup">Syrup</option>
+                <option value="Oral - Powder">Powder</option>
+                <option value="Oral - Mixture">Mixture</option>
+                <option value="Oral - Emulsion">Emulsion</option>
+                <option value="Oral - Linctus">Linctus</option>
+                <option value="Oral - Suspension">Suspension</option>
+                <option value="Oral - Solution">Solution</option>
+                <option value="Oral - Drop">Drop</option>
+              </optgroup>
+              <optgroup label="2. Parenteral (Injection)">
+                <option value="Parenteral - I.V (Intravenous)">I.V (Intravenous)</option>
+                <option value="Parenteral - I.M (Intramuscular)">I.M (Intramuscular)</option>
+                <option value="Parenteral - I.D (Intradermal)">I.D (Intradermal)</option>
+                <option value="Parenteral - I.T (Intrathecal)">I.T (Intrathecal)</option>
+                <option value="Parenteral - SubQ (Subcutaneous)">SubQ (Subcutaneous)</option>
+                <option value="Parenteral - I.P (Intraperitoneal)">I.P (Intraperitoneal)</option>
+              </optgroup>
+              <optgroup label="3. Buccal (Lozenges)">
+                <option value="Buccal - Candied">Candied</option>
+                <option value="Buccal - Pastilles (Gums)">Pastilles (Gums)</option>
+                <option value="Buccal - Troches">Troches</option>
+                <option value="Buccal - Elixirs (Sweet)">Elixirs (Sweet)</option>
+              </optgroup>
+              <optgroup label="4. Sublingual">
+                <option value="Sublingual - Tablet">Tablet</option>
+                <option value="Sublingual - Films">Films</option>
+                <option value="Sublingual - Spray">Spray</option>
+                <option value="Sublingual - Drops">Drops</option>
+              </optgroup>
+              <optgroup label="5. Inhalation">
+                <option value="Inhalation - Pressurized Metered Dose Inhalers (PMDI)">Pressurized Metered Dose Inhalers (PMDI)</option>
+                <option value="Inhalation - Dry Powder Inhalers (DPIs)">Dry Powder Inhalers (DPIs)</option>
+                <option value="Inhalation - Soft Mist Inhalers (SMIs)">Soft Mist Inhalers (SMIs)</option>
+                <option value="Inhalation - Nebulizers">Nebulizers</option>
+                <option value="Inhalation - Low Flow Devices (Oxygen)">Low Flow Devices (Oxygen)</option>
+              </optgroup>
+              <optgroup label="6. Topical">
+                <option value="Topical - Cream">Cream</option>
+                <option value="Topical - Ointment">Ointment</option>
+                <option value="Topical - Gel">Gel</option>
+                <option value="Topical - Lotion">Lotion</option>
+                <option value="Topical - Liniment">Liniment</option>
+                <option value="Topical - Collodion">Collodion</option>
+                <option value="Topical - Patches">Patches</option>
+                <option value="Topical - Powder">Powder</option>
+              </optgroup>
+              <optgroup label="7. Rectal">
+                <option value="Rectal - Cream">Cream</option>
+                <option value="Rectal - Enemas">Enemas</option>
+                <option value="Rectal - Suppository">Suppository</option>
+                <option value="Rectal - Ointment">Ointment</option>
+                <option value="Rectal - Pessary">Pessary</option>
+              </optgroup>
+              <optgroup label="8. Vaginal">
+                <option value="Vaginal - Cream">Cream</option>
+                <option value="Vaginal - Suppository">Suppository</option>
+                <option value="Vaginal - Ointment">Ointment</option>
+                <option value="Vaginal - Pessary">Pessary</option>
+              </optgroup>
+              <optgroup label="10. Drop">
+                <option value="Drop">Drop</option>
+              </optgroup>
+            </select>
+          </td>
+          <td><input type="text" name="med1_name"></td>
+          <td><input type="text" name="med1_strength"></td>
+          <td>
+            <select name="med1_dosage_regime">
+              <option value="">-- Select --</option>
+              <option value="dly (Daily)">dly (Daily)</option>
+              <option value="bd (12hrs)">bd (12hrs)</option>
+              <option value="tds (8hrs)">tds (8hrs)</option>
+              <option value="qds (6hrs)">qds (6hrs)</option>
+              <option value="nocte (night/bed)">nocte (night/bed)</option>
+              <option value="stat (once)">stat (once)</option>
+              <option value="PRN (when needed)">PRN (when needed)</option>
+            </select>
+          </td>
+          <td>
+            <input type="number" name="med1_length_value" style="width:60px">
+            <select name="med1_length_unit">
+              <option value="">--</option>
+              <option value="X/7">X/7</option>
+              <option value="X/52">X/52</option>
+              <option value="X/12">X/12</option>
+            </select>
+          </td>
+          <td><input type="number" name="med1_amount"></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <p><em>(Additional rows can be duplicated per medication as needed.)</em></p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Informed Consent</legend>
+    <p>Note: Informed Consent is optional; not all patients need it.</p>
+    <label><input type="radio" name="informed_consent" value="Yes"> Yes</label>
+    <label><input type="radio" name="informed_consent" value="No"> No</label><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Medical Bill</legend>
+    <table border="1" cellpadding="4" cellspacing="0">
+      <thead>
+        <tr>
+          <th>S/N</th>
+          <th>Name</th>
+          <th>Amount (&#8358;)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Registration Bill</td><td><input type="number" name="bill_registration"></td></tr>
+        <tr><td>2</td><td>Consultation Bill</td><td><input type="number" name="bill_consultation"></td></tr>
+        <tr><td>3</td><td>Rapid Medical Examination Bill</td><td><input type="number" name="bill_rme"></td></tr>
+        <tr><td>4</td><td>Laboratory Test Bill</td><td><input type="number" name="bill_lab_test"></td></tr>
+        <tr><td>5</td><td>Admission Bill</td><td><input type="number" name="bill_admission"></td></tr>
+        <tr><td>6</td><td>Medical Service Bill</td><td><input type="number" name="bill_medical_service"></td></tr>
+        <tr><td>7</td><td>Logistics Bill</td><td><input type="number" name="bill_logistics"></td></tr>
+        <tr><td>8</td><td>Maintenance Bill</td><td><input type="number" name="bill_maintenance"></td></tr>
+        <tr><td>9</td><td>Surgical Procedure Bill</td><td><input type="number" name="bill_surgical_procedure"></td></tr>
+        <tr><td colspan="2"><strong>TOTAL</strong></td><td><input type="number" name="bill_total"></td></tr>
+      </tbody>
+    </table>
+    <br>
+
+    <p><em>Note: Overall Medical Bill = Paid Bill + Balance/Outstanding (automatically saved).</em></p>
+
+    <label for="bill-paid">Paid Bill</label><br>
+    <input type="number" id="bill-paid" name="bill_paid" readonly><br><br>
+
+    <label for="bill-balance">Balance</label><br>
+    <input type="number" id="bill-balance" name="bill_balance" readonly><br><br>
+
+    <label for="bill-outstanding">Outstanding</label><br>
+    <input type="number" id="bill-outstanding" name="bill_outstanding" readonly><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Referral Letter</legend>
+    <p>Note: Referral Letter is optional.</p>
+    <label><input type="radio" name="referral_letter" value="Yes"> Yes</label>
+    <label><input type="radio" name="referral_letter" value="No"> No</label><br><br>
+  </fieldset>
+
+  <fieldset>
+    <legend>Next Visit (Appointment Date)</legend>
+
+    <label for="next-visit-date">Date</label><br>
+    <input type="date" id="next-visit-date" name="next_visit_date"><br><br>
+
+    <label for="physician-name">Attending Physician - Name</label><br>
+    <input type="text" id="physician-name" name="attending_physician_name"><br><br>
+
+    <label for="physician-signature">Signature</label><br>
+    <input type="text" id="physician-signature" name="attending_physician_signature"><br><br>
+
+    <label for="physician-date">Date</label><br>
+    <input type="date" id="physician-date" name="attending_physician_date"><br><br>
+  </fieldset>
+
+  <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>
+
+

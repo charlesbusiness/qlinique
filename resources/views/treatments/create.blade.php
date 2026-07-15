@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="fw-semibold fs-4 text-dark mb-0">{{ __('New Treatment Chart') }}</h2>
+        <h2 class="fw-semibold fs-4 text-dark mb-0">{{ __('New Assessment') }}</h2>
     </x-slot>
 
     <div class="card">

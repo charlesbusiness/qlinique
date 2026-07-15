@@ -6,6 +6,7 @@ use App\Models\TreatmentChart;
 use App\Services\TreatmentService;
 use App\Http\Requests\StoreTreatmentChartRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TreatmentController extends Controller
 {
@@ -16,6 +17,14 @@ class TreatmentController extends Controller
     public function index(Request $request)
     {
         $treatments = TreatmentChart::with('patient.file')
+            ->when($publishStatus = $request->input('publish_status'), function($q) use ($publishStatus) {
+                if ($publishStatus === 'draft') {
+                    $q->where('is_draft', true)
+                      ->where('created_by', Auth::id());
+                }
+            }, function($q) {
+                $q->where('is_draft', false);
+            })
             ->when($request->input('status') === 'active', fn($q) => $q->where('is_completed', false))
             ->when($pending = $request->input('pending'), function($q) use ($pending) {
                 $q->where('is_completed', false)
@@ -60,7 +69,7 @@ class TreatmentController extends Controller
 
     public function show(TreatmentChart $treatment)
     {
-        $treatment->load('patient.file', 'vitals', 'medications', 'labTests', 'complianceLogs', 'physicalExaminations', 'rmeResults', 'treatmentPlanItems');
+        $treatment->load('patient.file', 'vitals', 'medications', 'labTests', 'complianceLogs', 'physicalExaminations', 'rmeResults', 'treatmentPlanItems', 'maternalHealthRecord');
         return view('treatments.show', compact('treatment'));
     }
 
@@ -98,5 +107,18 @@ class TreatmentController extends Controller
 
         return redirect()->route('treatments.show', $treatment)
             ->with('status', 'Treatment marked as completed.');
+    }
+
+    public function createMaternal(Request $request)
+    {
+        $patientId = $request->input('patient_id');
+        $subOption = $request->input('sub_option', 'antenatal_care');
+        return view('treatments.create-maternal', compact('patientId', 'subOption'));
+    }
+
+    public function editMaternal(TreatmentChart $treatment)
+    {
+        $record = $treatment->maternalHealthRecord()->findOrFail();
+        return view('treatments.edit-maternal', compact('treatment', 'record'));
     }
 }
