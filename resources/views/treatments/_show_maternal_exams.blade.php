@@ -215,31 +215,51 @@
 {{-- Billing & Consent --}}
 <div class="row">
     <div class="col-md-6">
-        @if ($record->medical_bill)
+                @if ($record->medical_bill)
             <div class="card mb-4">
                 <div class="card-header"><strong>Medical Bill</strong></div>
                 <div class="card-body">
+                    @php
+                        $labTotal = collect($record->lab_tests ?? [])->sum('amount');
+                        $medTotal = collect($record->medications ?? [])->sum('amount');
+                        $manualItems = collect($record->medical_bill ?? [])->only(['registration', 'consultation', 'rapid_medical_examination', 'admission', 'logistics', 'maintenance', 'surgical_procedure']);
+                        $billTotal = $labTotal + $medTotal + $manualItems->sum();
+                        $billPaid = $record->bill_paid ?? 0;
+                        $billOutstanding = $billTotal - $billPaid;
+                    @endphp
                     <table class="table table-sm mb-0">
                         <tbody>
-                            @foreach (['registration' => 'Registration', 'consultation' => 'Consultation', 'rapid_medical_examination' => 'RME', 'laboratory_test' => 'Lab Test', 'admission' => 'Admission', 'medical_service' => 'Medical Service', 'logistics' => 'Logistics', 'maintenance' => 'Maintenance', 'surgical_procedure' => 'Surgical Procedure'] as $key => $label)
-                                @if (($record->medical_bill[$key] ?? 0) > 0)
+                            @if ($labTotal > 0)
+                                <tr>
+                                    <td>Lab Test</td>
+                                    <td class="text-end">₦{{ number_format($labTotal, 2) }}</td>
+                                </tr>
+                            @endif
+                            @if ($medTotal > 0)
+                                <tr>
+                                    <td>Medical Service</td>
+                                    <td class="text-end">₦{{ number_format($medTotal, 2) }}</td>
+                                </tr>
+                            @endif
+                            @foreach (['registration' => 'Registration', 'consultation' => 'Consultation', 'rapid_medical_examination' => 'RME', 'admission' => 'Admission', 'logistics' => 'Logistics', 'maintenance' => 'Maintenance', 'surgical_procedure' => 'Surgical Procedure'] as $key => $label)
+                                @if ($manualItems->get($key, 0) > 0)
                                     <tr>
                                         <td>{{ $label }}</td>
-                                        <td class="text-end">₦{{ number_format($record->medical_bill[$key], 2) }}</td>
+                                        <td class="text-end">₦{{ number_format($manualItems->get($key), 2) }}</td>
                                     </tr>
                                 @endif
                             @endforeach
                             <tr class="table-active fw-bold">
                                 <td>Current Total</td>
-                                <td class="text-end">₦{{ number_format(array_sum($record->medical_bill), 2) }}</td>
+                                <td class="text-end">₦{{ number_format($billTotal, 2) }}</td>
                             </tr>
                             <tr>
                                 <td>Paid</td>
-                                <td class="text-end">₦{{ number_format($record->bill_paid ?? 0, 2) }}</td>
+                                <td class="text-end">₦{{ number_format($billPaid, 2) }}</td>
                             </tr>
-                            <tr class="fw-bold {{ ($record->bill_outstanding ?? 0) > 0 ? 'text-danger' : 'text-success' }}">
+                            <tr class="fw-bold {{ $billOutstanding > 0 ? 'text-danger' : 'text-success' }}">
                                 <td>Outstanding Balance</td>
-                                <td class="text-end">₦{{ number_format($record->bill_outstanding ?? 0, 2) }}</td>
+                                <td class="text-end">₦{{ number_format($billOutstanding, 2) }}</td>
                             </tr>
                         </tbody>
                     </table>

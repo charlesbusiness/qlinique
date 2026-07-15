@@ -118,7 +118,7 @@ class TreatmentController extends Controller
 
     public function editMaternal(TreatmentChart $treatment)
     {
-        $record = $treatment->maternalHealthRecord()->findOrFail();
+        $record = $treatment->maternalHealthRecord()->firstOrFail();
         return view('treatments.edit-maternal', compact('treatment', 'record'));
     }
 }

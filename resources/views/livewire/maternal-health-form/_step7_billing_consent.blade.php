@@ -20,18 +20,42 @@
 
 <h6 class="mb-3">Medical Bill</h6>
 <div class="table-responsive mb-3">
+    @php
+        $calculatedItems = [
+            'laboratory_test' => 'Laboratory Test',
+            'medical_service' => 'Medical Service',
+        ];
+        $manualItems = [
+            'registration' => 'Registration',
+            'consultation' => 'Consultation',
+            'rapid_medical_examination' => 'RME',
+            'admission' => 'Admission',
+            'logistics' => 'Logistics',
+            'maintenance' => 'Maintenance',
+            'surgical_procedure' => 'Surgical Procedure',
+        ];
+    @endphp
     <table class="table table-bordered">
         <thead class="table-light">
             <tr>
                 <th>S/N</th>
                 <th>Item</th>
-                <th>Amount</th>
+                <th>Amount (₦)</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (['registration' => 'Registration', 'consultation' => 'Consultation', 'rapid_medical_examination' => 'RME', 'laboratory_test' => 'Laboratory Test', 'admission' => 'Admission', 'medical_service' => 'Medical Service', 'logistics' => 'Logistics', 'maintenance' => 'Maintenance', 'surgical_procedure' => 'Surgical Procedure'] as $key => $label)
-                <tr>
+            @foreach ($calculatedItems as $key => $label)
+                <tr class="table-secondary">
                     <td>{{ $loop->iteration }}</td>
+                    <td>{{ $label }}</td>
+                    <td>
+                        <span class="form-control form-control-sm bg-light border-0 fw-bold">{{ number_format($medical_bill[$key] ?? 0, 2) }}</span>
+                    </td>
+                </tr>
+            @endforeach
+            @foreach ($manualItems as $key => $label)
+                <tr>
+                    <td>{{ $loop->iteration + count($calculatedItems) }}</td>
                     <td>{{ $label }}</td>
                     <td>
                         <input type="number" step="0.01" class="form-control form-control-sm" wire:model="medical_bill.{{ $key }}">
@@ -39,18 +63,21 @@
                 </tr>
             @endforeach
         </tbody>
+        <tfoot>
+            <tr class="fw-bold">
+                <td colspan="2" class="text-end">TOTAL ₦</td>
+                <td>{{ number_format(collect($medical_bill)->sum(), 2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-end fw-bold">Paid Bill ₦</td>
+                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.live="bill_paid" placeholder="0.00"></td>
+            </tr>
+            <tr class="fw-bold">
+                <td colspan="2" class="text-end">Balance ₦</td>
+                <td>{{ number_format($bill_outstanding, 2) }}</td>
+            </tr>
+        </tfoot>
     </table>
-</div>
-
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <label class="form-label fw-semibold">Paid</label>
-        <input type="number" step="0.01" class="form-control" wire:model="bill_paid">
-    </div>
-    <div class="col-md-4">
-        <label class="form-label fw-semibold">Outstanding</label>
-        <input type="number" step="0.01" class="form-control" wire:model="bill_outstanding">
-    </div>
 </div>
 
 <hr class="my-4">
@@ -63,7 +90,12 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">Attending Physician</label>
-        <input type="text" class="form-control" wire:model="attending_physician_name">
+        <select class="form-select" wire:model="attending_physician_name">
+            <option value="">Select...</option>
+            @foreach ($staff as $s)
+                <option value="{{ $s->name }}">{{ $s->name }} ({{ ucfirst(str_replace('_', ' ', $s->role)) }})</option>
+            @endforeach
+        </select>
     </div>
     <div class="col-md-4">
         <label class="form-label">Physician Signature</label>

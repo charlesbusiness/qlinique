@@ -282,7 +282,12 @@ class MaternalHealthForm extends Component
 
     public function render()
     {
-        return view('livewire.maternal-health-form');
+        return view('livewire.maternal-health-form', [
+            'staff' => \App\Models\User::where('is_active', true)
+                ->whereIn('role', ['doctor', 'nurse', 'matron', 'super_admin'])
+                ->orderBy('name')
+                ->get(['id', 'name', 'role']),
+        ]);
     }
 
     // ─── Draft Management ──────────────────────────────────────────
@@ -439,6 +444,29 @@ class MaternalHealthForm extends Component
         return array_values(array_filter($this->medications, fn($m) => !empty($m['drug_name'])));
     }
 
+    public function autoFillMedicalBill(): void
+    {
+        $this->medical_bill['laboratory_test'] = collect($this->buildLabTestData())->sum('amount');
+        $this->medical_bill['medical_service'] = collect($this->buildMedicationData())->sum('amount');
+        $this->recalculateBill();
+    }
+
+    public function recalculateBill(): void
+    {
+        $total = collect($this->medical_bill)->sum();
+        $this->bill_outstanding = $total - $this->bill_paid;
+    }
+
+    public function updatedMedicalBill(): void
+    {
+        $this->recalculateBill();
+    }
+
+    public function updatedBillPaid(): void
+    {
+        $this->recalculateBill();
+    }
+
     // ─── Dynamic Rows ──────────────────────────────────────────────
 
     public function addPriorPregnancy(): void
@@ -508,6 +536,10 @@ class MaternalHealthForm extends Component
     {
         $this->saveDraft();
 
+        if ($this->step === 6) {
+            $this->autoFillMedicalBill();
+        }
+
         if ($this->step === 7) {
             $this->publish();
             return;
@@ -537,7 +569,7 @@ class MaternalHealthForm extends Component
             }
         }
 
-        session()->flash('status', 'Maternal health record created successfully.');
+        session()->flash('status', $this->recordId ? 'Maternal health record updated successfully.' : 'Maternal health record created successfully.');
         $this->redirect(route('treatments.show', $this->treatmentChartId), navigate: true);
     }
 
@@ -554,10 +586,9 @@ class MaternalHealthForm extends Component
         $this->isDraft = true;
 
         // Load all fields from record
-        $fields = $record->getAttributes();
-        foreach ($fields as $key => $value) {
+        foreach ($record->getAttributes() as $key => $value) {
             if (property_exists($this, $key) && !in_array($key, ['recordId', 'treatmentChartId', 'patientId', 'patient', 'sub_option', 'isDraft', 'step'])) {
-                $this->$key = $value ?? $this->$key;
+                $this->$key = $record->$key ?? $this->$key;
             }
         }
 
