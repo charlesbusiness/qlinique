@@ -11,8 +11,8 @@
             <div class="card mb-4">
                 <div class="card-header"><strong>Invoice Details</strong></div>
                 <div class="card-body">
-                    <p class="mb-1"><strong>Patient:</strong> {{ $invoice->patient->name }} ({{ $invoice->patient->file?->file_number ?? '—' }})</p>
-                    <p class="mb-1"><strong>Account Type:</strong> <span class="badge bg-info">{{ ucfirst($invoice->account_type ?? '—') }}</span></p>
+                    <p class="mb-1"><strong>File:</strong> {{ $invoice->patientFile->file_number ?? '—' }} <span class="badge bg-info">{{ ucfirst($invoice->account_type ?? '—') }}</span></p>
+                    <p class="mb-1"><strong>Patient:</strong> {{ $invoice->patient->name ?? '—' }}</p>
                     <p class="mb-1"><strong>Amount Due:</strong> {{ number_format($invoice->amount_due, 2) }}</p>
                     <p class="mb-1"><strong>Amount Paid:</strong> {{ number_format($invoice->amount_paid, 2) }}</p>
                     <p class="mb-1"><strong>Balance:</strong> <strong>{{ number_format($invoice->balance, 2) }}</strong></p>
@@ -59,6 +59,35 @@
             </div>
         </div>
     </div>
+
+    @if ($invoice->items->isNotEmpty())
+        <div class="card mb-4">
+            <div class="card-header"><strong>Line Items</strong></div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead class="table-light">
+                        <tr><th>Description</th><th class="text-end">Amount</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($invoice->items as $item)
+                            <tr>
+                                <td>{{ $item->description }}</td>
+                                <td class="text-end">₦{{ number_format($item->amount, 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot class="table-active fw-bold">
+                        <tr>
+                            <td>Total</td>
+                            <td class="text-end">₦{{ number_format($invoice->amount_due, 2) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if ($invoice->payments->isNotEmpty())
         <div class="card">

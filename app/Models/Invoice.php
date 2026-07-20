@@ -3,17 +3,18 @@
 namespace App\Models;
 
 use App\Traits\HasAuditTrail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Invoice extends Model
 {
-    use HasFactory, SoftDeletes, HasAuditTrail;
+    use HasAuditTrail, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'invoice_number',
         'patient_id',
+        'patient_file_id',
         'treatment_chart_id',
         'status',
         'amount_due',
@@ -28,6 +29,11 @@ class Invoice extends Model
         return $this->belongsTo(Patient::class);
     }
 
+    public function patientFile()
+    {
+        return $this->belongsTo(PatientFile::class);
+    }
+
     public function treatmentChart()
     {
         return $this->belongsTo(TreatmentChart::class);
@@ -38,6 +44,11 @@ class Invoice extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+
     public function isFullyPaid(): bool
     {
         return $this->balance <= 0;
@@ -45,6 +56,6 @@ class Invoice extends Model
 
     public function getAccountTypeAttribute(): ?string
     {
-        return $this->patient?->file?->type;
+        return $this->patientFile?->type;
     }
 }

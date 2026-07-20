@@ -4,13 +4,13 @@ namespace App\Models;
 
 use App\Traits\HasAuditTrail;
 use App\Traits\HasCompliance;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TreatmentChart extends Model
 {
-    use HasFactory, SoftDeletes, HasAuditTrail, HasCompliance;
+    use HasAuditTrail, HasCompliance, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'patient_id',
@@ -112,5 +112,10 @@ class TreatmentChart extends Model
     public function maternalHealthRecord()
     {
         return $this->hasOne(MaternalHealthRecord::class);
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
     }
 }

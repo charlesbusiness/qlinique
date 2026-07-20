@@ -14,12 +14,12 @@ class UserService
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('staff_id', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('staff_id', 'like', "%{$search}%");
                 });
             })
-            ->when($filters['role'] ?? null, fn($q, $r) => $q->where('role', $r))
-            ->when(isset($filters['is_active']), fn($q, $v) => $q->where('is_active', $v))
+            ->when($filters['role'] ?? null, fn ($q, $r) => $q->where('role', $r))
+            ->when(isset($filters['is_active']), fn ($q, $v) => $q->where('is_active', $v))
             ->orderBy('created_at', 'desc')
             ->paginate(15);
     }

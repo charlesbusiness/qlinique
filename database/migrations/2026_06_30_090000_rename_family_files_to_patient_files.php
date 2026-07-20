@@ -13,7 +13,7 @@ return new class extends Migration
             Schema::rename('family_files', 'patient_files');
         }
 
-        if (!Schema::hasColumn('patients', 'file_id')) {
+        if (! Schema::hasColumn('patients', 'file_id')) {
             Schema::table('patients', function (Blueprint $table) {
                 $table->foreignId('file_id')->nullable()->after('id');
             });

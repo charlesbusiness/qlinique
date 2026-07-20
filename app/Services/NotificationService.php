@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\TreatmentChart;
 use App\Models\Invoice;
+use App\Models\TreatmentChart;
 
 class NotificationService
 {

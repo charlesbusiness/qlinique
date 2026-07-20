@@ -31,15 +31,13 @@
                     @endif
                     @if (Auth::user()->hasPermission('treatments.view'))
                     <li class="nav-item">
-                        <x-nav-link :href="route('treatments.index')" :active="request()->routeIs('treatments.*')">
+                        <x-nav-link :href="route('treatments.index')" :active="request()->routeIs('treatments.index')">
                             {{ __('Assessments') }}
                         </x-nav-link>
                     </li>
-                    @endif
-                    @if (Auth::user()->hasPermission('antenatal.view'))
                     <li class="nav-item">
-                        <x-nav-link :href="route('antenatal.index')" :active="request()->routeIs('antenatal.*')">
-                            {{ __('Antenatal') }}
+                        <x-nav-link :href="route('treatments.maternal')" :active="request()->routeIs('treatments.maternal*')">
+                            {{ __('Maternal Health') }}
                         </x-nav-link>
                     </li>
                     @endif

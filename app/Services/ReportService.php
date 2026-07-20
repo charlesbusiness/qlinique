@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
+use App\Models\Invoice;
 use App\Models\Patient;
 use App\Models\TreatmentChart;
-use App\Models\Invoice;
 use Carbon\Carbon;
 
 class ReportService
 {
-    public function dailyReport(Carbon $date = null): array
+    public function dailyReport(?Carbon $date = null): array
     {
         $date = $date ?? now();
 
@@ -21,7 +21,7 @@ class ReportService
         ];
     }
 
-    public function treatmentReport(Carbon $from = null, Carbon $to = null): array
+    public function treatmentReport(?Carbon $from = null, ?Carbon $to = null): array
     {
         $from = $from ?? now()->startOfMonth();
         $to = $to ?? now()->endOfMonth();
@@ -42,7 +42,7 @@ class ReportService
         ];
     }
 
-    public function financialReport(Carbon $from = null, Carbon $to = null): array
+    public function financialReport(?Carbon $from = null, ?Carbon $to = null): array
     {
         $from = $from ?? now()->startOfMonth();
         $to = $to ?? now()->endOfMonth();

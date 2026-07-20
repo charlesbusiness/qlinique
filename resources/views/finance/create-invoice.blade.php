@@ -9,11 +9,28 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label class="form-label">Patient</label>
-                    <select name="patient_id" class="form-select @error('patient_id') is-invalid @enderror" required>
-                        <option value="">Select patient...</option>
-                        @foreach ($patients as $p)
-                            <option value="{{ $p->id }}">{{ $p->file?->file_number ?? 'N/A' }} — {{ $p->name }} ({{ ucfirst($p->file?->type ?? '—') }})</option>
+                    <label class="form-label">File <span class="text-danger">*</span></label>
+                    <select name="patient_file_id" id="patientFileSelect" class="form-select @error('patient_file_id') is-invalid @enderror" required onchange="filterPatients()">
+                        <option value="">Select file...</option>
+                        @foreach ($patientFiles as $file)
+                            <option value="{{ $file->id }}" data-file-id="{{ $file->id }}">
+                                {{ $file->file_number }} — {{ $file->name }} ({{ ucfirst($file->type) }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('patient_file_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Patient <span class="text-danger">*</span></label>
+                    <select name="patient_id" id="patientSelect" class="form-select @error('patient_id') is-invalid @enderror" required>
+                        <option value="">Select a file first...</option>
+                        @foreach ($patientFiles as $file)
+                            @foreach ($file->patients as $patient)
+                                <option value="{{ $patient->id }}" data-file-id="{{ $file->id }}" style="display: none;">
+                                    {{ $patient->name }} ({{ $patient->phone ?? '—' }})
+                                </option>
+                            @endforeach
                         @endforeach
                     </select>
                     @error('patient_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -37,4 +54,27 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function filterPatients() {
+            const fileId = document.getElementById('patientFileSelect').value;
+            const patientSelect = document.getElementById('patientSelect');
+            const options = patientSelect.querySelectorAll('option[data-file-id]');
+
+            patientSelect.innerHTML = '<option value="">Select patient...</option>';
+
+            if (!fileId) {
+                patientSelect.innerHTML = '<option value="">Select a file first...</option>';
+                return;
+            }
+
+            options.forEach(function(opt) {
+                if (opt.getAttribute('data-file-id') === fileId) {
+                    const cloned = opt.cloneNode(true);
+                    cloned.style.display = '';
+                    patientSelect.appendChild(cloned);
+                }
+            });
+        }
+    </script>
 </x-app-layout>

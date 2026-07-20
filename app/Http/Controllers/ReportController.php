@@ -16,6 +16,7 @@ class ReportController extends Controller
     {
         $date = $request->date ? Carbon::parse($request->date) : now();
         $report = $this->reportService->dailyReport($date);
+
         return view('reports.daily', compact('report', 'date'));
     }
 
@@ -24,6 +25,7 @@ class ReportController extends Controller
         $from = $request->from ? Carbon::parse($request->from) : now()->startOfMonth();
         $to = $request->to ? Carbon::parse($request->to) : now()->endOfMonth();
         $report = $this->reportService->treatmentReport($from, $to);
+
         return view('reports.treatment', compact('report', 'from', 'to'));
     }
 
@@ -37,6 +39,7 @@ class ReportController extends Controller
         $from = $request->from ? Carbon::parse($request->from) : now()->startOfMonth();
         $to = $request->to ? Carbon::parse($request->to) : now()->endOfMonth();
         $report = $this->reportService->financialReport($from, $to);
+
         return view('reports.financial', compact('report', 'from', 'to'));
     }
 }

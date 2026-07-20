@@ -139,3 +139,7 @@
 @endforeach
 
 <button type="button" class="btn btn-outline-primary btn-sm mb-3" wire:click="addMedication">+ Add Drug</button>
+
+@include('livewire.maternal-health-form._step6_ipt_malaria')
+
+@include('livewire.maternal-health-form._step6_immunization')

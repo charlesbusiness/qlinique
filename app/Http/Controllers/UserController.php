@@ -22,7 +22,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = array_filter(UserRole::cases(), fn($r) => $r !== UserRole::SuperAdmin);
+        $roles = array_filter(UserRole::cases(), fn ($r) => $r !== UserRole::SuperAdmin);
 
         return view('users.create', compact('roles'));
     }
@@ -42,7 +42,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $roles = array_filter(UserRole::cases(), fn($r) => $r !== UserRole::SuperAdmin);
+        $roles = array_filter(UserRole::cases(), fn ($r) => $r !== UserRole::SuperAdmin);
 
         return view('users.edit', compact('user', 'roles'));
     }

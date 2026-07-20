@@ -14,34 +14,51 @@
 
     <div class="card">
         <div class="card-header">
-            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                <form method="GET" class="d-flex gap-2 flex-grow-1" style="max-width: 400px;">
-                    @if (request('status')) <input type="hidden" name="status" value="{{ request('status') }}"> @endif
-                    @if (request('pending')) <input type="hidden" name="pending" value="{{ request('pending') }}"> @endif
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name, phone or file number..." value="{{ request('search') }}">
-                    <button class="btn btn-sm btn-outline-primary">Search</button>
-                </form>
+            <div class="row g-2 align-items-center">
+                {{-- Search --}}
+                <div class="col-12 col-md-5">
+                    <form method="GET" class="d-flex gap-2">
+                        @if (request('status')) <input type="hidden" name="status" value="{{ request('status') }}"> @endif
+                        @if (request('pending')) <input type="hidden" name="pending" value="{{ request('pending') }}"> @endif
+                        @if (request('publish_status')) <input type="hidden" name="publish_status" value="{{ request('publish_status') }}"> @endif
+                        <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name, phone or file number..." value="{{ request('search') }}">
+                        <button class="btn btn-sm btn-outline-primary">Search</button>
+                    </form>
+                </div>
+
+                {{-- Status Dropdown --}}
+                @php
+                    $statusFilters = [
+                        'status' => request('status'),
+                        'pending' => request('pending'),
+                        'publish_status' => request('publish_status'),
+                    ];
+                    $hasActiveStatus = $statusFilters['status'] === 'active' || $statusFilters['pending'] || $statusFilters['publish_status'];
+                    $statusLabel = 'All';
+                    if ($statusFilters['pending'] === 'today') $statusLabel = 'Pending Today';
+                    elseif ($statusFilters['pending'] === 'week') $statusLabel = 'Pending This Week';
+                    elseif ($statusFilters['pending'] === 'month') $statusLabel = 'Pending This Month';
+                    elseif ($statusFilters['status'] === 'active') $statusLabel = 'Active';
+                    elseif ($statusFilters['publish_status'] === 'draft') $statusLabel = 'Drafts';
+                @endphp
+                <div class="col-6 col-md-auto">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle w-100 text-start" data-bs-toggle="dropdown">
+                            Status: {{ $statusLabel }}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item {{ !$hasActiveStatus ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['search' => request('search')])) }}">All</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item {{ request('status') === 'active' && !request('pending') ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['status' => 'active', 'search' => request('search')])) }}">Active</a></li>
+                            <li><a class="dropdown-item {{ request('publish_status') === 'draft' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['publish_status' => 'draft', 'search' => request('search')])) }}">Drafts</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item {{ request('pending') === 'today' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'today', 'search' => request('search')])) }}">Pending Today</a></li>
+                            <li><a class="dropdown-item {{ request('pending') === 'week' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'week', 'search' => request('search')])) }}">Pending This Week</a></li>
+                            <li><a class="dropdown-item {{ request('pending') === 'month' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'month', 'search' => request('search')])) }}">Pending This Month</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <ul class="nav nav-pills">
-                <li class="nav-item">
-                    <a class="nav-link {{ !request('status') && !request('pending') ? 'active' : '' }}" href="{{ route('treatments.index') }}">All</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request('status') === 'active' && !request('pending') ? 'active' : '' }}" href="{{ route('treatments.index', ['status' => 'active']) }}">Active</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request('publish_status') === 'draft' ? 'active' : '' }}" href="{{ route('treatments.index', ['publish_status' => 'draft']) }}">Drafts</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request('pending') === 'today' ? 'active' : '' }}" href="{{ route('treatments.index', ['pending' => 'today']) }}">Pending Today</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request('pending') === 'week' ? 'active' : '' }}" href="{{ route('treatments.index', ['pending' => 'week']) }}">Pending This Week</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request('pending') === 'month' ? 'active' : '' }}" href="{{ route('treatments.index', ['pending' => 'month']) }}">Pending This Month</a>
-                </li>
-            </ul>
         </div>
 
         <div class="card-body p-0">
@@ -49,7 +66,7 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th>S/N</th>
                         <th>Patient</th>
                         <th>Category</th>
                         <th>Visit Date</th>
@@ -58,9 +75,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($treatments as $treatment)
+                    @forelse ($treatments as $index => $treatment)
                         <tr>
-                            <td>{{ $treatment->id }}</td>
+                            <td>{{ $treatments->firstItem() + $index }}</td>
                             <td>{{ $treatment->patient->name ?? '—' }}</td>
                             <td>
                                 <span class="badge bg-warning">{{ \App\Enums\TreatmentCategory::tryFrom($treatment->category)?->label() ?? ucfirst($treatment->category) }}</span>

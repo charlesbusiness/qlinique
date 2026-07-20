@@ -2,12 +2,25 @@
 
 namespace App\Services;
 
+use App\Models\Invoice;
 use App\Models\TreatmentChart;
 use App\Repositories\TreatmentRepository;
 use Illuminate\Support\Facades\DB;
 
 class TreatmentService
 {
+    protected const BILL_CATEGORY_LABELS = [
+        'registration' => 'Registration',
+        'consultation' => 'Consultation',
+        'rapid_medical_examination' => 'RME',
+        'laboratory_test' => 'Lab Test',
+        'admission' => 'Admission',
+        'medical_service' => 'Medical Service',
+        'logistics' => 'Logistics',
+        'maintenance' => 'Maintenance',
+        'surgical_procedure' => 'Surgical Procedure',
+    ];
+
     public function __construct(
         protected TreatmentRepository $repository
     ) {}
@@ -156,6 +169,8 @@ class TreatmentService
                 'is_draft' => false,
             ]);
 
+            $this->syncInvoice($draft);
+
             return $draft->fresh();
         });
     }
@@ -163,5 +178,60 @@ class TreatmentService
     public function discardDraft(TreatmentChart $draft): void
     {
         $draft->delete();
+    }
+
+    public function syncInvoice(TreatmentChart $chart): void
+    {
+        $medicalBill = $chart->medical_bill;
+
+        if (! $medicalBill || ! is_array($medicalBill)) {
+            return;
+        }
+
+        $items = [];
+        foreach (self::BILL_CATEGORY_LABELS as $key => $label) {
+            $amount = (float) ($medicalBill[$key] ?? 0);
+            if ($amount > 0) {
+                $items[] = [
+                    'description' => $label,
+                    'category' => $key,
+                    'amount' => $amount,
+                ];
+            }
+        }
+
+        $total = array_sum(array_column($items, 'amount'));
+
+        if ($total <= 0) {
+            return;
+        }
+
+        $paid = (float) ($medicalBill['paid'] ?? 0);
+        $invoiceData = [
+            'patient_id' => $chart->patient_id,
+            'patient_file_id' => $chart->patient->file_id,
+            'treatment_chart_id' => $chart->id,
+            'amount_due' => $total,
+            'amount_paid' => $paid,
+            'items' => $items,
+        ];
+
+        $existingInvoice = $chart->invoices()->first();
+
+        if ($existingInvoice) {
+            $hasFinancialChanges = $existingInvoice->amount_due != $total
+                || $existingInvoice->amount_paid != $paid;
+
+            if ($hasFinancialChanges) {
+                $invoiceData['amount_paid'] = $existingInvoice->payments()->sum('amount');
+                $invoiceData['amount_due'] = $total;
+                $invoiceData['balance'] = $total - $invoiceData['amount_paid'];
+                $invoiceData['status'] = $invoiceData['balance'] <= 0 ? 'paid' : 'pending';
+
+                app(FinanceService::class)->updateInvoice($existingInvoice, $invoiceData);
+            }
+        } else {
+            app(FinanceService::class)->generateInvoice($invoiceData);
+        }
     }
 }

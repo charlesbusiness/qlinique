@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class MakeSuperUser extends Command
 {
     protected $signature = 'make:super-user';
+
     protected $description = 'Create the super admin user from config/super-user.php (.env)';
 
     public function handle(): int
@@ -18,6 +19,7 @@ class MakeSuperUser extends Command
 
         if (empty($email) || empty($password)) {
             $this->error('SUPER_USER_EMAIL and SUPER_USER_PASSWORD must be set in .env');
+
             return Command::FAILURE;
         }
 
@@ -25,6 +27,7 @@ class MakeSuperUser extends Command
 
         if ($existing) {
             $this->warn("Super user already exists ({$email}). Skipping.");
+
             return Command::SUCCESS;
         }
 
@@ -39,6 +42,7 @@ class MakeSuperUser extends Command
         ]);
 
         $this->info("Super user created: {$email}");
+
         return Command::SUCCESS;
     }
 }

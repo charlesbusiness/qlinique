@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class FixCorruptedJsonFields extends Command
 {
     protected $signature = 'patients:fix-json-fields';
+
     protected $description = 'Fix double-encoded JSON fields (next_of_kin, consent) on existing patients';
 
     public function handle(): int

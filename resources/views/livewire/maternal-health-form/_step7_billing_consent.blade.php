@@ -82,12 +82,38 @@
 
 <hr class="my-4">
 
-<h6 class="mb-3">Next Visit (Appointment)</h6>
-<div class="row g-3">
-    <div class="col-md-4">
-        <label class="form-label">Next Visit Date</label>
-        <input type="date" class="form-control" wire:model="next_visit_date">
+<h6 class="mb-3">Visit Schedule</h6>
+
+@if ($recordId && $patientId)
+    <div x-data>
+        <button type="button" class="btn btn-outline-primary"
+            x-on:click="Livewire.dispatch('open-schedule-modal', { recordId: {{ $recordId }}, patientId: {{ $patientId }}, visitType: '{{ $visitType }}' })">
+            <i class="bi bi-calendar-event"></i> Manage Visit Schedule
+        </button>
     </div>
+
+    @php
+        $scheduleCount = \App\Models\AntenatalVisit::where('patient_id', $patientId)->count();
+    @endphp
+    @if ($scheduleCount > 0)
+        <p class="text-muted small mt-2 mb-0">
+            <i class="bi bi-check-circle text-success"></i>
+            {{ $scheduleCount }} visit{{ $scheduleCount > 1 ? 's' : '' }} scheduled.
+        </p>
+    @else
+        <p class="text-muted small mt-2 mb-0">
+            <i class="bi bi-exclamation-circle text-warning"></i>
+            No visits scheduled yet.
+        </p>
+    @endif
+@else
+    <div class="alert alert-info mb-0">
+        <i class="bi bi-info-circle"></i>
+        Save the record first to manage the visit schedule.
+    </div>
+@endif
+
+<div class="row mt-4">
     <div class="col-md-4">
         <label class="form-label">Attending Physician</label>
         <select class="form-select" wire:model="attending_physician_name">
@@ -99,7 +125,147 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">Physician Signature</label>
-        <input type="text" class="form-control" wire:model="attending_physician_signature">
+        <div class="mb-2">
+            <div class="btn-group btn-group-sm" role="group">
+                <input type="radio" class="btn-check" wire:model.live="attending_physician_signature_type" value="typed" id="phys_sig_typed" autocomplete="off">
+                <label class="btn btn-outline-primary" for="phys_sig_typed">Type</label>
+
+                <input type="radio" class="btn-check" wire:model.live="attending_physician_signature_type" value="drawn" id="phys_sig_drawn" autocomplete="off">
+                <label class="btn btn-outline-primary" for="phys_sig_drawn">Draw</label>
+
+                <input type="radio" class="btn-check" wire:model.live="attending_physician_signature_type" value="uploaded" id="phys_sig_upload" autocomplete="off">
+                <label class="btn btn-outline-primary" for="phys_sig_upload">Upload</label>
+            </div>
+        </div>
+
+        @if ($attending_physician_signature_type === 'typed')
+            <input type="text" class="form-control" wire:model="attending_physician_signature" placeholder="Type full name as signature">
+            @if ($attending_physician_signature)
+                <div class="mt-2 p-2 border rounded bg-light" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.3rem;">
+                    {{ $attending_physician_signature }}
+                </div>
+            @endif
+        @elseif ($attending_physician_signature_type === 'uploaded')
+            <input type="file" class="form-control" wire:model="attending_physician_signature_upload" accept="image/*">
+            @if ($attending_physician_signature_upload)
+                <div class="mt-2">
+                    <img src="{{ $attending_physician_signature_upload->temporaryUrl() }}" class="border rounded" style="max-height: 80px;">
+                </div>
+            @endif
+        @endif
+
+        <div wire:ignore>
+            <div class="mt-2 d-none" id="phys-draw-signature-wrap">
+                <label class="form-label small">Draw Signature Below</label>
+                <div class="border rounded p-1" style="background: #fff;">
+                    <canvas id="physician-signature-canvas"
+                        class="w-100 rounded"
+                        style="height: 150px; touch-action: none; cursor: crosshair;"></canvas>
+                </div>
+                <div class="mt-1">
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="clear-physician-signature">Clear</button>
+                </div>
+            </div>
+
+            <script>
+                (function() {
+                    var inited = false;
+                    var canvas, ctx;
+
+                    function initCanvas() {
+                        canvas = document.getElementById('physician-signature-canvas');
+                        if (!canvas) return;
+                        ctx = canvas.getContext('2d');
+
+                        function resize() {
+                            var rect = canvas.getBoundingClientRect();
+                            if (rect.width === 0 || rect.height === 0) return;
+                            canvas.width = rect.width * (window.devicePixelRatio || 1);
+                            canvas.height = rect.height * (window.devicePixelRatio || 1);
+                            ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+                            ctx.strokeStyle = '#000';
+                            ctx.lineWidth = 2;
+                            ctx.lineCap = 'round';
+                            ctx.lineJoin = 'round';
+                        }
+
+                        function getPos(e) {
+                            var rect = canvas.getBoundingClientRect();
+                            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+                            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+                            return { x: cx - rect.left, y: cy - rect.top };
+                        }
+
+                        var drawing = false;
+
+                        function start(e) {
+                            e.preventDefault();
+                            drawing = true;
+                            var p = getPos(e);
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                        }
+
+                        function move(e) {
+                            e.preventDefault();
+                            if (!drawing) return;
+                            var p = getPos(e);
+                            ctx.lineTo(p.x, p.y);
+                            ctx.stroke();
+                        }
+
+                        function stop(e) {
+                            e.preventDefault();
+                            if (!drawing) return;
+                            drawing = false;
+                            ctx.closePath();
+                            window.dispatchEvent(new CustomEvent('set-physician-signature', { detail: { value: canvas.toDataURL('image/png') } }));
+                        }
+
+                        canvas.addEventListener('mousedown', start);
+                        canvas.addEventListener('mousemove', move);
+                        canvas.addEventListener('mouseup', stop);
+                        canvas.addEventListener('mouseleave', stop);
+                        canvas.addEventListener('touchstart', start, { passive: false });
+                        canvas.addEventListener('touchmove', move, { passive: false });
+                        canvas.addEventListener('touchend', stop, { passive: false });
+
+                        document.getElementById('clear-physician-signature')?.addEventListener('click', function() {
+                            if (!canvas || !ctx) return;
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            window.dispatchEvent(new CustomEvent('set-physician-signature', { detail: { value: '' } }));
+                        });
+
+                        resize();
+                        window.addEventListener('resize', resize);
+                    }
+
+                    function toggleDraw() {
+                        var wrap = document.getElementById('phys-draw-signature-wrap');
+                        var drawn = document.getElementById('phys_sig_drawn');
+                        if (!wrap || !drawn) return;
+                        if (drawn.checked) {
+                            wrap.classList.remove('d-none');
+                            if (!inited) {
+                                inited = true;
+                                setTimeout(initCanvas, 50);
+                            }
+                        } else {
+                            wrap.classList.add('d-none');
+                        }
+                    }
+
+                    document.querySelectorAll('#phys_sig_typed, #phys_sig_drawn, #phys_sig_upload').forEach(function(el) {
+                        el.addEventListener('change', toggleDraw);
+                    });
+
+                    if (document.getElementById('phys_sig_drawn')?.checked) {
+                        inited = true;
+                        setTimeout(initCanvas, 50);
+                    }
+                })();
+            </script>
+        </div>
     </div>
     <div class="col-md-4">
         <label class="form-label">Date</label>

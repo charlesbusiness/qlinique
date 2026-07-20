@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Traits\HasAuditTrail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MaternalHealthRecord extends Model
 {
-    use HasFactory, SoftDeletes, HasAuditTrail;
+    use HasAuditTrail, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'treatment_chart_id',
@@ -95,8 +95,10 @@ class MaternalHealthRecord extends Model
         'consent_enabled',
         'referral_letter',
         'next_visit_date',
+        'schedule_type',
         'attending_physician_name',
         'attending_physician_signature',
+        'attending_physician_signature_type',
         'attending_physician_date',
         'medical_bill',
         'bill_paid',
@@ -143,5 +145,10 @@ class MaternalHealthRecord extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function antenatalVisits()
+    {
+        return $this->hasMany(AntenatalVisit::class);
     }
 }

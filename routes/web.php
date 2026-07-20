@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\AntenatalController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientFileController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TreatmentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -39,7 +42,7 @@ Route::middleware('auth')->group(function () {
     })->name('password.required.post');
 
     Route::middleware('password.reset')->group(function () {
-        Route::get('/dashboard', App\Http\Controllers\DashboardController::class)
+        Route::get('/dashboard', DashboardController::class)
             ->middleware('verified')->name('dashboard');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -64,6 +67,13 @@ Route::middleware('auth')->group(function () {
             ->middleware('permission:patients.view')
             ->name('patient-files.members');
 
+        Route::get('treatments/maternal', [TreatmentController::class, 'maternal'])
+            ->middleware('permission:treatments.view')->name('treatments.maternal');
+        Route::get('treatments/maternal/create', [TreatmentController::class, 'createMaternal'])
+            ->middleware('permission:treatments.create')->name('treatments.maternal.create');
+        Route::get('treatments/maternal/{treatment}/edit', [TreatmentController::class, 'editMaternal'])
+            ->middleware('permission:treatments.edit')->name('treatments.maternal.edit');
+
         Route::resource('treatments', TreatmentController::class)->middleware([
             'index' => 'permission:treatments.view',
             'show' => 'permission:treatments.view',
@@ -77,10 +87,6 @@ Route::middleware('auth')->group(function () {
             ->middleware('permission:treatments.compliance')->name('treatments.compliance');
         Route::post('treatments/{treatment}/complete', [TreatmentController::class, 'complete'])
             ->middleware('permission:treatments.edit')->name('treatments.complete');
-        Route::get('treatments/maternal/create', [TreatmentController::class, 'createMaternal'])
-            ->middleware('permission:treatments.create')->name('treatments.maternal.create');
-        Route::get('treatments/maternal/{treatment}/edit', [TreatmentController::class, 'editMaternal'])
-            ->middleware('permission:treatments.edit')->name('treatments.maternal.edit');
 
         Route::resource('antenatal', AntenatalController::class)->middleware([
             'index' => 'permission:antenatal.view',
@@ -110,17 +116,17 @@ Route::middleware('auth')->group(function () {
             ->middleware('permission:finance.payments.create')->name('finance.store-payment');
 
         Route::prefix('reports')->name('reports.')->group(function () {
-            Route::get('daily', [App\Http\Controllers\ReportController::class, 'daily'])
+            Route::get('daily', [ReportController::class, 'daily'])
                 ->middleware('permission:reports.daily')->name('daily');
-            Route::get('treatment', [App\Http\Controllers\ReportController::class, 'treatment'])
+            Route::get('treatment', [ReportController::class, 'treatment'])
                 ->middleware('permission:reports.treatment')->name('treatment');
-            Route::get('compliance', [App\Http\Controllers\ReportController::class, 'compliance'])
+            Route::get('compliance', [ReportController::class, 'compliance'])
                 ->middleware('permission:reports.compliance')->name('compliance');
-            Route::get('financial', [App\Http\Controllers\ReportController::class, 'financial'])
+            Route::get('financial', [ReportController::class, 'financial'])
                 ->middleware('permission:reports.financial')->name('financial');
         });
 
-        Route::resource('users', App\Http\Controllers\UserController::class)
+        Route::resource('users', UserController::class)
             ->middleware('role:super_admin');
     });
 });

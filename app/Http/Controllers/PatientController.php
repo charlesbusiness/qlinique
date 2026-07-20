@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePatientRequest;
 use App\Models\Patient;
 use App\Services\PatientService;
-use App\Http\Requests\StorePatientRequest;
 use Illuminate\Http\Request;
 
 class PatientController extends Controller
@@ -17,18 +17,25 @@ class PatientController extends Controller
     {
         $search = $request->get('search');
         $accountType = $request->get('account_type');
+        $tab = $request->get('tab', 'normal');
 
         $patients = Patient::with('file')
-            ->when($search, fn($q) => $q->where(function ($q) use ($search) {
+            ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhereHas('file', fn($f) => $f->where('file_number', 'like', "%{$search}%"));
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhereHas('file', fn ($f) => $f->where('file_number', 'like', "%{$search}%"));
             }))
-            ->when($accountType, fn($q) => $q->whereHas('file', fn($f) => $f->where('type', $accountType)))
+            ->when($accountType, fn ($q) => $q->whereHas('file', fn ($f) => $f->where('type', $accountType)))
+            ->when($tab === 'maternal', fn ($q) => $q->where('patient_type', 'antenatal'))
+            ->when($tab === 'normal', fn ($q) => $q->where('patient_type', '!=', 'antenatal'))
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->appends(['tab' => $tab, 'search' => $search, 'account_type' => $accountType]);
 
-        return view('patients.index', compact('patients'));
+        $normalCount = Patient::where('patient_type', '!=', 'antenatal')->count();
+        $maternalCount = Patient::where('patient_type', 'antenatal')->count();
+
+        return view('patients.index', compact('patients', 'tab', 'normalCount', 'maternalCount'));
     }
 
     public function create(Request $request)
@@ -53,6 +60,7 @@ class PatientController extends Controller
     public function show(Patient $patient)
     {
         $patient->load('file', 'treatmentCharts');
+
         return view('patients.show', compact('patient'));
     }
 
@@ -77,6 +85,7 @@ class PatientController extends Controller
     public function destroy(Patient $patient)
     {
         $patient->delete();
+
         return redirect()->route('patients.index')
             ->with('status', 'Patient deleted successfully.');
     }

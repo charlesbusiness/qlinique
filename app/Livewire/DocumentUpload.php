@@ -4,18 +4,23 @@ namespace App\Livewire;
 
 use App\Models\Document;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
+use Livewire\WithPagination;
 
 class DocumentUpload extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     public string $documentableType;
+
     public int $documentableId;
+
     public $file = null;
+
     public string $description = '';
+
     public bool $showUploadForm = false;
 
     protected function rules(): array
@@ -34,8 +39,8 @@ class DocumentUpload extends Component
 
     public function toggleForm(): void
     {
-        $this->showUploadForm = !$this->showUploadForm;
-        if (!$this->showUploadForm) {
+        $this->showUploadForm = ! $this->showUploadForm;
+        if (! $this->showUploadForm) {
             $this->reset(['file', 'description']);
         }
     }
@@ -75,7 +80,7 @@ class DocumentUpload extends Component
         $documents = Document::where('documentable_type', $this->documentableType)
             ->where('documentable_id', $this->documentableId)
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('livewire.document-upload', compact('documents'));
     }

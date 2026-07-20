@@ -8,6 +8,7 @@ use Livewire\Component;
 class PatientSearch extends Component
 {
     public string $query = '';
+
     public bool $showDropdown = false;
 
     public function updatedQuery(): void
@@ -30,7 +31,7 @@ class PatientSearch extends Component
             $results = Patient::with('file')
                 ->where('name', 'like', "%{$this->query}%")
                 ->orWhere('phone', 'like', "%{$this->query}%")
-                ->orWhereHas('file', fn($q) => $q->where('file_number', 'like', "%{$this->query}%"))
+                ->orWhereHas('file', fn ($q) => $q->where('file_number', 'like', "%{$this->query}%"))
                 ->take(10)
                 ->get();
         }

@@ -14,6 +14,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Invoice</th>
+                        <th>File</th>
                         <th>Patient</th>
                         <th>Amount Due</th>
                         <th>Paid</th>
@@ -25,6 +26,10 @@
                     @forelse ($invoices as $invoice)
                         <tr>
                             <td><span class="badge bg-secondary">{{ $invoice->invoice_number }}</span></td>
+                            <td>
+                                {{ $invoice->patientFile->file_number ?? '—' }}
+                                <br><small class="text-muted">{{ ucfirst($invoice->patientFile->type ?? '') }}</small>
+                            </td>
                             <td>{{ $invoice->patient->name ?? '—' }}</td>
                             <td>{{ number_format($invoice->amount_due, 2) }}</td>
                             <td>{{ number_format($invoice->amount_paid, 2) }}</td>
@@ -32,7 +37,7 @@
                             <td><a href="{{ route('finance.show-invoice', $invoice) }}" class="btn btn-sm btn-primary">Pay</a></td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="text-center text-muted py-4">All invoices are settled.</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted py-4">All invoices are settled.</td></tr>
                     @endforelse
                 </tbody>
             </table>

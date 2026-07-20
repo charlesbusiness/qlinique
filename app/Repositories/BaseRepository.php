@@ -36,6 +36,7 @@ abstract class BaseRepository
     public function update(Model $model, array $data): Model
     {
         $model->update($data);
+
         return $model->fresh();
     }
 

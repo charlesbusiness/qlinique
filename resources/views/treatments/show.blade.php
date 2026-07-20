@@ -3,10 +3,7 @@
         <div class="d-flex justify-content-between align-items-center">
             @if ($treatment->category === 'maternal_health' && $treatment->maternalHealthRecord)
                 <h2 class="fw-semibold fs-4 text-dark mb-0">Maternal Health Record — {{ $treatment->patient->name ?? '—' }}</h2>
-                <div>
-                    @if (!$treatment->is_completed && Auth::user()->hasPermission('treatments.edit'))
-                    <a href="{{ route('treatments.maternal.edit', $treatment) }}" class="btn btn-outline-warning btn-sm">Edit</a>
-                    @endif
+                <div class="d-flex gap-2 align-items-center flex-wrap">
                     @if (!$treatment->is_completed && Auth::user()->hasPermission('treatments.edit'))
                     <form action="{{ route('treatments.complete', $treatment) }}" method="POST" class="d-inline">
                         @csrf
@@ -17,7 +14,7 @@
                 </div>
             @else
                 <h2 class="fw-semibold fs-4 text-dark mb-0">Treatment Chart — {{ $treatment->patient->name }}</h2>
-                <div>
+                <div class="d-flex gap-2 align-items-center flex-wrap">
                     @if (!$treatment->is_completed && Auth::user()->hasPermission('treatments.edit'))
                     <a href="{{ route('treatments.edit', $treatment) }}" class="btn btn-outline-warning btn-sm">Edit</a>
                     @endif
@@ -377,6 +374,44 @@
                 </div>
             @endif
 
+            @if ($treatment->invoices->isNotEmpty())
+                @php $invoice = $treatment->invoices->first(); @endphp
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <strong>Invoice</strong>
+                            <a href="{{ route('finance.show-invoice', $invoice) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Invoice #:</strong> {{ $invoice->invoice_number }}</p>
+                            <p class="mb-1"><strong>Amount Due:</strong> ₦{{ number_format($invoice->amount_due, 2) }}</p>
+                            <p class="mb-1"><strong>Amount Paid:</strong> ₦{{ number_format($invoice->amount_paid, 2) }}</p>
+                            <p class="mb-1"><strong>Balance:</strong> <strong class="{{ $invoice->balance > 0 ? 'text-danger' : 'text-success' }}">₦{{ number_format($invoice->balance, 2) }}</strong></p>
+                            <p class="mb-0"><strong>Status:</strong>
+                                @php $c = match($invoice->status) { 'paid' => 'success', 'partial' => 'warning', 'cancelled' => 'secondary', default => 'danger' }; @endphp
+                                <span class="badge bg-{{ $c }}">{{ ucfirst($invoice->status) }}</span>
+                            </p>
+                            @if ($invoice->items->isNotEmpty())
+                                <hr>
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr><th>Item</th><th class="text-end">Amount</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($invoice->items as $item)
+                                            <tr>
+                                                <td>{{ $item->description }}</td>
+                                                <td class="text-end">₦{{ number_format($item->amount, 2) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @if ($treatment->consent)
                 <div class="col-md-6">
                     <div class="card mb-4">
@@ -392,6 +427,8 @@
                                         <p class="mb-1" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.3rem;">{{ $treatment->consent['patient_signature'] }}</p>
                                     @elseif (($treatment->consent['patient_signature_type'] ?? '') === 'uploaded' && ($treatment->consent['patient_signature_upload'] ?? ''))
                                         <img src="{{ asset('storage/' . $treatment->consent['patient_signature_upload']) }}" class="border rounded" style="max-height: 50px;">
+                                    @elseif (($treatment->consent['patient_signature_type'] ?? '') === 'drawn' && ($treatment->consent['patient_signature'] ?? ''))
+                                        <img src="{{ asset('storage/' . $treatment->consent['patient_signature']) }}" class="border rounded" style="max-height: 50px;">
                                     @else
                                         <p class="text-muted mb-1">—</p>
                                     @endif
@@ -403,6 +440,8 @@
                                         <p class="mb-1" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.3rem;">{{ $treatment->consent['witness_signature'] }}</p>
                                     @elseif (($treatment->consent['witness_signature_type'] ?? '') === 'uploaded' && ($treatment->consent['witness_signature_upload'] ?? ''))
                                         <img src="{{ asset('storage/' . $treatment->consent['witness_signature_upload']) }}" class="border rounded" style="max-height: 50px;">
+                                    @elseif (($treatment->consent['witness_signature_type'] ?? '') === 'drawn' && ($treatment->consent['witness_signature'] ?? ''))
+                                        <img src="{{ asset('storage/' . $treatment->consent['witness_signature']) }}" class="border rounded" style="max-height: 50px;">
                                     @else
                                         <p class="text-muted mb-1">—</p>
                                     @endif
@@ -413,6 +452,8 @@
                                         <p class="mb-1" style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.3rem;">{{ $treatment->consent['physician_signature'] }}</p>
                                     @elseif (($treatment->consent['physician_signature_type'] ?? '') === 'uploaded' && ($treatment->consent['physician_signature_upload'] ?? ''))
                                         <img src="{{ asset('storage/' . $treatment->consent['physician_signature_upload']) }}" class="border rounded" style="max-height: 50px;">
+                                    @elseif (($treatment->consent['physician_signature_type'] ?? '') === 'drawn' && ($treatment->consent['physician_signature'] ?? ''))
+                                        <img src="{{ asset('storage/' . $treatment->consent['physician_signature']) }}" class="border rounded" style="max-height: 50px;">
                                     @else
                                         <p class="text-muted mb-1">—</p>
                                     @endif
@@ -430,4 +471,5 @@
             </div>
         </div>
     @endif
+
 </x-app-layout>

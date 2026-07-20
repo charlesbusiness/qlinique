@@ -22,7 +22,7 @@ class PatientService
             $fileType = $data['file_type'] ?? FileType::Individual->value;
             $fileId = $data['file_id'] ?? null;
 
-            if (!$fileId) {
+            if (! $fileId) {
                 $fileData = [
                     'name' => $data['name'],
                     'email' => $data['email'] ?? '',

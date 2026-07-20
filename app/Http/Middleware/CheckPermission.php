@@ -11,7 +11,7 @@ class CheckPermission
     public function handle(Request $request, Closure $next, string $permission): Response
     {
         if (! $request->user() || ! $request->user()->hasPermission($permission)) {
-            abort(403, 'Unauthorized. Required permission: ' . $permission . '.');
+            abort(403, 'Unauthorized. Required permission: '.$permission.'.');
         }
 
         return $next($request);

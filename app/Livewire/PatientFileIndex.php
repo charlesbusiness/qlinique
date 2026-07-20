@@ -11,19 +11,29 @@ class PatientFileIndex extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $filterType = '';
 
     public string $new_name = '';
+
     public string $new_email = '';
+
     public string $new_phone = '';
+
     public string $new_address = '';
+
     public string $new_type = 'family';
 
     public ?int $editingFileId = null;
+
     public string $edit_name = '';
+
     public string $edit_email = '';
+
     public string $edit_phone = '';
+
     public string $edit_address = '';
+
     public string $edit_type = 'family';
 
     protected function rules(): array
@@ -57,8 +67,9 @@ class PatientFileIndex extends Component
             function ($attribute, $value, $fail) {
                 foreach (explode(',', $value) as $num) {
                     $num = trim($num);
-                    if (!preg_match('/^\d{1,11}$/', $num)) {
+                    if (! preg_match('/^\d{1,11}$/', $num)) {
                         $fail('Each phone number must be up to 11 digits, separated by commas.');
+
                         return;
                     }
                 }
@@ -123,13 +134,13 @@ class PatientFileIndex extends Component
     {
         $files = PatientFile::withCount('patients')
             ->with('patients:id,name,file_id')
-            ->when($this->search, fn($q) => $q->where(function ($q) {
+            ->when($this->search, fn ($q) => $q->where(function ($q) {
                 $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('file_number', 'like', "%{$this->search}%")
-                  ->orWhere('email', 'like', "%{$this->search}%")
-                  ->orWhere('phone', 'like', "%{$this->search}%");
+                    ->orWhere('file_number', 'like', "%{$this->search}%")
+                    ->orWhere('email', 'like', "%{$this->search}%")
+                    ->orWhere('phone', 'like', "%{$this->search}%");
             }))
-            ->when($this->filterType, fn($q) => $q->where('type', $this->filterType))
+            ->when($this->filterType, fn ($q) => $q->where('type', $this->filterType))
             ->latest()
             ->paginate(15);
 

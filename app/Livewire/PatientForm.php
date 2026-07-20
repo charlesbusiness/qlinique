@@ -2,52 +2,78 @@
 
 namespace App\Livewire;
 
-use App\Enums\FileType;
+use App\Livewire\TreatmentComponents\Concerns\HasBase64Signature;
 use App\Models\Patient;
 use App\Models\PatientFile;
 use App\Services\PatientService;
-use Illuminate\Http\UploadedFile;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class PatientForm extends Component
 {
+    use HasBase64Signature;
     use WithFileUploads;
 
     public ?Patient $patient = null;
+
     public ?int $fileId = null;
+
     public string $name = '';
+
     public string $gender = '';
+
     public string $date_of_birth = '';
+
     public string $phone = '';
+
     public string $email = '';
+
     public string $address = '';
+
     public string $occupation = '';
+
     public string $marital_status = '';
+
     public string $blood_group = '';
+
     public string $genotype = '';
+
     public $photo = null;
+
     public string $account_type = 'individual';
+
     public ?string $patient_type = null;
+
     public ?string $selected_file_id = null;
+
     public array $next_of_kin = [];
+
     public array $consent = [];
+
     public string $religion = '';
 
     public $existingPhoto = null;
 
     public ?string $signature_type = null;
+
     public string $signature = '';
+
     public $signature_upload = null;
 
     public ?string $existingSignature = null;
+
     public ?string $existingSignatureType = null;
 
     public int $step = 1;
+
     public bool $show_create_file = false;
+
     public string $new_file_name = '';
+
     public string $new_file_email = '';
+
     public string $new_file_phone = '';
+
     public string $new_file_address = '';
 
     protected function rules(): array
@@ -116,7 +142,7 @@ class PatientForm extends Component
 
     public function updatedAccountType($value): void
     {
-        if (!in_array($value, ['family', 'corporate'])) {
+        if (! in_array($value, ['family', 'corporate'])) {
             $this->selected_file_id = null;
             $this->show_create_file = false;
         }
@@ -134,8 +160,8 @@ class PatientForm extends Component
 
     public function toggleCreateFile(): void
     {
-        $this->show_create_file = !$this->show_create_file;
-        if (!$this->show_create_file) {
+        $this->show_create_file = ! $this->show_create_file;
+        if (! $this->show_create_file) {
             $this->new_file_name = '';
             $this->new_file_email = '';
             $this->new_file_phone = '';
@@ -155,8 +181,9 @@ class PatientForm extends Component
                 function ($attribute, $value, $fail) {
                     foreach (explode(',', $value) as $num) {
                         $num = trim($num);
-                        if (!preg_match('/^\d{1,11}$/', $num)) {
+                        if (! preg_match('/^\d{1,11}$/', $num)) {
                             $fail('Each phone number must be up to 11 digits, separated by commas.');
+
                             return;
                         }
                     }
@@ -230,14 +257,6 @@ class PatientForm extends Component
         }
 
         $this->redirect(route('patients.index'), navigate: true);
-    }
-
-    private function base64ToUploadedFile(string $base64): UploadedFile
-    {
-        $decoded = base64_decode(substr($base64, strpos($base64, ',') + 1));
-        $tmpPath = tempnam(sys_get_temp_dir(), 'sig_') . '.png';
-        file_put_contents($tmpPath, $decoded);
-        return new UploadedFile($tmpPath, 'signature.png', 'image/png', null, true);
     }
 
     public function render()

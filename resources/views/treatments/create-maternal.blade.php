@@ -5,7 +5,13 @@
 
     <div class="card">
         <div class="card-body">
-            @livewire('maternal-health-form', ['patientId' => $patientId ? (int) $patientId : null, 'subOption' => $subOption])
+            @livewire('maternal-health-form', [
+                'patientId' => $patientId ? (int) $patientId : null,
+                'subOption' => $subOption,
+                'startStep' => (int) $startStep,
+                'visitType' => $visitType,
+                'visitId' => $visitId ? (int) $visitId : null,
+            ])
         </div>
     </div>
 </x-app-layout>

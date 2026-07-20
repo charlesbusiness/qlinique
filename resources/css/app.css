@@ -26,6 +26,107 @@
     --bs-btn-active-border-color: #0d5e32;
 }
 
+/* Pagination */
+.pagination .page-link {
+    color: #0d5e32;
+    border-color: #dee2e6;
+}
+.pagination .page-item.active .page-link {
+    background-color: #0d5e32;
+    border-color: #0d5e32;
+    color: #fff;
+}
+.pagination .page-link:hover {
+    background-color: #0a4d29;
+    border-color: #0a4d29;
+    color: #fff;
+}
+
+/* Category Selection Cards */
+.category-card {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    background: #fff;
+}
+.category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(13, 94, 50, 0.12);
+    border-color: #0d5e32;
+}
+.category-card:active {
+    transform: translateY(-1px);
+}
+.category-card .category-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 14px;
+}
+.category-card .category-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 4px;
+}
+.category-card .category-desc {
+    font-size: 0.8rem;
+    color: #6c757d;
+    line-height: 1.4;
+}
+.category-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.category-card.disabled:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: #e9ecef;
+}
+
+/* Category icon color variants */
+.category-icon-green { background: #e8f5e9; color: #2e7d32; }
+.category-icon-blue { background: #e3f2fd; color: #1565c0; }
+.category-icon-pink { background: #fce4ec; color: #c62828; }
+.category-icon-orange { background: #fff3e0; color: #e65100; }
+.category-icon-red { background: #ffebee; color: #c62828; }
+.category-icon-purple { background: #f3e5f5; color: #6a1b9a; }
+.category-icon-teal { background: #e0f2f1; color: #00695c; }
+.category-icon-indigo { background: #e8eaf6; color: #283593; }
+
+/* Option list items (antenatal options) */
+.option-list-item {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    background: #fff;
+}
+.option-list-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 15px rgba(13, 94, 50, 0.1);
+    border-color: #0d5e32;
+    background: #f8fdf9;
+}
+.option-list-item .option-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
 /* Offcanvas navbar: render inline on md+ screens, overlay on small */
 @media (min-width: 768px) {
     .navbar .offcanvas {

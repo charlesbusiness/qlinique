@@ -56,5 +56,11 @@
                 @endif
             @endforeach
         </div>
+        
+        @if ($documents->hasPages())
+            <div class="mt-2">
+                {{ $documents->links() }}
+            </div>
+        @endif
     @endif
 </div>

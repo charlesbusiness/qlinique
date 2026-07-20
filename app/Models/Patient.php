@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Traits\HasAuditTrail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Patient extends Model
 {
-    use HasFactory, SoftDeletes, HasAuditTrail;
+    use HasAuditTrail, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'file_id',
@@ -52,6 +52,7 @@ class Patient extends Model
             'admission' => 'Full Admission',
             'outpatient' => 'Out-patient',
             'outreach' => 'Outreach (Home Service)',
+            'antenatal' => 'Antenatal',
         ];
     }
 

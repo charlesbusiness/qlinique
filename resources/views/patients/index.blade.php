@@ -10,6 +10,7 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <form method="GET" class="d-flex gap-2 flex-grow-1 me-3">
+                <input type="hidden" name="tab" value="{{ $tab }}">
                 <input type="text" name="search" class="form-control" placeholder="Search by name, file no., or phone..." value="{{ request('search') }}">
                 <select name="account_type" class="form-select" style="max-width: 200px;">
                     <option value="">All Accounts</option>
@@ -19,12 +20,27 @@
                 </select>
                 <button class="btn btn-outline-secondary" type="submit">Search</button>
                 @if(request('search') || request('account_type'))
-                    <a href="{{ route('patients.index') }}" class="btn btn-outline-danger">Clear</a>
+                    <a href="{{ route('patients.index', ['tab' => $tab]) }}" class="btn btn-outline-danger">Clear</a>
                 @endif
             </form>
             @if (Auth::user()->hasPermission('patients.create'))
             <a href="{{ route('patients.create') }}" class="btn btn-primary">+ New Patient</a>
             @endif
+        </div>
+
+        <div class="card-body pb-0">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link {{ $tab === 'normal' ? 'active' : '' }}" href="{{ route('patients.index', array_merge(request()->query(), ['tab' => 'normal'])) }}">
+                        Normal <span class="badge bg-secondary ms-1">{{ $normalCount }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $tab === 'maternal' ? 'active' : '' }}" href="{{ route('patients.index', array_merge(request()->query(), ['tab' => 'maternal'])) }}">
+                        Maternal Health <span class="badge bg-secondary ms-1">{{ $maternalCount }}</span>
+                    </a>
+                </li>
+            </ul>
         </div>
 
         <div class="card-body p-0">

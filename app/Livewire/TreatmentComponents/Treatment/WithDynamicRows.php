@@ -1,7 +1,14 @@
 <?php
 
-namespace App\Livewire\Concerns;
+namespace App\Livewire\TreatmentComponents\Treatment;
 
+/**
+ * @property-write array $labTests
+ * @property-write array $labTestUploads
+ * @property-write array $treatmentPlanItems
+ * @property-write array $rmeResults
+ * @property-write string $rmeNewTest
+ */
 trait WithDynamicRows
 {
     public function addLabTest(): void
@@ -41,10 +48,12 @@ trait WithDynamicRows
 
     public function addRmeTest(): void
     {
-        if (!$this->rmeNewTest) return;
+        if (! $this->rmeNewTest) {
+            return;
+        }
 
         $exists = collect($this->rmeResults)->contains('test_name', $this->rmeNewTest);
-        if (!$exists) {
+        if (! $exists) {
             $this->rmeResults[] = [
                 'test_name' => $this->rmeNewTest,
                 'result' => '',

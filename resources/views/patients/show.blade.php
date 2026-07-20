@@ -84,6 +84,16 @@
                             <div class="col-md-4 mb-2"><strong>Relationship:</strong> {{ $patient->next_of_kin['relationship'] ?? '—' }}</div>
                             <div class="col-md-4 mb-2"><strong>Phone:</strong> {{ $patient->next_of_kin['phone'] ?? '—' }}</div>
                             <div class="col-12 mb-2"><strong>Address:</strong> {{ $patient->next_of_kin['address'] ?? '—' }}</div>
+                            @if (!empty($patient->next_of_kin['signature']))
+                                <div class="col-12 mt-2">
+                                    <strong>Signature:</strong><br>
+                                    @if (($patient->next_of_kin['signature_type'] ?? 'typed') === 'drawn' || ($patient->next_of_kin['signature_type'] ?? 'typed') === 'uploaded')
+                                        <img src="{{ asset('storage/' . $patient->next_of_kin['signature']) }}" class="border rounded" style="max-height: 60px;">
+                                    @else
+                                        <span style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.3rem;">{{ $patient->next_of_kin['signature'] }}</span>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

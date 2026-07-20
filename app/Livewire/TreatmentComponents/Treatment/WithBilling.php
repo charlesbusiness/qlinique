@@ -1,11 +1,38 @@
 <?php
 
-namespace App\Livewire\Concerns;
+namespace App\Livewire\TreatmentComponents\Treatment;
 
 use App\Models\TreatmentChart;
 
+/**
+ * @property-write array $rmeResults
+ * @property-write array $labTests
+ * @property-write array $treatmentPlanItems
+ * @property-write ?int $patientId
+ * @property-write ?int $draftId
+ */
 trait WithBilling
 {
+    public array $medicalBill = [
+        'registration' => 0,
+        'consultation' => 0,
+        'rapid_medical_examination' => 0,
+        'laboratory_test' => 0,
+        'admission' => 0,
+        'medical_service' => 0,
+        'logistics' => 0,
+        'maintenance' => 0,
+        'surgical_procedure' => 0,
+    ];
+
+    public float $billTotal = 0;
+
+    public float $billPaid = 0;
+
+    public float $billOutstanding = 0;
+
+    public float $previousOutstanding = 0;
+
     public function autoFillMedicalBill(): void
     {
         $this->medicalBill['rapid_medical_examination'] = collect($this->rmeResults)->sum('amount');
@@ -27,7 +54,7 @@ trait WithBilling
                 ->where('id', '!=', $this->draftId)
                 ->where('is_draft', false)
                 ->get()
-                ->sum(fn($chart) => ($chart->medical_bill['total'] ?? 0) - ($chart->medical_bill['paid'] ?? 0));
+                ->sum(fn ($chart) => ($chart->medical_bill['total'] ?? 0) - ($chart->medical_bill['paid'] ?? 0));
         }
 
         $this->billTotal = array_sum($this->stripExtraBillKeys());

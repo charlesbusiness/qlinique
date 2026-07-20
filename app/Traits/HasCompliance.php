@@ -12,6 +12,7 @@ trait HasCompliance
         }
 
         $attended = $this->complianceLogs()->where('status', 'attended')->count();
+
         return round(($attended / $total) * 100, 2);
     }
 

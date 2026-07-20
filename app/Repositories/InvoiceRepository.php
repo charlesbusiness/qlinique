@@ -15,7 +15,7 @@ class InvoiceRepository extends BaseRepository
     {
         return $this->model
             ->whereIn('status', ['pending', 'partial'])
-            ->with('patient')
+            ->with('patientFile', 'patient')
             ->latest()
             ->paginate(15);
     }
@@ -24,7 +24,7 @@ class InvoiceRepository extends BaseRepository
     {
         return $this->model
             ->where('patient_id', $patientId)
-            ->with('payments')
+            ->with('payments', 'patientFile')
             ->latest()
             ->get();
     }

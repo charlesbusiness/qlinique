@@ -16,9 +16,9 @@ class AntenatalController extends Controller
     public function index()
     {
         $records = AntenatalRecord::with('patient.file')
-            ->whereHas('patient', fn($q) => $q->where('is_active', true))
+            ->whereHas('patient', fn ($q) => $q->where('is_active', true))
             ->latest()
-            ->paginate(15);
+            ->paginate(10);
 
         return view('antenatal.index', compact('records'));
     }
@@ -26,6 +26,7 @@ class AntenatalController extends Controller
     public function create()
     {
         $patients = Patient::with('file')->where('is_active', true)->orderBy('name')->get();
+
         return view('antenatal.create', compact('patients'));
     }
 
@@ -48,12 +49,14 @@ class AntenatalController extends Controller
     public function show(AntenatalRecord $antenatal)
     {
         $antenatal->load('patient.file', 'partographs');
+
         return view('antenatal.show', compact('antenatal'));
     }
 
     public function partograph(AntenatalRecord $antenatal)
     {
         $antenatal->load('patient.file', 'partographs');
+
         return view('antenatal.partograph', compact('antenatal'));
     }
 

@@ -1,20 +1,77 @@
 <?php
 
-namespace App\Livewire\Concerns;
+namespace App\Livewire\TreatmentComponents\Treatment;
 
+use App\Livewire\TreatmentComponents\Concerns\HasBase64Signature;
 use App\Models\TreatmentChart;
 use App\Services\TreatmentService;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property-write int $step
+ * @property-write ?int $patientId
+ * @property-write string $selectedCategory
+ * @property-write string $sub_category
+ * @property-write string $finding_on_history
+ * @property-write string $previous_treatment_history
+ * @property-write string $recommended_drugs
+ * @property-write string $allergies
+ * @property-write string $primary_diagnosis
+ * @property-write array $vitals
+ * @property-write string $anthropometryComment
+ * @property-write array $heartLungsFindings
+ * @property-write string $heartLungsComment
+ * @property-write array $eentEyesFindings
+ * @property-write array $eentEarsFindings
+ * @property-write array $eentNoseFindings
+ * @property-write array $eentThroatFindings
+ * @property-write string $eentComment
+ * @property-write array $abdominalFindings
+ * @property-write string $abdominalComment
+ * @property-write string $reflexFinding
+ * @property-write string $reflexComment
+ * @property-write array $hairFindings
+ * @property-write string $hairComment
+ * @property-write array $skinFindings
+ * @property-write string $skinComment
+ * @property-write array $rmeResults
+ * @property-write string $rmeComment
+ * @property-write array $labTests
+ * @property-write array $labTestUploads
+ * @property-write array $treatmentPlanItems
+ * @property-write bool $consent_enabled
+ * @property-write array $consent
+ * @property-write $consent_upload_patient
+ * @property-write $consent_upload_witness
+ * @property-write $consent_upload_physician
+ * @property-write $consent_drawn_patient
+ * @property-write $consent_drawn_witness
+ * @property-write $consent_drawn_physician
+ * @property-write array $medicalBill
+ * @property-write float $billPaid
+ * @property-write float $billTotal
+ * @property-write float $billOutstanding
+ * @property-write float $previousOutstanding
+ * @property-write bool $showCategory
+ * @property-write bool $showStep1
+ * @property-write bool $isDraft
+ * @property-write bool $isEditing
+ * @property-write ?int $treatmentId
+ */
 trait WithDraftManagement
 {
+    use HasBase64Signature;
     public function saveDraft(): void
     {
-        if (!$this->draftId) return;
+        if (! $this->draftId) {
+            return;
+        }
 
         $service = app(TreatmentService::class);
         $draft = TreatmentChart::find($this->draftId);
-        if (!$draft) return;
+        if (! $draft) {
+            return;
+        }
 
         $data = $this->buildStepData($this->step);
         $service->saveStep($draft, $this->step, $data);
@@ -33,11 +90,11 @@ trait WithDraftManagement
                 'allergies' => $this->allergies ?: null,
             ],
             2 => [
-                'vitals' => array_filter($this->vitals, fn($v) => $v !== null && $v !== ''),
+                'vitals' => array_filter($this->vitals, fn ($v) => $v !== null && $v !== ''),
             ],
             3 => [
                 'physical_examinations' => $this->buildPhysicalExamData(),
-                'vitals' => array_filter($this->vitals, fn($v) => $v !== null && $v !== ''),
+                'vitals' => array_filter($this->vitals, fn ($v) => $v !== null && $v !== ''),
             ],
             4 => [
                 'physical_examinations' => $this->buildPhysicalExamData(),
@@ -81,14 +138,17 @@ trait WithDraftManagement
             ['section' => 'hair', 'findings' => $this->hairFindings, 'comment' => $this->hairComment ?: null],
             ['section' => 'skin', 'findings' => $this->skinFindings, 'comment' => $this->skinComment ?: null],
         ];
-        return array_filter($data, fn($d) => $d['findings'] || $d['comment']);
+
+        return array_filter($data, fn ($d) => $d['findings'] || $d['comment']);
     }
 
     protected function buildLabTestData(): array
     {
         $tests = [];
         foreach ($this->labTests as $i => $lab) {
-            if (empty($lab['test_type'])) continue;
+            if (empty($lab['test_type'])) {
+                continue;
+            }
             $item = [
                 'test_type' => $lab['test_type'],
                 'sample_type' => $lab['sample_type'] ?? null,
@@ -100,14 +160,15 @@ trait WithDraftManagement
             }
             $tests[] = $item;
         }
+
         return $tests;
     }
 
     protected function buildTreatmentPlanData(): array
     {
-        $items = array_filter($this->treatmentPlanItems, fn($item) => !empty($item['drug_name']));
+        $items = array_filter($this->treatmentPlanItems, fn ($item) => ! empty($item['drug_name']));
 
-        return array_values(array_map(fn($item) => array_merge($item, [
+        return array_values(array_map(fn ($item) => array_merge($item, [
             'length_display' => $item['length_display'] ?? $this->lengthDisplay($item['length_value'] ?? 1, $item['length_unit'] ?? 'days'),
         ]), $items));
     }
@@ -123,13 +184,25 @@ trait WithDraftManagement
             $consent['patient_signature_upload'] = $this->consent_upload_patient->store('signatures', 'public');
             $consent['patient_signature'] = null;
         }
+        if ($consent['patient_signature_type'] === 'drawn' && $this->consent_drawn_patient) {
+            $file = $this->base64ToUploadedFile($this->consent_drawn_patient, 'consent_pat_sig_' . time() . '.png');
+            $consent['patient_signature'] = $file->store('signatures', 'public');
+        }
         if ($consent['witness_signature_type'] === 'uploaded' && $this->consent_upload_witness) {
             $consent['witness_signature_upload'] = $this->consent_upload_witness->store('signatures', 'public');
             $consent['witness_signature'] = null;
         }
+        if ($consent['witness_signature_type'] === 'drawn' && $this->consent_drawn_witness) {
+            $file = $this->base64ToUploadedFile($this->consent_drawn_witness, 'consent_wit_sig_' . time() . '.png');
+            $consent['witness_signature'] = $file->store('signatures', 'public');
+        }
         if ($consent['physician_signature_type'] === 'uploaded' && $this->consent_upload_physician) {
             $consent['physician_signature_upload'] = $this->consent_upload_physician->store('signatures', 'public');
             $consent['physician_signature'] = null;
+        }
+        if ($consent['physician_signature_type'] === 'drawn' && $this->consent_drawn_physician) {
+            $file = $this->base64ToUploadedFile($this->consent_drawn_physician, 'consent_doc_sig_' . time() . '.png');
+            $consent['physician_signature'] = $file->store('signatures', 'public');
         }
 
         return $consent;
@@ -205,7 +278,7 @@ trait WithDraftManagement
             }
         }
 
-        $this->rmeResults = array_values($draft->rmeResults->map(fn($rme) => [
+        $this->rmeResults = array_values($draft->rmeResults->map(fn ($rme) => [
             'test_name' => $rme->test_name,
             'result' => $rme->result ?? '',
             'amount' => $rme->amount ?? 0,
@@ -264,9 +337,11 @@ trait WithDraftManagement
                 $chart->is_completed = false;
                 $chart->save();
                 $service->syncSchedule($chart);
+                $service->syncInvoice($chart);
             }
             session()->flash('status', 'Treatment chart updated successfully.');
             $this->redirect(route('treatments.show', $this->treatmentId), navigate: true);
+
             return;
         }
 

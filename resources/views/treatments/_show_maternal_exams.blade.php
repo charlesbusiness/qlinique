@@ -285,9 +285,12 @@
                     <p class="mb-1"><strong>Attending Physician:</strong> {{ $record->attending_physician_name }}</p>
                 @endif
                 @if ($record->attending_physician_signature)
-                    <p class="mb-1"><strong>Physician Signature:</strong>
+                    <p class="mb-1"><strong>Physician Signature:</strong></p>
+                    @if (($record->attending_physician_signature_type ?? 'typed') === 'drawn' || ($record->attending_physician_signature_type ?? 'typed') === 'uploaded')
+                        <img src="{{ asset('storage/' . $record->attending_physician_signature) }}" class="border rounded" style="max-height: 60px;">
+                    @else
                         <span style="font-family: 'Dancing Script', 'Pacifico', cursive; font-size: 1.2rem;">{{ $record->attending_physician_signature }}</span>
-                    </p>
+                    @endif
                 @endif
                 @if ($record->attending_physician_date)
                     <p class="mb-0"><strong>Date Signed:</strong> {{ $record->attending_physician_date->format('d M Y') }}</p>

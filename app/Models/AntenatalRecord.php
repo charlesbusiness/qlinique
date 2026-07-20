@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Traits\HasAuditTrail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AntenatalRecord extends Model
 {
-    use HasFactory, SoftDeletes, HasAuditTrail;
+    use HasAuditTrail, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'patient_id',

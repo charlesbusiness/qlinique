@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
-use App\Models\Patient;
+use App\Models\Payment;
+use App\Models\PatientFile;
 use App\Services\FinanceService;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ class FinanceController extends Controller
 
     public function invoices()
     {
-        $invoices = Invoice::with('patient.file')
+        $invoices = Invoice::with('patientFile', 'patient')
             ->latest()
             ->paginate(15);
 
@@ -24,17 +25,17 @@ class FinanceController extends Controller
 
     public function createInvoice()
     {
-        $patients = Patient::with('file')
-            ->where('is_active', true)
+        $patientFiles = PatientFile::with('patients')
             ->orderBy('name')
             ->get();
 
-        return view('finance.create-invoice', compact('patients'));
+        return view('finance.create-invoice', compact('patientFiles'));
     }
 
     public function storeInvoice(Request $request)
     {
         $data = $request->validate([
+            'patient_file_id' => 'required|exists:patient_files,id',
             'patient_id' => 'required|exists:patients,id',
             'treatment_chart_id' => 'nullable|exists:treatment_charts,id',
             'amount_due' => 'required|numeric|min:0',
@@ -49,13 +50,14 @@ class FinanceController extends Controller
 
     public function showInvoice(Invoice $invoice)
     {
-        $invoice->load('patient.file', 'payments', 'treatmentChart');
+        $invoice->load('patientFile', 'patient', 'payments', 'treatmentChart', 'items');
+
         return view('finance.show-invoice', compact('invoice'));
     }
 
     public function payments()
     {
-        $payments = \App\Models\Payment::with('invoice.patient.file')
+        $payments = Payment::with('invoice.patientFile', 'invoice.patient')
             ->latest()
             ->paginate(15);
 

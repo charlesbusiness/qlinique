@@ -8,7 +8,7 @@
         @if ($step < 7)
             <button type="submit" class="btn btn-primary">Save & Continue</button>
         @else
-            <button type="submit" class="btn btn-success">Submit Record</button>
+            <button type="submit" class="btn btn-success">{{ $isEditing ? 'Update Record' : 'Submit Record' }}</button>
         @endif
     </div>
 </div>

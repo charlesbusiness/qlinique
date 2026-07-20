@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use App\Models\Patient;
 use App\Models\TreatmentChart;
-use App\Models\Invoice;
 use App\Services\ComplianceService;
 
 class DashboardController extends Controller

@@ -13,7 +13,7 @@ class PatientRepository extends BaseRepository
 
     public function findByFileNumber(string $fileNumber): ?Patient
     {
-        return $this->model->whereHas('file', fn($q) => $q->where('file_number', $fileNumber))->first();
+        return $this->model->whereHas('file', fn ($q) => $q->where('file_number', $fileNumber))->first();
     }
 
     public function search(string $query)
@@ -21,7 +21,7 @@ class PatientRepository extends BaseRepository
         return $this->model
             ->where('name', 'like', "%{$query}%")
             ->orWhere('phone', 'like', "%{$query}%")
-            ->orWhereHas('file', fn($q) => $q->where('file_number', 'like', "%{$query}%"))
+            ->orWhereHas('file', fn ($q) => $q->where('file_number', 'like', "%{$query}%"))
             ->latest()
             ->paginate(15);
     }
@@ -30,7 +30,7 @@ class PatientRepository extends BaseRepository
     {
         return $this->model
             ->where('file_id', $fileId)
-            ->orWhereHas('file', fn($q) => $q->where('id', $fileId))
+            ->orWhereHas('file', fn ($q) => $q->where('id', $fileId))
             ->get();
     }
 

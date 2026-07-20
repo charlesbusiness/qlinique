@@ -4,12 +4,15 @@ namespace App\Livewire;
 
 use App\Models\ComplianceLog;
 use App\Models\TreatmentChart;
+use Carbon\Carbon;
 use Livewire\Component;
 
 class ComplianceTracker extends Component
 {
     public TreatmentChart $treatment;
+
     public array $logs = [];
+
     public bool $editing = false;
 
     private function parseSchedule(): array
@@ -44,7 +47,7 @@ class ComplianceTracker extends Component
             ->toArray();
     }
 
-    public function resolveSlotDate(int $slot): \Carbon\Carbon
+    public function resolveSlotDate(int $slot): Carbon
     {
         $parsed = $this->parseSchedule();
         $unitType = $parsed['unitType'];
@@ -128,8 +131,8 @@ class ComplianceTracker extends Component
                 $log = $this->treatment->complianceLogs()
                     ->whereBetween('date', [$start, $end])
                     ->first();
-                $slotLabel = 'Week ' . ($i + 1);
-                $dateLabel = $start->format('d M') . ' - ' . $end->format('d M');
+                $slotLabel = 'Week '.($i + 1);
+                $dateLabel = $start->format('d M').' - '.$end->format('d M');
             } elseif ($unitType === 'months') {
                 $start = $this->treatment->visit_date->copy()->addMonthsNoOverflow($i);
                 $end = $start->copy()->addMonthNoOverflow()->subDay();
@@ -138,11 +141,11 @@ class ComplianceTracker extends Component
                     ->whereBetween('date', [$start, $end])
                     ->first();
                 $slotLabel = $start->format('M Y');
-                $dateLabel = $start->format('d M') . ' - ' . $end->format('d M');
+                $dateLabel = $start->format('d M').' - '.$end->format('d M');
             } else {
                 $date = $this->treatment->visit_date->copy()->addDays($i);
                 $log = $this->treatment->complianceLogs()->whereDate('date', $date)->first();
-                $slotLabel = 'Day ' . ($i + 1);
+                $slotLabel = 'Day '.($i + 1);
                 $dateLabel = $date->format('d M');
             }
 

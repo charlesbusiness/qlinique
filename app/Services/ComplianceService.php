@@ -14,8 +14,8 @@ class ComplianceService
 
         return [
             'total_active' => (clone $query)->count(),
-            'compliant' => (clone $query)->get()->filter(fn($t) => $t->compliancePercentage() >= 75)->count(),
-            'non_compliant' => (clone $query)->get()->filter(fn($t) => $t->compliancePercentage() < 75)->count(),
+            'compliant' => (clone $query)->get()->filter(fn ($t) => $t->compliancePercentage() >= 75)->count(),
+            'non_compliant' => (clone $query)->get()->filter(fn ($t) => $t->compliancePercentage() < 75)->count(),
         ];
     }
 }
