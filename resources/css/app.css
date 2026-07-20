@@ -1,5 +1,9 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
+body {
+    font-weight: 500;
+}
+
 :root {
     --bs-primary: #0d5e32;
     --bs-primary-rgb: 13, 94, 50;
