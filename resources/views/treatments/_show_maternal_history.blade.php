@@ -158,7 +158,20 @@
                 @if ($record->family_genetic_history && count($record->family_genetic_history))
                     <hr>
                     <h6 class="mb-2">Family & Genetic History</h6>
-                    <p class="mb-1">{{ $labelMap(\App\Livewire\MaternalHealthForm::$familyGeneticOptions, $record->family_genetic_history) }}</p>
+                    @foreach ($record->family_genetic_history as $fKey)
+                        <p class="mb-1">
+                            <strong>{{ \App\Livewire\MaternalHealthForm::$familyGeneticOptions[$fKey] ?? ucfirst(str_replace('_', ' ', $fKey)) }}:</strong>
+                            @if ($fKey === 'genetic_errors' && $record->genetic_errors_selection)
+                                {{ \App\Livewire\MaternalHealthForm::$geneticErrorsOptions[$record->genetic_errors_selection] ?? $record->genetic_errors_selection }}
+                            @elseif ($fKey === 'heart_defects' && $record->heart_defects_selection)
+                                {{ \App\Livewire\MaternalHealthForm::$heartDefectsOptions[$record->heart_defects_selection] ?? $record->heart_defects_selection }}
+                            @elseif ($fKey === 'family_history_conditions' && $record->family_history_selection)
+                                {{ \App\Livewire\MaternalHealthForm::$familyHistoryOptions[$record->family_history_selection] ?? $record->family_history_selection }}
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </p>
+                    @endforeach
                 @endif
                 @if ($record->family_history_notes)
                     <p class="mb-1"><strong>Notes:</strong> {{ $record->family_history_notes }}</p>
@@ -178,11 +191,11 @@
                     <div class="col-md-6"><strong>Travel History:</strong> {{ $record->travel_history ?? '—' }}</div>
                 </div>
 
-                @if ($record->diet_intake && count($record->diet_intake))
-                    <p class="mb-1 mt-2"><strong>Diet Intake:</strong> {{ $labelMap(\App\Livewire\MaternalHealthForm::$dietIntakeOptions, $record->diet_intake) }}</p>
+                @if ($record->diet_intake)
+                    <p class="mb-1 mt-2"><strong>Diet Intake:</strong> {{ \App\Livewire\MaternalHealthForm::$dietIntakeOptions[$record->diet_intake] ?? $record->diet_intake }}</p>
                 @endif
-                @if ($record->physical_activities && count($record->physical_activities))
-                    <p class="mb-0"><strong>Physical Activities:</strong> {{ $labelMap(\App\Livewire\MaternalHealthForm::$physicalActivityOptions, $record->physical_activities) }}</p>
+                @if ($record->physical_activities)
+                    <p class="mb-0"><strong>Physical Activities:</strong> {{ \App\Livewire\MaternalHealthForm::$physicalActivityOptions[$record->physical_activities] ?? $record->physical_activities }}</p>
                 @endif
             </div>
         </div>

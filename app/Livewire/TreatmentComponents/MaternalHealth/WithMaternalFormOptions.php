@@ -41,9 +41,28 @@ trait WithMaternalFormOptions
     ];
 
     public static array $familyGeneticOptions = [
-        'genetic_errors' => 'Genetic / Inborn Errors (Cystic Fibrosis, Sickle Cell Disease/Trait, Thalassemia)',
+        'genetic_errors' => 'Genetic / Inborn Errors',
         'heart_defects' => 'Congenital Heart Defects / Birth Defects',
-        'family_history_conditions' => 'Family History of Preeclampsia, Gestational Diabetes, or Twins',
+        'family_history_conditions' => 'Family History',
+    ];
+
+    public static array $geneticErrorsOptions = [
+        'inborn_errors' => 'Inborn Errors',
+        'cystic_fibrosis' => 'Cystic Fibrosis',
+        'sickle_cell_disease' => 'Sickle Cell Disease',
+        'sickle_cell_trait' => 'Sickle Cell Trait',
+        'thalassemia' => 'Thalassemia',
+    ];
+
+    public static array $heartDefectsOptions = [
+        'heart_defects' => 'Heart Defects',
+        'birth_defects' => 'Birth Defects',
+    ];
+
+    public static array $familyHistoryOptions = [
+        'preeclampsia' => 'Preeclampsia',
+        'gestational_diabetes' => 'Gestational Diabetes',
+        'twins_multiples' => 'Twins/Multiples',
     ];
 
     public static array $dietIntakeOptions = [

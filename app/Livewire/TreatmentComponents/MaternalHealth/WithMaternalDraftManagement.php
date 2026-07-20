@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-write bool $isDraft
  * @property-write ?int $recordId
  * @property-write ?Patient $patient
+ * @property-read ?int $doseNumber
  * @property-write ?string $lmp
  * @property-write string $cycle_regularity
  * @property-write ?string $edd
@@ -39,6 +40,9 @@ use Illuminate\Support\Facades\Auth;
  * @property-write string $allergies
  * @property-write string $current_medications
  * @property-write array $family_genetic_history
+ * @property-write ?string $genetic_errors_selection
+ * @property-write ?string $heart_defects_selection
+ * @property-write ?string $family_history_selection
  * @property-write string $family_history_notes
  * @property-write string $tobacco_vape
  * @property-write ?int $tobacco_packs_per_day
@@ -53,8 +57,8 @@ use Illuminate\Support\Facades\Auth;
  * @property-write string $ipv_details
  * @property-write string $occupation_hazard
  * @property-write string $travel_history
- * @property-write array $diet_intake
- * @property-write array $physical_activities
+ * @property-write string $diet_intake
+ * @property-write string $physical_activities
  * @property-write ?float $temperature
  * @property-write string $temperature_unit
  * @property-write ?int $pulse_bpm
@@ -184,6 +188,9 @@ trait WithMaternalDraftManagement
                 'allergies' => $this->allergies ?: null,
                 'current_medications' => $this->current_medications ?: null,
                 'family_genetic_history' => $this->family_genetic_history,
+                'genetic_errors_selection' => $this->genetic_errors_selection,
+                'heart_defects_selection' => $this->heart_defects_selection,
+                'family_history_selection' => $this->family_history_selection,
                 'family_history_notes' => $this->family_history_notes ?: null,
                 'tobacco_vape' => $this->tobacco_vape ?: null,
                 'tobacco_packs_per_day' => $this->tobacco_packs_per_day,
@@ -198,8 +205,8 @@ trait WithMaternalDraftManagement
                 'ipv_details' => $this->ipv_details ?: null,
                 'occupation_hazard' => $this->occupation_hazard ?: null,
                 'travel_history' => $this->travel_history ?: null,
-                'diet_intake' => $this->diet_intake,
-                'physical_activities' => $this->physical_activities,
+                'diet_intake' => $this->diet_intake ?: null,
+                'physical_activities' => $this->physical_activities ?: null,
             ],
             4 => [
                 'temperature' => $this->temperature,

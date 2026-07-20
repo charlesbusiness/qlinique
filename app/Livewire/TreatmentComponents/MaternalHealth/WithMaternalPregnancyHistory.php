@@ -50,6 +50,12 @@ trait WithMaternalPregnancyHistory
 
     public array $family_genetic_history = [];
 
+    public ?string $genetic_errors_selection = null;
+
+    public ?string $heart_defects_selection = null;
+
+    public ?string $family_history_selection = null;
+
     public string $family_history_notes = '';
 
     public string $tobacco_vape = '';
@@ -78,7 +84,7 @@ trait WithMaternalPregnancyHistory
 
     public string $travel_history = '';
 
-    public array $diet_intake = [];
+    public string $diet_intake = '';
 
-    public array $physical_activities = [];
+    public string $physical_activities = '';
 }

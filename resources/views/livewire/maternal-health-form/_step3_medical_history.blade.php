@@ -43,11 +43,44 @@
 <hr class="my-4">
 
 <h6 class="mb-3">Family & Genetic History</h6>
-<div class="mb-3">
+<div class="mb-3" x-data="{ openGenetic: @entangle('family_genetic_history') }">
     @foreach (\App\Livewire\MaternalHealthForm::$familyGeneticOptions as $value => $label)
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" wire:model="family_genetic_history" value="{{ $value }}" id="fam_{{ $value }}">
-            <label class="form-check-label" for="fam_{{ $value }}">{{ $label }}</label>
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" wire:model="family_genetic_history" value="{{ $value }}" id="fam_{{ $value }}">
+                <label class="form-check-label fw-semibold" for="fam_{{ $value }}">{{ $label }}</label>
+            </div>
+            @if ($value === 'genetic_errors')
+                <div class="ms-4 mt-2" wire:ignore>
+                    <select class="form-select form-select-sm" x-show="openGenetic.includes('genetic_errors')"
+                            x-on:change="$wire.set('genetic_errors_selection', $event.target.value)">
+                        <option value="">— Select condition —</option>
+                        @foreach (\App\Livewire\MaternalHealthForm::$geneticErrorsOptions as $opt => $optLabel)
+                            <option value="{{ $opt }}" {{ ($genetic_errors_selection ?? '') === $opt ? 'selected' : '' }}>{{ $optLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @elseif ($value === 'heart_defects')
+                <div class="ms-4 mt-2" wire:ignore>
+                    <select class="form-select form-select-sm" x-show="openGenetic.includes('heart_defects')"
+                            x-on:change="$wire.set('heart_defects_selection', $event.target.value)">
+                        <option value="">— Select condition —</option>
+                        @foreach (\App\Livewire\MaternalHealthForm::$heartDefectsOptions as $opt => $optLabel)
+                            <option value="{{ $opt }}" {{ ($heart_defects_selection ?? '') === $opt ? 'selected' : '' }}>{{ $optLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @elseif ($value === 'family_history_conditions')
+                <div class="ms-4 mt-2" wire:ignore>
+                    <select class="form-select form-select-sm" x-show="openGenetic.includes('family_history_conditions')"
+                            x-on:change="$wire.set('family_history_selection', $event.target.value)">
+                        <option value="">— Select condition —</option>
+                        @foreach (\App\Livewire\MaternalHealthForm::$familyHistoryOptions as $opt => $optLabel)
+                            <option value="{{ $opt }}" {{ ($family_history_selection ?? '') === $opt ? 'selected' : '' }}>{{ $optLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
         </div>
     @endforeach
     <div class="mt-2">
@@ -150,20 +183,20 @@
 <div class="row g-3 mb-3">
     <div class="col-md-6">
         <label class="form-label fw-semibold">Diet Intake</label>
-        @foreach (\App\Livewire\MaternalHealthForm::$dietIntakeOptions as $value => $label)
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" wire:model="diet_intake" value="{{ $value }}" id="diet_{{ $value }}">
-                <label class="form-check-label" for="diet_{{ $value }}">{{ $label }}</label>
-            </div>
-        @endforeach
+        <select class="form-select" wire:model="diet_intake">
+            <option value="">— Select diet —</option>
+            @foreach (\App\Livewire\MaternalHealthForm::$dietIntakeOptions as $value => $label)
+                <option value="{{ $value }}">{{ $label }}</option>
+            @endforeach
+        </select>
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Physical Activities</label>
-        @foreach (\App\Livewire\MaternalHealthForm::$physicalActivityOptions as $value => $label)
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" wire:model="physical_activities" value="{{ $value }}" id="phys_{{ $value }}">
-                <label class="form-check-label" for="phys_{{ $value }}">{{ $label }}</label>
-            </div>
-        @endforeach
+        <select class="form-select" wire:model="physical_activities">
+            <option value="">— Select activity level —</option>
+            @foreach (\App\Livewire\MaternalHealthForm::$physicalActivityOptions as $value => $label)
+                <option value="{{ $value }}">{{ $label }}</option>
+            @endforeach
+        </select>
     </div>
 </div>
