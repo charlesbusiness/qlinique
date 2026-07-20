@@ -2,19 +2,13 @@
     @include('livewire.maternal-health-form._header')
 
     <form wire:submit="nextStep">
-        {{-- Only show steps 1-3 if startStep is 1 --}}
-        @if ($startStep === 1)
-            @if ($step === 1)
-                @include('livewire.maternal-health-form._step1_patient_summary')
-            @elseif ($step === 2)
-                @include('livewire.maternal-health-form._step2_pregnancy')
-            @elseif ($step === 3)
-                @include('livewire.maternal-health-form._step3_medical_history')
-            @endif
-        @endif
-
-        {{-- Steps 4-7 are always shown --}}
-        @if ($step === 4)
+        @if ($step === 1)
+            @include('livewire.maternal-health-form._step1_patient_summary')
+        @elseif ($step === 2)
+            @include('livewire.maternal-health-form._step2_pregnancy')
+        @elseif ($step === 3)
+            @include('livewire.maternal-health-form._step3_medical_history')
+        @elseif ($step === 4)
             @include('livewire.maternal-health-form._step4_vitals_rme')
         @elseif ($step === 5)
             @include('livewire.maternal-health-form._step5_physical_exam')

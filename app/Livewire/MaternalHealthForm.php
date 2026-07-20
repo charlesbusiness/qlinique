@@ -64,15 +64,6 @@ class MaternalHealthForm extends Component
 
     public function getStepLabelsProperty(): array
     {
-        if ($this->startStep === 4) {
-            return [
-                4 => 'Vitals & RME',
-                5 => 'Physical & Obstetric Exam',
-                6 => 'Investigation & Treatment',
-                7 => 'Consent & Billing',
-            ];
-        }
-
         return [
             1 => 'Patient Summary',
             2 => 'Pregnancy & Obstetric History',
@@ -228,7 +219,7 @@ class MaternalHealthForm extends Component
 
     public function prevStep(): void
     {
-        if ($this->step > $this->startStep) {
+        if ($this->step > 1) {
             $this->step--;
         }
     }
