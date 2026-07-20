@@ -58,6 +58,7 @@ class MaternalHealthRecord extends Model
         'respiration_bpm',
         'bp_systolic',
         'bp_diastolic',
+        'oxygen_saturation',
         'vitals_comment',
         'weight',
         'height',

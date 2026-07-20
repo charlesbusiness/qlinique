@@ -20,7 +20,7 @@
     </div>
     <div class="col-md-3">
         <label class="form-label">SpO2 (%)</label>
-        <input type="number" class="form-control" wire:model="bp_systolic" placeholder="Systolic">
+        <input type="number" class="form-control" wire:model="oxygen_saturation">
     </div>
     <div class="col-md-3">
         <label class="form-label">BP Systolic (mmHg)</label>
@@ -37,18 +37,44 @@
 </div>
 
 <h6 class="mb-3">Anthropometric Measure</h6>
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4" x-data>
     <div class="col-md-3">
         <label class="form-label">Weight (kg)</label>
-        <input type="number" step="0.1" class="form-control" wire:model="weight">
+        <input type="number" step="0.1" id="mhWeightInput" class="form-control" wire:model="weight"
+            x-on:blur="
+                let w = parseFloat($el.value);
+                let h = parseFloat(document.getElementById('mhHeightInput').value);
+                let bmiEl = document.getElementById('mhBmiInput');
+                if (w && h && h > 0) {
+                    let bmi = Math.round((w / ((h / 100) ** 2)) * 10) / 10;
+                    bmiEl.value = bmi;
+                    $wire.set('bmi', bmi);
+                } else {
+                    bmiEl.value = '';
+                    $wire.set('bmi', null);
+                }
+            ">
     </div>
     <div class="col-md-3">
         <label class="form-label">Height (cm)</label>
-        <input type="number" step="0.1" class="form-control" wire:model="height">
+        <input type="number" step="0.1" id="mhHeightInput" class="form-control" wire:model="height"
+            x-on:blur="
+                let w = parseFloat(document.getElementById('mhWeightInput').value);
+                let h = parseFloat($el.value);
+                let bmiEl = document.getElementById('mhBmiInput');
+                if (w && h && h > 0) {
+                    let bmi = Math.round((w / ((h / 100) ** 2)) * 10) / 10;
+                    bmiEl.value = bmi;
+                    $wire.set('bmi', bmi);
+                } else {
+                    bmiEl.value = '';
+                    $wire.set('bmi', null);
+                }
+            ">
     </div>
     <div class="col-md-3">
         <label class="form-label">BMI</label>
-        <input type="number" step="0.1" class="form-control" wire:model="bmi" readonly>
+        <input type="number" step="0.1" id="mhBmiInput" class="form-control" wire:model="bmi" readonly>
     </div>
     <div class="col-md-3">
         <label class="form-label">Comment</label>

@@ -61,6 +61,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-write ?int $respiration_bpm
  * @property-write ?int $bp_systolic
  * @property-write ?int $bp_diastolic
+ * @property-write ?int $oxygen_saturation
  * @property-write string $vitals_comment
  * @property-write ?float $weight
  * @property-write ?float $height
@@ -207,6 +208,7 @@ trait WithMaternalDraftManagement
                 'respiration_bpm' => $this->respiration_bpm,
                 'bp_systolic' => $this->bp_systolic,
                 'bp_diastolic' => $this->bp_diastolic,
+                'oxygen_saturation' => $this->oxygen_saturation,
                 'vitals_comment' => $this->vitals_comment ?: null,
                 'weight' => $this->weight,
                 'height' => $this->height,

@@ -17,6 +17,8 @@ trait WithMaternalVitalsExam
 
     public ?int $bp_diastolic = null;
 
+    public ?int $oxygen_saturation = null;
+
     public string $vitals_comment = '';
 
     public ?float $weight = null;
@@ -105,23 +107,4 @@ trait WithMaternalVitalsExam
     public $attending_physician_signature_upload = null;
 
     public ?string $attending_physician_date = '';
-
-    // ─── BMI Auto-calc ─────────────────────────────────────────────
-
-    public function updatedWeight(): void
-    {
-        $this->calculateBmi();
-    }
-
-    public function updatedHeight(): void
-    {
-        $this->calculateBmi();
-    }
-
-    private function calculateBmi(): void
-    {
-        if ($this->weight && $this->height && $this->height > 0) {
-            $this->bmi = round($this->weight / (($this->height / 100) ** 2), 1);
-        }
-    }
 }
