@@ -7,9 +7,8 @@
     </x-slot>
 
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header">
             <span>{{ $patientFile->file_number }} ({{ ucfirst($patientFile->type) }})</span>
-            <a href="{{ route('patients.create', ['file_id' => $patientFile->id]) }}" class="btn btn-sm btn-success">+ Add Patient</a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
