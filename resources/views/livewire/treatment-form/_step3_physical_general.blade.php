@@ -62,6 +62,7 @@
 
 {{-- (2) Heart & Lungs --}}
 <div class="card mb-3">
+    <h1 class="card-header">PHYSICAL EXAMINATION</h1>
     <div class="card-body">
         <h5 class="card-title">(1) HEART AND LUNGS</h5>
         <div class="row">

@@ -58,8 +58,8 @@ trait WithStepNavigation
                 'vitals.comment' => 'nullable|string',
             ],
             3 => [
-                'vitals.weight' => 'required|numeric|min:0',
-                'vitals.height' => 'required|numeric|min:0',
+                'vitals.weight' => 'nullable|numeric|min:0',
+                'vitals.height' => 'nullable|numeric|min:0',
             ],
             6 => [
                 'consent.procedure_description' => 'required_if:consent_enabled,true|string|max:500',
