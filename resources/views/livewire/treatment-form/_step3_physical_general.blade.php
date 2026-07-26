@@ -3,28 +3,7 @@
     $eentParts = ['eyes' => 'EYES', 'ears' => 'EARS', 'nose' => 'NOSE', 'throat' => 'THROAT'];
 @endphp
 
-{{-- (1) Heart & Lungs --}}
-<div class="card mb-3">
-    <div class="card-body">
-        <h5 class="card-title">(1) HEART AND LUNGS</h5>
-        <div class="row">
-            @foreach (['lub_dub' => 'Lub – Dub', 'murmur_swishing' => 'Murmur/Swishing', 'arrhythmia_irregular' => 'Arrhythmia/Irregular', 'crackles_fluid' => 'Crackles/Fluid Sound'] as $val => $label)
-                <div class="col-md-4">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" wire:model="heartLungsFindings" value="{{ $val }}" id="hl_{{ $val }}">
-                        <label class="form-check-label" for="hl_{{ $val }}">{{ $label }}</label>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-        <div class="mt-2">
-            <label class="form-label">Comment</label>
-            <textarea class="form-control" wire:model="heartLungsComment" rows="2"></textarea>
-        </div>
-    </div>
-</div>
-
-{{-- (2) Anthropometry --}}
+{{-- (1) Anthropometry --}}
 <div class="card mb-3" x-data>
     <div class="card-body">
         <h5 class="card-title"> Anthropometry Measure</h5>
@@ -39,7 +18,7 @@
                         let h = parseFloat($el.closest('.row').querySelector('#heightInput').value);
                         let bmiEl = $el.closest('.row').querySelector('#bmiInput');
                         if (w && h && h > 0) {
-                            let bmi = Math.round((w / (h ** 2)) * 10) / 10;
+                            let bmi = Math.round((w / ((h / 100) ** 2)) * 10) / 10;
                             bmiEl.value = bmi;
                             $wire.set('vitals.bmi', bmi);
                         } else {
@@ -51,7 +30,7 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label class="form-label">Height (m) <span class="text-danger">*</span></label>
-                <input type="number" step="0.1" id="heightInput"
+                <input type="number" step="0.01" id="heightInput"
                     class="form-control @error('vitals.height') is-invalid @enderror"
                     wire:model.blur="vitals.height"
                     x-on:blur="
@@ -59,7 +38,7 @@
                         let h = parseFloat($el.value);
                         let bmiEl = $el.closest('.row').querySelector('#bmiInput');
                         if (w && h && h > 0) {
-                            let bmi = Math.round((w / (h ** 2)) * 10) / 10;
+                            let bmi = Math.round((w / ((h / 100) ** 2)) * 10) / 10;
                             bmiEl.value = bmi;
                             $wire.set('vitals.bmi', bmi);
                         } else {
