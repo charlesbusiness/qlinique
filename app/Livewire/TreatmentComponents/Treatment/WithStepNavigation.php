@@ -44,8 +44,8 @@ trait WithStepNavigation
         return [
             1 => [
                 'finding_on_history' => 'required|string',
-                'previous_treatment_history' => 'required|string',
-                'recommended_drugs' => 'required|string',
+                'previous_treatment_history' => 'nullable|string',
+                'recommended_drugs' => 'nullable|string',
                 'allergies' => 'nullable|string',
             ],
             2 => [
