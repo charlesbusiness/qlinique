@@ -46,7 +46,7 @@ trait WithStepNavigation
                 'finding_on_history' => 'required|string',
                 'previous_treatment_history' => 'required|string',
                 'recommended_drugs' => 'required|string',
-                'allergies' => 'required|string',
+                'allergies' => 'nullable|string',
             ],
             2 => [
                 'vitals.temperature' => $this->temperatureRule(),
