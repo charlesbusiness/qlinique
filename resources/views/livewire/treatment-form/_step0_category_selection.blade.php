@@ -43,7 +43,7 @@
         @endforeach
     </div>
 
-@elseif (!$patientId)
+@else
     <button type="button" class="btn btn-link btn-sm p-0 mb-3 text-decoration-none" wire:click="goBackToCategories">
         &larr; Back to categories
     </button>

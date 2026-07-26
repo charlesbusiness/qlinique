@@ -48,7 +48,9 @@
                         <td>
                             <div class="d-flex gap-1">
                                 <button type="button" class="btn btn-sm btn-outline-primary" wire:click="editFile({{ $file->id }})" title="Edit">Edit</button>
-                                <a href="{{ route('patients.create', ['file_id' => $file->id]) }}" class="btn btn-sm btn-outline-success" title="Add Patient">+ Patient</a>
+                                @if ($file->type !== 'individual')
+                                    <a href="{{ route('patients.create', ['file_id' => $file->id]) }}" class="btn btn-sm btn-outline-success" title="Add Patient">+ Patient</a>
+                                @endif
                             </div>
                         </td>
                     </tr>
