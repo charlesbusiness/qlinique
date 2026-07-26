@@ -49,12 +49,12 @@ trait WithStepNavigation
                 'allergies' => 'nullable|string',
             ],
             2 => [
-                'vitals.temperature' => $this->temperatureRule(),
-                'vitals.blood_pressure_systolic' => 'required|numeric',
-                'vitals.blood_pressure_diastolic' => 'required|numeric',
-                'vitals.pulse_rate' => 'required|numeric|min:0|max:300',
-                'vitals.respiratory_rate' => 'required|numeric|min:0|max:100',
-                'vitals.oxygen_saturation' => 'required|numeric|min:0|max:100',
+                'vitals.temperature' => 'nullable|numeric',
+                'vitals.blood_pressure_systolic' => 'nullable|numeric',
+                'vitals.blood_pressure_diastolic' => 'nullable|numeric',
+                'vitals.pulse_rate' => 'nullable|numeric|min:0|max:300',
+                'vitals.respiratory_rate' => 'nullable|numeric|min:0|max:100',
+                'vitals.oxygen_saturation' => 'nullable|numeric|min:0|max:100',
                 'vitals.comment' => 'nullable|string',
             ],
             3 => [
