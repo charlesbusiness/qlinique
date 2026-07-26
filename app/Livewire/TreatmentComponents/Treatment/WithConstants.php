@@ -123,6 +123,7 @@ trait WithConstants
     public static function eentConditions(): array
     {
         return [
+            'satisfied' => 'Satisfied',
             'inflammation' => 'Inflammation',
             'congestion' => 'Congestion',
             'structural_issues' => 'Structural issues',
