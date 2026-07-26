@@ -3,7 +3,7 @@
     <div class="card-body">
         <h5 class="card-title">(3) ABDOMINAL EXAMINATION</h5>
         <div class="row">
-            @foreach (['tenderness' => 'Tenderness', 'abnormal_masses' => 'Abnormal Masses', 'pain' => 'Pain', 'tympanites_bloating' => 'Tympanites/Bloating', 'ascites_fluid' => 'Ascites/Fluid Retain'] as $val => $label)
+            @foreach (['satisfied' => 'Satisfied', 'tenderness' => 'Tenderness', 'abnormal_masses' => 'Abnormal Masses', 'pain' => 'Pain', 'tympanites_bloating' => 'Tympanites/Bloating', 'ascites_fluid' => 'Ascites/Fluid Retain'] as $val => $label)
                 <div class="col-md-4">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" wire:model="abdominalFindings" value="{{ $val }}" id="abd_{{ $val }}">
