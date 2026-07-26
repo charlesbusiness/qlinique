@@ -18,7 +18,7 @@
                         let h = parseFloat($el.closest('.row').querySelector('#heightInput').value);
                         let bmiEl = $el.closest('.row').querySelector('#bmiInput');
                         if (w && h && h > 0) {
-                            let bmi = Math.round((w / ((h / 100) ** 2)) * 10) / 10;
+                            let bmi = Math.round((w / (h ** 2)) * 10) / 10;
                             bmiEl.value = bmi;
                             $wire.set('vitals.bmi', bmi);
                         } else {
@@ -38,7 +38,7 @@
                         let h = parseFloat($el.value);
                         let bmiEl = $el.closest('.row').querySelector('#bmiInput');
                         if (w && h && h > 0) {
-                            let bmi = Math.round((w / ((h / 100) ** 2)) * 10) / 10;
+                            let bmi = Math.round((w / (h ** 2)) * 10) / 10;
                             bmiEl.value = bmi;
                             $wire.set('vitals.bmi', bmi);
                         } else {

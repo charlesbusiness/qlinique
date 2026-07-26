@@ -46,7 +46,7 @@
                 let h = parseFloat(document.getElementById('mhHeightInput').value);
                 let bmiEl = document.getElementById('mhBmiInput');
                 if (w && h && h > 0) {
-                    let bmi = Math.round((w / ((h / 100) ** 2)) * 10) / 10;
+                    let bmi = Math.round((w / (h ** 2)) * 10) / 10;
                     bmiEl.value = bmi;
                     $wire.set('bmi', bmi);
                 } else {
@@ -56,14 +56,14 @@
             ">
     </div>
     <div class="col-md-3">
-        <label class="form-label">Height (cm)</label>
-        <input type="number" step="0.1" id="mhHeightInput" class="form-control" wire:model="height"
+        <label class="form-label">Height (m)</label>
+        <input type="number" step="0.01" id="mhHeightInput" class="form-control" wire:model="height"
             x-on:blur="
                 let w = parseFloat(document.getElementById('mhWeightInput').value);
                 let h = parseFloat($el.value);
                 let bmiEl = document.getElementById('mhBmiInput');
                 if (w && h && h > 0) {
-                    let bmi = Math.round((w / ((h / 100) ** 2)) * 10) / 10;
+                    let bmi = Math.round((w / (h ** 2)) * 10) / 10;
                     bmiEl.value = bmi;
                     $wire.set('bmi', bmi);
                 } else {
