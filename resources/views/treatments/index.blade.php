@@ -35,9 +35,9 @@
                     ];
                     $hasActiveStatus = $statusFilters['status'] === 'active' || $statusFilters['pending'] || $statusFilters['publish_status'];
                     $statusLabel = 'All';
-                    if ($statusFilters['pending'] === 'today') $statusLabel = 'Pending Today';
-                    elseif ($statusFilters['pending'] === 'week') $statusLabel = 'Pending This Week';
-                    elseif ($statusFilters['pending'] === 'month') $statusLabel = 'Pending This Month';
+                    if ($statusFilters['pending'] === 'today') $statusLabel = 'Review Today';
+                    elseif ($statusFilters['pending'] === 'week') $statusLabel = 'Review This Week';
+                    elseif ($statusFilters['pending'] === 'month') $statusLabel = 'review This Month';
                     elseif ($statusFilters['status'] === 'active') $statusLabel = 'Active';
                     elseif ($statusFilters['publish_status'] === 'draft') $statusLabel = 'Drafts';
                 @endphp
@@ -52,9 +52,9 @@
                             <li><a class="dropdown-item {{ request('status') === 'active' && !request('pending') ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['status' => 'active', 'search' => request('search')])) }}">Active</a></li>
                             <li><a class="dropdown-item {{ request('publish_status') === 'draft' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['publish_status' => 'draft', 'search' => request('search')])) }}">Drafts</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item {{ request('pending') === 'today' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'today', 'search' => request('search')])) }}">Pending Today</a></li>
-                            <li><a class="dropdown-item {{ request('pending') === 'week' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'week', 'search' => request('search')])) }}">Pending This Week</a></li>
-                            <li><a class="dropdown-item {{ request('pending') === 'month' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'month', 'search' => request('search')])) }}">Pending This Month</a></li>
+                            <li><a class="dropdown-item {{ request('pending') === 'today' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'today', 'search' => request('search')])) }}">Review Today</a></li>
+                            <li><a class="dropdown-item {{ request('pending') === 'week' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'week', 'search' => request('search')])) }}">Review This Week</a></li>
+                            <li><a class="dropdown-item {{ request('pending') === 'month' ? 'active' : '' }}" href="{{ route('treatments.index', array_filter(['pending' => 'month', 'search' => request('search')])) }}">Review This Month</a></li>
                         </ul>
                     </div>
                 </div>

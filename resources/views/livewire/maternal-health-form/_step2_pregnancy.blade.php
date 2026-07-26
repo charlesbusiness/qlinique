@@ -22,11 +22,11 @@
         <input type="date" class="form-control" wire:model="edd">
     </div>
     <div class="col-md-3">
-        <label class="form-label">CGA Weeks</label>
+        <label class="form-label">GA Weeks</label>
         <input type="number" class="form-control" wire:model.live="cga_weeks" min="0" max="45">
     </div>
     <div class="col-md-3">
-        <label class="form-label">CGA Days</label>
+        <label class="form-label">GA Days</label>
         <input type="number" class="form-control" wire:model.live="cga_days" min="0" max="6">
     </div>
 </div>

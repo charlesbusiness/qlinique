@@ -76,7 +76,7 @@
                     <div class="col-md-4"><strong>LMP:</strong> {{ $record->lmp?->format('d M Y') ?? '—' }}</div>
                     <div class="col-md-4"><strong>Cycle:</strong> {{ $record->cycle_regularity ?? '—' }}</div>
                     <div class="col-md-4"><strong>EDD:</strong> {{ $record->edd?->format('d M Y') ?? '—' }}</div>
-                    <div class="col-md-4"><strong>CGA:</strong> {{ $record->cga_weeks ?? '—' }}w {{ $record->cga_days ?? '—' }}d</div>
+                    <div class="col-md-4"><strong>GA:</strong> {{ $record->cga_weeks ?? '—' }}w {{ $record->cga_days ?? '—' }}d</div>
                 </div>
 
                 @if ($record->current_symptoms && count($record->current_symptoms))
