@@ -6,7 +6,7 @@
 {{-- (1) Anthropometry --}}
 <div class="card mb-3" x-data>
     <div class="card-body">
-        <h5 class="card-title"> Anthropometry Measure</h5>
+        <h5 class="card-title">ANTHROPOMETRY MEASURE </h5>
         <div class="row">
             <div class="col-md-4 mb-3">
                 <label class="form-label">Weight (kg) <span class="text-danger">*</span></label>
@@ -84,7 +84,7 @@
 {{-- (2) Eyes / Ears / Nose / Throat --}}
 <div class="card mb-3">
     <div class="card-body">
-        <h5 class="card-title">(3) EYES / EARS / NOSE / THROAT</h5>
+        <h5 class="card-title">(2) EYES / EARS / NOSE / THROAT</h5>
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead>

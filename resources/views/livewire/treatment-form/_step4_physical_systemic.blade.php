@@ -1,7 +1,7 @@
-{{-- (4) Abdominal --}}
+{{-- (3) Abdominal --}}
 <div class="card mb-3">
     <div class="card-body">
-        <h5 class="card-title">(4) ABDOMINAL EXAMINATION</h5>
+        <h5 class="card-title">(3) ABDOMINAL EXAMINATION</h5>
         <div class="row">
             @foreach (['tenderness' => 'Tenderness', 'abnormal_masses' => 'Abnormal Masses', 'pain' => 'Pain', 'tympanites_bloating' => 'Tympanites/Bloating', 'ascites_fluid' => 'Ascites/Fluid Retain'] as $val => $label)
                 <div class="col-md-4">
@@ -19,10 +19,10 @@
     </div>
 </div>
 
-{{-- (5) Reflex / Nerves --}}
+{{-- (4) Reflex / Nerves --}}
 <div class="card mb-3">
     <div class="card-body">
-        <h5 class="card-title">(5) REFLEX / NERVES FUNCTION</h5>
+        <h5 class="card-title">(4) REFLEX / NERVES FUNCTION</h5>
         <div class="mb-2">
             @foreach (['satisfied' => 'Satisfied', 'fear' => 'Fear', 'poor_unresponsive' => 'Poor/Unresponsive'] as $val => $label)
                 <div class="form-check form-check-inline">
@@ -38,10 +38,10 @@
     </div>
 </div>
 
-{{-- (6) Hair Condition --}}
+{{-- (5) Hair Condition --}}
 <div class="card mb-3">
     <div class="card-body">
-        <h5 class="card-title">(6) HAIR CONDITION</h5>
+        <h5 class="card-title">(5) HAIR CONDITION</h5>
         <div class="row">
             @foreach (['normal' => 'Normal', 'pallor' => 'Pallor', 'dry' => 'Dry', 'cool' => 'Cool', 'rough' => 'Rough', 'tattered' => 'Tattered', 'shining' => 'Shining', 'scantly' => 'Scantly'] as $val => $label)
                 <div class="col-md-3">
@@ -59,10 +59,10 @@
     </div>
 </div>
 
-{{-- (7) Skin Scanning --}}
+{{-- (6) Skin Scanning --}}
 <div class="card mb-3">
     <div class="card-body">
-        <h5 class="card-title">(7) SKIN SCANNING</h5>
+        <h5 class="card-title">(6) SKIN SCANNING</h5>
         <div class="row">
             @foreach (['perfect' => 'Perfect', 'unusual_moles' => 'Unusual Moles', 'rashes' => 'Rashes', 'rough' => 'Rough', 'dry' => 'Dry'] as $val => $label)
                 <div class="col-md-3">
