@@ -66,6 +66,7 @@ class MaternalHealthRecord extends Model
         'weight',
         'height',
         'bmi',
+        'bmi_range',
         'anthropometric_comment',
         'rme_fbs',
         'rme_rbs',

@@ -73,6 +73,7 @@ class TreatmentForm extends Component
         'height' => null,
         'oxygen_saturation' => null,
         'bmi' => null,
+        'bmi_range' => '',
         'comment' => '',
     ];
 

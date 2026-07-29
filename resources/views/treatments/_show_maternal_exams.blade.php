@@ -16,6 +16,7 @@
                     <div class="col-4"><strong>Weight:</strong> {{ $record->weight ?? '—' }} kg</div>
                     <div class="col-4"><strong>Height:</strong> {{ $record->height ?? '—' }} cm</div>
                     <div class="col-4"><strong>BMI:</strong> {{ $record->bmi ?? '—' }}</div>
+                    <div class="col-4"><strong>BMI Range:</strong> {{ $record->bmi_range ?? '—' }}</div>
                 </div>
                 @if ($record->vitals_comment)
                     <p class="mb-0 mt-2"><strong>Comment:</strong> {{ $record->vitals_comment }}</p>

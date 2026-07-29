@@ -80,6 +80,7 @@
                                     <div class="col-4"><strong>Weight:</strong> {{ $vital->weight ?? '—' }} kg</div>
                                     <div class="col-4"><strong>Height:</strong> {{ $vital->height ?? '—' }} cm</div>
                                     <div class="col-4"><strong>BMI:</strong> {{ $vital->bmi ?? '—' }}</div>
+                                    <div class="col-4"><strong>BMI Range:</strong> {{ $vital->bmi_range ?? '—' }}</div>
                                 </div>
                                 @if ($vital->comment)
                                     <p class="mb-0 mt-2"><strong>Comment:</strong> {{ $vital->comment }}</p>
@@ -137,7 +138,8 @@
                             <h6 class="fw-bold">Anthropometry</h6>
                             <p class="mb-0">Weight: {{ $treatment->vitals->first()?->weight ?? '—' }} kg |
                                Height: {{ $treatment->vitals->first()?->height ?? '—' }} cm |
-                               BMI: {{ $treatment->vitals->first()?->bmi ?? '—' }}</p>
+                               BMI: {{ $treatment->vitals->first()?->bmi ?? '—' }} |
+                               BMI Range: {{ $treatment->vitals->first()?->bmi_range ?? '—' }}</p>
                             @if ($examMap->get('anthropometry')->comment)
                                 <p class="mb-0 text-muted small">{{ $examMap->get('anthropometry')->comment }}</p>
                             @endif

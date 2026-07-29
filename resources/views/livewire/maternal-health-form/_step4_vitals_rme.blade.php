@@ -49,9 +49,12 @@
                     let bmi = Math.round((w / (h ** 2)) * 10) / 10;
                     bmiEl.value = bmi;
                     $wire.set('bmi', bmi);
+                    let bmiRange = bmi < 18.5 ? 'underweight' : bmi <= 24.9 ? 'normal healthy weight' : bmi < 30 ? 'overweight' : 'obese';
+                    $wire.set('bmi_range', bmiRange);
                 } else {
                     bmiEl.value = '';
                     $wire.set('bmi', null);
+                    $wire.set('bmi_range', '');
                 }
             ">
     </div>
@@ -66,15 +69,39 @@
                     let bmi = Math.round((w / (h ** 2)) * 10) / 10;
                     bmiEl.value = bmi;
                     $wire.set('bmi', bmi);
+                    let bmiRange = bmi < 18.5 ? 'underweight' : bmi <= 24.9 ? 'normal healthy weight' : bmi < 30 ? 'overweight' : 'obese';
+                    $wire.set('bmi_range', bmiRange);
                 } else {
                     bmiEl.value = '';
                     $wire.set('bmi', null);
+                    $wire.set('bmi_range', '');
                 }
             ">
     </div>
     <div class="col-md-3">
         <label class="form-label">BMI</label>
         <input type="number" step="0.1" id="mhBmiInput" class="form-control" wire:model="bmi" readonly>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">BMI Range</label>
+        <div class="d-flex flex-wrap gap-3">
+            <label class="form-check">
+                <input type="radio" class="form-check-input" value="underweight" wire:model="bmi_range">
+                <span class="form-check-label">&lt; 18.5 (Underweight)</span>
+            </label>
+            <label class="form-check">
+                <input type="radio" class="form-check-input" value="normal healthy weight" wire:model="bmi_range">
+                <span class="form-check-label">18.5 – 24.9 (Normal healthy weight)</span>
+            </label>
+            <label class="form-check">
+                <input type="radio" class="form-check-input" value="overweight" wire:model="bmi_range">
+                <span class="form-check-label">25.0 – 29.9 (Overweight)</span>
+            </label>
+            <label class="form-check">
+                <input type="radio" class="form-check-input" value="obese" wire:model="bmi_range">
+                <span class="form-check-label">30.0 &amp; above (Obese)</span>
+            </label>
+        </div>
     </div>
     <div class="col-md-3">
         <label class="form-label">Comment</label>

@@ -238,6 +238,7 @@ trait WithDraftManagement
                 'height' => $vital->height,
                 'oxygen_saturation' => $vital->oxygen_saturation,
                 'bmi' => $vital->bmi,
+                'bmi_range' => $vital->bmi_range ?? '',
                 'comment' => $vital->comment ?? '',
             ];
         }

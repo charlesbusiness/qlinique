@@ -21,9 +21,12 @@
                             let bmi = Math.round((w / (h ** 2)) * 10) / 10;
                             bmiEl.value = bmi;
                             $wire.set('vitals.bmi', bmi);
+                            let bmiRange = bmi < 18.5 ? 'underweight' : bmi <= 24.9 ? 'normal healthy weight' : bmi < 30 ? 'overweight' : 'obese';
+                            $wire.set('vitals.bmi_range', bmiRange);
                         } else {
                             bmiEl.value = '';
                             $wire.set('vitals.bmi', null);
+                            $wire.set('vitals.bmi_range', '');
                         }
                     ">
                 @error('vitals.weight') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
@@ -41,16 +44,40 @@
                             let bmi = Math.round((w / (h ** 2)) * 10) / 10;
                             bmiEl.value = bmi;
                             $wire.set('vitals.bmi', bmi);
+                            let bmiRange = bmi < 18.5 ? 'underweight' : bmi <= 24.9 ? 'normal healthy weight' : bmi < 30 ? 'overweight' : 'obese';
+                            $wire.set('vitals.bmi_range', bmiRange);
                         } else {
                             bmiEl.value = '';
                             $wire.set('vitals.bmi', null);
+                            $wire.set('vitals.bmi_range', '');
                         }
                     ">
                 @error('vitals.height') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
             </div>
-            <div class="col-md-4 mb-3">
+             <div class="col-md-4 mb-3">
                 <label class="form-label">BMI</label>
                 <input type="number" step="0.1" id="bmiInput" class="form-control" wire:model="vitals.bmi" readonly>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">BMI Range</label>
+            <div class="d-flex flex-wrap gap-4">
+                <label class="form-check">
+                    <input type="radio" class="form-check-input" value="underweight" wire:model="vitals.bmi_range">
+                    <span class="form-check-label">&lt; 18.5 (Underweight)</span>
+                </label>
+                <label class="form-check">
+                    <input type="radio" class="form-check-input" value="normal healthy weight" wire:model="vitals.bmi_range">
+                    <span class="form-check-label">18.5 – 24.9 (Normal healthy weight)</span>
+                </label>
+                <label class="form-check">
+                    <input type="radio" class="form-check-input" value="overweight" wire:model="vitals.bmi_range">
+                    <span class="form-check-label">25.0 – 29.9 (Overweight)</span>
+                </label>
+                <label class="form-check">
+                    <input type="radio" class="form-check-input" value="obese" wire:model="vitals.bmi_range">
+                    <span class="form-check-label">30.0 &amp; above (Obese)</span>
+                </label>
             </div>
         </div>
         <div class="mb-3">

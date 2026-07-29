@@ -70,6 +70,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-write ?float $weight
  * @property-write ?float $height
  * @property-write ?float $bmi
+ * @property-write string $bmi_range
  * @property-write string $anthropometric_comment
  * @property-write ?float $rme_fbs
  * @property-write ?float $rme_rbs
@@ -220,6 +221,7 @@ trait WithMaternalDraftManagement
                 'weight' => $this->weight,
                 'height' => $this->height,
                 'bmi' => $this->bmi,
+                'bmi_range' => $this->bmi_range ?: null,
                 'anthropometric_comment' => $this->anthropometric_comment ?: null,
                 'rme_fbs' => $this->rme_fbs,
                 'rme_rbs' => $this->rme_rbs,

@@ -16,6 +16,7 @@ class Vital extends Model
         'weight',
         'height',
         'bmi',
+        'bmi_range',
         'oxygen_saturation',
         'temperature_unit',
         'comment',

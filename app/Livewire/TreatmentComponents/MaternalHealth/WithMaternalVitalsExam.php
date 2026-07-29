@@ -27,6 +27,8 @@ trait WithMaternalVitalsExam
 
     public ?float $bmi = null;
 
+    public string $bmi_range = '';
+
     public string $anthropometric_comment = '';
 
     public ?float $rme_fbs = null;
