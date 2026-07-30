@@ -2,7 +2,22 @@
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         <label class="form-label">Last Menstrual Period (LMP)</label>
-        <input type="date" class="form-control" wire:model="lmp">
+        <input type="date" class="form-control" wire:model="lmp"
+            x-on:change="
+                let lmp = new Date($el.value);
+                if (!isNaN(lmp.getTime())) {
+                    let edd = new Date(lmp);
+                    edd.setDate(edd.getDate() + 7);
+                    edd.setMonth(edd.getMonth() - 3);
+                    edd.setFullYear(edd.getFullYear() + 1);
+                    let y = edd.getFullYear();
+                    let m = String(edd.getMonth() + 1).padStart(2, '0');
+                    let d = String(edd.getDate()).padStart(2, '0');
+                    $wire.set('edd', `${y}-${m}-${d}`);
+                } else {
+                    $wire.set('edd', '');
+                }
+            ">
     </div>
     <div class="col-md-4">
         <label class="form-label">Cycle Regularity</label>
