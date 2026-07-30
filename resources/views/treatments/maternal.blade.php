@@ -139,7 +139,7 @@
                             <td>{{ $treatment->patient?->file?->file_number ?? 'NA' }}</td>
                             <td>
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Actions</button>
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-boundary="window">Actions</button>
                                     <ul class="dropdown-menu">
                                         <li><a class="dropdown-item" href="{{ route('treatments.show', $treatment) }}"><i class="bi bi-eye me-1"></i> View</a></li>
                                         <li><hr class="dropdown-divider"></li>
