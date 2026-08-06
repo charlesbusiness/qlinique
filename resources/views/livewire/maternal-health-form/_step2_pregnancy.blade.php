@@ -1,8 +1,32 @@
 <h6 class="mb-3">Pregnancy Dating & Current Status</h6>
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4" x-data="{
+        recalcGa() {
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let lmp = this.$refs.lmp?.value ? new Date(this.$refs.lmp.value + 'T00:00:00') : null;
+            let edd = this.$refs.edd?.value ? new Date(this.$refs.edd.value + 'T00:00:00') : null;
+            let totalDays = null;
+            if (lmp && !isNaN(lmp.getTime())) {
+                totalDays = Math.floor((today - lmp) / 86400000);
+            } else if (edd && !isNaN(edd.getTime())) {
+                totalDays = 280 - Math.round((edd - today) / 86400000);
+            }
+            let weeks = null;
+            let days = null;
+            if (totalDays !== null) {
+                if (totalDays < 0) totalDays = 0;
+                weeks = Math.floor(totalDays / 7);
+                days = totalDays % 7;
+            }
+            if (this.$refs.gaWeeks) this.$refs.gaWeeks.value = weeks ?? '';
+            if (this.$refs.gaDays) this.$refs.gaDays.value = days ?? '';
+            $wire.set('cga_weeks', weeks);
+            $wire.set('cga_days', days);
+        }
+    }" x-init="if (!this.$refs.gaWeeks?.value) recalcGa()">
     <div class="col-md-4">
         <label class="form-label">Last Menstrual Period (LMP)</label>
-        <input type="date" class="form-control" wire:model="lmp"
+        <input type="date" class="form-control" wire:model="lmp" x-ref="lmp"
             x-on:change="
                 let lmp = new Date($el.value);
                 if (!isNaN(lmp.getTime())) {
@@ -14,9 +38,12 @@
                     let m = String(edd.getMonth() + 1).padStart(2, '0');
                     let d = String(edd.getDate()).padStart(2, '0');
                     $wire.set('edd', `${y}-${m}-${d}`);
+                    $refs.edd.value = `${y}-${m}-${d}`;
                 } else {
                     $wire.set('edd', '');
+                    $refs.edd.value = '';
                 }
+                recalcGa();
             ">
     </div>
     <div class="col-md-4">
@@ -34,15 +61,15 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">Expected Date of Delivery (EDD)</label>
-        <input type="date" class="form-control" wire:model="edd">
+        <input type="date" class="form-control" wire:model="edd" x-ref="edd" x-on:change="recalcGa()">
     </div>
     <div class="col-md-3">
         <label class="form-label">GA Weeks</label>
-        <input type="number" class="form-control" wire:model.live="cga_weeks" min="0" max="45">
+        <input type="number" class="form-control" wire:model.live="cga_weeks" x-ref="gaWeeks" readonly min="0" max="45">
     </div>
     <div class="col-md-3">
         <label class="form-label">GA Days</label>
-        <input type="number" class="form-control" wire:model.live="cga_days" min="0" max="6">
+        <input type="number" class="form-control" wire:model.live="cga_days" x-ref="gaDays" readonly min="0" max="6">
     </div>
 </div>
 
