@@ -2,22 +2,7 @@
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         <label class="form-label">Last Menstrual Period (LMP)</label>
-        <input type="date" class="form-control" wire:model="lmp"
-            x-on:change="
-                let lmp = new Date($el.value);
-                if (!isNaN(lmp.getTime())) {
-                    let edd = new Date(lmp);
-                    edd.setDate(edd.getDate() + 7);
-                    edd.setMonth(edd.getMonth() - 3);
-                    edd.setFullYear(edd.getFullYear() + 1);
-                    let y = edd.getFullYear();
-                    let m = String(edd.getMonth() + 1).padStart(2, '0');
-                    let d = String(edd.getDate()).padStart(2, '0');
-                    $wire.set('edd', `${y}-${m}-${d}`);
-                } else {
-                    $wire.set('edd', '');
-                }
-            ">
+        <input type="date" class="form-control" wire:model="lmp">
     </div>
     <div class="col-md-4">
         <label class="form-label">Cycle Regularity</label>
@@ -38,11 +23,11 @@
     </div>
     <div class="col-md-3">
         <label class="form-label">GA Weeks</label>
-        <input type="number" class="form-control" wire:model.live="cga_weeks" min="0" max="45">
+        <input type="number" class="form-control" wire:model="cga_weeks" min="0" max="45" readonly>
     </div>
     <div class="col-md-3">
         <label class="form-label">GA Days</label>
-        <input type="number" class="form-control" wire:model.live="cga_days" min="0" max="6">
+        <input type="number" class="form-control" wire:model="cga_days" min="0" max="6" readonly>
     </div>
 </div>
 

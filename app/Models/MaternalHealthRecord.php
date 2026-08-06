@@ -123,6 +123,8 @@ class MaternalHealthRecord extends Model
             'chronic_conditions' => 'array',
             'infectious_disease_history' => 'array',
             'family_genetic_history' => 'array',
+            'diet_intake' => 'array',
+            'physical_activities' => 'array',
             'cardio_resp' => 'array',
             'thyroid' => 'array',
             'breast' => 'array',

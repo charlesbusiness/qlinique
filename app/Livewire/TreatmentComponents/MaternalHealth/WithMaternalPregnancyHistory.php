@@ -2,6 +2,8 @@
 
 namespace App\Livewire\TreatmentComponents\MaternalHealth;
 
+use Illuminate\Support\Carbon;
+
 trait WithMaternalPregnancyHistory
 {
     // Step 2: Pregnancy dating + Obstetric history
@@ -14,6 +16,43 @@ trait WithMaternalPregnancyHistory
     public ?int $cga_weeks = null;
 
     public ?int $cga_days = null;
+
+    public function updatedLmp(?string $value): void
+    {
+        if ($value) {
+            $this->edd = Carbon::parse($value)->addDays(280)->toDateString();
+        }
+
+        $this->recalculateGestationalAge();
+    }
+
+    public function updatedEdd(?string $value): void
+    {
+        $this->recalculateGestationalAge();
+    }
+
+    protected function recalculateGestationalAge(): void
+    {
+        $today = now()->startOfDay();
+
+        $totalDays = null;
+
+        if ($this->lmp) {
+            $lmp = Carbon::parse($this->lmp)->startOfDay();
+            $totalDays = $today->diffInDays($lmp, false);
+        } elseif ($this->edd) {
+            $edd = Carbon::parse($this->edd)->startOfDay();
+            $totalDays = 280 - $today->diffInDays($edd, false);
+        }
+
+        if ($totalDays !== null && $totalDays >= 0) {
+            $this->cga_weeks = intdiv($totalDays, 7);
+            $this->cga_days = $totalDays % 7;
+        } else {
+            $this->cga_weeks = null;
+            $this->cga_days = null;
+        }
+    }
 
     public array $current_symptoms = [];
 

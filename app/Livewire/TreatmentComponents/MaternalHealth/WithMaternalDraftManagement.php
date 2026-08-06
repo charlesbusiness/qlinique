@@ -333,6 +333,11 @@ trait WithMaternalDraftManagement
             }
         }
 
+        // Backfill gestational age for drafts saved before auto-calculation existed
+        if ($this->lmp && $this->cga_weeks === null) {
+            $this->recalculateGestationalAge();
+        }
+
         $this->step = 1;
     }
 
