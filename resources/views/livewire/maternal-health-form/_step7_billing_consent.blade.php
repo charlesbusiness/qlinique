@@ -19,7 +19,21 @@
 <hr class="my-4">
 
 <h6 class="mb-3">Medical Bill</h6>
-<div class="table-responsive mb-3">
+<div class="table-responsive mb-3" x-data="{
+        recalcBill() {
+            const itemKeys = ['registration', 'consultation', 'rapid_medical_examination', 'laboratory_test', 'admission', 'medical_service', 'logistics', 'maintenance', 'surgical_procedure'];
+            let total = 0;
+            for (const key of itemKeys) {
+                const el = this.$refs['amt_' + key];
+                const raw = el?.value ?? el?.textContent ?? '0';
+                total += parseFloat(String(raw).replace(/,/g, '')) || 0;
+            }
+            const paid = parseFloat(this.$refs.billPaid?.value) || 0;
+            const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            this.$refs.billTotal.textContent = fmt(total);
+            this.$refs.billBalance.textContent = fmt(total - paid);
+        }
+    }" x-init="recalcBill()">
     @php
         $calculatedItems = [
             'laboratory_test' => 'Laboratory Test',
@@ -49,7 +63,7 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $label }}</td>
                     <td>
-                        <span class="form-control form-control-sm bg-light border-0 fw-bold">{{ number_format($medical_bill[$key] ?? 0, 2) }}</span>
+                        <span class="form-control form-control-sm bg-light border-0 fw-bold" x-ref="amt_{{ $key }}">{{ number_format($medical_bill[$key] ?? 0, 2) }}</span>
                     </td>
                 </tr>
             @endforeach
@@ -58,7 +72,7 @@
                     <td>{{ $loop->iteration + count($calculatedItems) }}</td>
                     <td>{{ $label }}</td>
                     <td>
-                        <input type="number" step="0.01" class="form-control form-control-sm" wire:model="medical_bill.{{ $key }}">
+                        <input type="number" step="0.01" class="form-control form-control-sm" wire:model="medical_bill.{{ $key }}" x-ref="amt_{{ $key }}" x-on:input="recalcBill()">
                     </td>
                 </tr>
             @endforeach
@@ -66,15 +80,15 @@
         <tfoot>
             <tr class="fw-bold">
                 <td colspan="2" class="text-end">TOTAL ₦</td>
-                <td>{{ number_format(collect($medical_bill)->sum(), 2) }}</td>
+                <td x-ref="billTotal">{{ number_format(collect($medical_bill)->sum(), 2) }}</td>
             </tr>
             <tr>
                 <td colspan="2" class="text-end fw-bold">Paid Bill ₦</td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.live="bill_paid" placeholder="0.00"></td>
+                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.live="bill_paid" x-ref="billPaid" x-on:input="recalcBill()" placeholder="0.00"></td>
             </tr>
             <tr class="fw-bold">
                 <td colspan="2" class="text-end">Balance ₦</td>
-                <td>{{ number_format($bill_outstanding, 2) }}</td>
+                <td x-ref="billBalance">{{ number_format($bill_outstanding, 2) }}</td>
             </tr>
         </tfoot>
     </table>
