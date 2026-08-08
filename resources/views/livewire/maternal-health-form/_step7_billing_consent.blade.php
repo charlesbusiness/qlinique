@@ -36,13 +36,13 @@
     }" x-init="recalcBill()">
     @php
         $calculatedItems = [
+            'rapid_medical_examination' => 'RME',
             'laboratory_test' => 'Laboratory Test',
             'medical_service' => 'Medical Service',
         ];
         $manualItems = [
             'registration' => 'Registration',
             'consultation' => 'Consultation',
-            'rapid_medical_examination' => 'RME',
             'admission' => 'Admission',
             'logistics' => 'Logistics',
             'maintenance' => 'Maintenance',

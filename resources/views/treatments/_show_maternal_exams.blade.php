@@ -31,22 +31,42 @@
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-header"><strong>Rapid Medical Examination (RME)</strong></div>
-            <div class="card-body">
-                <div class="row g-2">
-                    @if ($record->rme_fbs)<div class="col-4"><strong>FBS:</strong> {{ $record->rme_fbs }}</div>@endif
-                    @if ($record->rme_rbs)<div class="col-4"><strong>RBS:</strong> {{ $record->rme_rbs }}</div>@endif
-                    @if ($record->rme_pcv)<div class="col-4"><strong>PCV:</strong> {{ $record->rme_pcv }}%</div>@endif
-                    @if ($record->rme_rdta)<div class="col-4"><strong>RDT-A:</strong> {{ $record->rme_rdta }}</div>@endif
-                    @if ($record->rme_glucose)<div class="col-4"><strong>Glucose:</strong> {{ $record->rme_glucose }}</div>@endif
-                    @if ($record->rme_protein)<div class="col-4"><strong>Protein:</strong> {{ $record->rme_protein }}</div>@endif
-                    @if ($record->rme_leukocytes)<div class="col-6"><strong>Leukocytes:</strong> {{ $record->rme_leukocytes }}</div>@endif
-                    @if ($record->rme_other_specify)<div class="col-6"><strong>{{ $record->rme_other_specify }}:</strong> {{ $record->rme_other_result ?? '—' }}</div>@endif
-                </div>
-                @if ($record->rme_comment)
-                    <p class="mb-0 mt-2"><strong>Comment:</strong> {{ $record->rme_comment }}</p>
+            <div class="card-body p-0">
+                @php
+                    $rmeRows = [
+                        ['label' => 'FBS', 'value' => $record->rme_fbs, 'suffix' => '', 'amount' => $record->rme_fbs_amount],
+                        ['label' => 'RBS', 'value' => $record->rme_rbs, 'suffix' => '', 'amount' => $record->rme_rbs_amount],
+                        ['label' => 'PCV', 'value' => $record->rme_pcv, 'suffix' => '%', 'amount' => $record->rme_pcv_amount],
+                        ['label' => 'RDT-A', 'value' => $record->rme_rdta, 'suffix' => '', 'amount' => $record->rme_rdta_amount],
+                        ['label' => 'Glucose', 'value' => $record->rme_glucose, 'suffix' => '', 'amount' => $record->rme_glucose_amount],
+                        ['label' => 'Protein', 'value' => $record->rme_protein, 'suffix' => '', 'amount' => $record->rme_protein_amount],
+                        ['label' => 'Leukocytes', 'value' => $record->rme_leukocytes, 'suffix' => '', 'amount' => $record->rme_leukocytes_amount],
+                        ['label' => $record->rme_other_specify ?: 'Other', 'value' => $record->rme_other_result, 'suffix' => '', 'amount' => $record->rme_other_amount],
+                    ];
+                    $hasRme = collect($rmeRows)->contains(fn ($r) => $r['value'] !== null && $r['value'] !== '');
+                @endphp
+                @if ($hasRme)
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr><th>Test</th><th>Result</th><th>Amount (₦)</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($rmeRows as $r)
+                                @if ($r['value'] !== null && $r['value'] !== '')
+                                    <tr>
+                                        <td>{{ $r['label'] }}</td>
+                                        <td>{{ $r['value'] }}{{ $r['suffix'] }}</td>
+                                        <td>{{ number_format($r['amount'] ?? 0, 2) }}</td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p class="text-muted mb-0 p-3">—</p>
                 @endif
-                @if (!$record->rme_fbs && !$record->rme_rbs && !$record->rme_pcv && !$record->rme_comment)
-                    <p class="text-muted mb-0">—</p>
+                @if ($record->rme_comment)
+                    <div class="card-footer text-muted small"><strong>Comment:</strong> {{ $record->rme_comment }}</div>
                 @endif
             </div>
         </div>
@@ -223,8 +243,18 @@
                     @php
                         $labTotal = collect($record->lab_tests ?? [])->sum('amount');
                         $medTotal = collect($record->medications ?? [])->sum('amount');
-                        $manualItems = collect($record->medical_bill ?? [])->only(['registration', 'consultation', 'rapid_medical_examination', 'admission', 'logistics', 'maintenance', 'surgical_procedure']);
-                        $billTotal = $labTotal + $medTotal + $manualItems->sum();
+                        $rmeTotal = collect([
+                            $record->rme_fbs_amount,
+                            $record->rme_rbs_amount,
+                            $record->rme_pcv_amount,
+                            $record->rme_rdta_amount,
+                            $record->rme_glucose_amount,
+                            $record->rme_protein_amount,
+                            $record->rme_leukocytes_amount,
+                            $record->rme_other_amount,
+                        ])->sum();
+                        $manualItems = collect($record->medical_bill ?? [])->only(['registration', 'consultation', 'admission', 'logistics', 'maintenance', 'surgical_procedure']);
+                        $billTotal = $labTotal + $medTotal + $rmeTotal + $manualItems->sum();
                         $billPaid = $record->bill_paid ?? 0;
                         $billOutstanding = $billTotal - $billPaid;
                     @endphp
@@ -242,7 +272,13 @@
                                     <td class="text-end">₦{{ number_format($medTotal, 2) }}</td>
                                 </tr>
                             @endif
-                            @foreach (['registration' => 'Registration', 'consultation' => 'Consultation', 'rapid_medical_examination' => 'RME', 'admission' => 'Admission', 'logistics' => 'Logistics', 'maintenance' => 'Maintenance', 'surgical_procedure' => 'Surgical Procedure'] as $key => $label)
+                            @if ($rmeTotal > 0)
+                                <tr>
+                                    <td>RME</td>
+                                    <td class="text-end">₦{{ number_format($rmeTotal, 2) }}</td>
+                                </tr>
+                            @endif
+                            @foreach (['registration' => 'Registration', 'consultation' => 'Consultation', 'admission' => 'Admission', 'logistics' => 'Logistics', 'maintenance' => 'Maintenance', 'surgical_procedure' => 'Surgical Procedure'] as $key => $label)
                                 @if ($manualItems->get($key, 0) > 0)
                                     <tr>
                                         <td>{{ $label }}</td>

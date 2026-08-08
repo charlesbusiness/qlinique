@@ -73,14 +73,22 @@ use Illuminate\Support\Facades\Auth;
  * @property-write string $bmi_range
  * @property-write string $anthropometric_comment
  * @property-write ?float $rme_fbs
+ * @property-write ?float $rme_fbs_amount
  * @property-write ?float $rme_rbs
+ * @property-write ?float $rme_rbs_amount
  * @property-write ?float $rme_pcv
+ * @property-write ?float $rme_pcv_amount
  * @property-write string $rme_rdta
+ * @property-write ?float $rme_rdta_amount
  * @property-write string $rme_glucose
+ * @property-write ?float $rme_glucose_amount
  * @property-write string $rme_protein
+ * @property-write ?float $rme_protein_amount
  * @property-write string $rme_leukocytes
+ * @property-write ?float $rme_leukocytes_amount
  * @property-write string $rme_other_specify
  * @property-write string $rme_other_result
+ * @property-write ?float $rme_other_amount
  * @property-write string $rme_comment
  * @property-write array $cardio_resp
  * @property-write string $cardio_resp_comment
@@ -224,14 +232,22 @@ trait WithMaternalDraftManagement
                 'bmi_range' => $this->bmi_range ?: null,
                 'anthropometric_comment' => $this->anthropometric_comment ?: null,
                 'rme_fbs' => $this->rme_fbs,
+                'rme_fbs_amount' => $this->rme_fbs_amount,
                 'rme_rbs' => $this->rme_rbs,
+                'rme_rbs_amount' => $this->rme_rbs_amount,
                 'rme_pcv' => $this->rme_pcv,
+                'rme_pcv_amount' => $this->rme_pcv_amount,
                 'rme_rdta' => $this->rme_rdta ?: null,
+                'rme_rdta_amount' => $this->rme_rdta_amount,
                 'rme_glucose' => $this->rme_glucose ?: null,
+                'rme_glucose_amount' => $this->rme_glucose_amount,
                 'rme_protein' => $this->rme_protein ?: null,
+                'rme_protein_amount' => $this->rme_protein_amount,
                 'rme_leukocytes' => $this->rme_leukocytes ?: null,
+                'rme_leukocytes_amount' => $this->rme_leukocytes_amount,
                 'rme_other_specify' => $this->rme_other_specify ?: null,
                 'rme_other_result' => $this->rme_other_result ?: null,
+                'rme_other_amount' => $this->rme_other_amount,
                 'rme_comment' => $this->rme_comment ?: null,
             ],
             5 => [

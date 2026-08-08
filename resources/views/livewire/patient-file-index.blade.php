@@ -129,12 +129,12 @@
                             @error('edit_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <label class="form-label">Email</label>
                             <input type="email" class="form-control @error('edit_email') is-invalid @enderror" wire:model="edit_email">
                             @error('edit_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="col-12 mb-3">
-                            <label class="form-label">Phone <span class="text-danger">*</span></label>
+                            <label class="form-label">Phone</label>
                             <input type="text" class="form-control @error('edit_phone') is-invalid @enderror" wire:model="edit_phone">
                             @error('edit_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>

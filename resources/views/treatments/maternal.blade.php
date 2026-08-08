@@ -88,6 +88,7 @@
                         <th>Category</th>
                         <th>Schedule</th>
                         <th>Visit Date</th>
+                        <th>Next Visit</th>
                         <th>File Number</th>
                         <th>Actions</th>
                     </tr>
@@ -108,6 +109,19 @@
                             $visits = $treatment->maternalHealthRecord?->antenatalVisits ?? collect();
                             $completedCount = $visits->where('status', 'completed')->count();
                             $totalCount = $visits->count();
+
+                            $nextVisit = $visits
+                                ->where('status', '!=', 'completed')
+                                ->where('scheduled_date', '>=', today())
+                                ->sortBy('scheduled_date')
+                                ->first();
+                            $overdueVisit = $visits
+                                ->where('status', '!=', 'completed')
+                                ->where('scheduled_date', '<', today())
+                                ->sortBy('scheduled_date')
+                                ->first();
+                            $nextVisitDate = $nextVisit?->scheduled_date
+                                ?? $treatment->maternalHealthRecord?->next_visit_date;
                         @endphp
                         <tr>
                             <td>{{ $treatments->firstItem() + $index }}</td>
@@ -135,6 +149,19 @@
                                 @endif
                             </td>
                             <td>{{ $treatment->visit_date->format('d M Y') }}</td>
+                            <td>
+                                @if ($nextVisit)
+                                    <span class="badge bg-primary">#{{ $nextVisit->visit_number }}</span>
+                                    <span class="d-block">{{ $nextVisit->scheduled_date->format('d M Y') }}</span>
+                                @elseif ($overdueVisit)
+                                    <span class="badge bg-danger">#{{ $overdueVisit->visit_number }}</span>
+                                    <span class="d-block text-danger">{{ $overdueVisit->scheduled_date->format('d M Y') }}</span>
+                                @elseif ($nextVisitDate)
+                                    <span class="d-block">{{ $nextVisitDate->format('d M Y') }}</span>
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
+                            </td>
                             <td>{{ $treatment->patient?->file?->file_number ?? 'NA' }}</td>
                             <td>
                                 <div class="dropdown">
@@ -188,7 +215,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8" class="text-center text-muted py-4">No maternal health records.</td></tr>
+                        <tr><td colspan="9" class="text-center text-muted py-4">No maternal health records.</td></tr>
                     @endforelse
                 </tbody>
             </table>

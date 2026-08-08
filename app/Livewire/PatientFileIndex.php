@@ -51,23 +51,22 @@ class PatientFileIndex extends Component
     {
         return [
             'edit_name' => 'required|string|max:255',
-            'edit_email' => 'required|email|max:255',
-            'edit_phone' => $this->phoneRule(),
+            'edit_email' => 'nullable|email|max:255',
+            'edit_phone' => $this->phoneRule(false),
             'edit_address' => 'nullable|string|max:1000',
             'edit_type' => 'required|in:family,corporate,individual',
         ];
     }
 
-    private function phoneRule(): array
+    private function phoneRule(bool $required = true): array
     {
-        return [
-            'required',
+        $rules = [
             'string',
             'max:36',
             function ($attribute, $value, $fail) {
-                foreach (explode(',', $value) as $num) {
+                foreach (explode(',', $value ?? '') as $num) {
                     $num = trim($num);
-                    if (! preg_match('/^\d{1,11}$/', $num)) {
+                    if ($num !== '' && ! preg_match('/^\d{1,11}$/', $num)) {
                         $fail('Each phone number must be up to 11 digits, separated by commas.');
 
                         return;
@@ -75,6 +74,12 @@ class PatientFileIndex extends Component
                 }
             },
         ];
+
+        if ($required) {
+            array_unshift($rules, 'required');
+        }
+
+        return $rules;
     }
 
     public function createFile(): void
@@ -100,8 +105,8 @@ class PatientFileIndex extends Component
         $file = PatientFile::findOrFail($id);
         $this->editingFileId = $file->id;
         $this->edit_name = $file->name;
-        $this->edit_email = $file->email;
-        $this->edit_phone = $file->phone;
+        $this->edit_email = $file->email ?? '';
+        $this->edit_phone = $file->phone ?? '';
         $this->edit_address = $file->address ?? '';
         $this->edit_type = $file->type;
         $this->dispatch('open-edit-modal');
@@ -119,8 +124,8 @@ class PatientFileIndex extends Component
         $file = PatientFile::findOrFail($this->editingFileId);
         $file->update([
             'name' => $this->edit_name,
-            'email' => $this->edit_email,
-            'phone' => $this->edit_phone,
+            'email' => $this->edit_email ?: null,
+            'phone' => $this->edit_phone ?: null,
             'address' => $this->edit_address ?: null,
             'type' => $this->edit_type,
         ]);

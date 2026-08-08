@@ -129,7 +129,7 @@
                                     <td>{{ $chart->visit_date->format('d M Y') }}</td>
                                     <td><span class="badge bg-warning">{{ ucfirst($chart->category) }}</span></td>
                                     <td>{{ $chart->primary_diagnosis ?? '—' }}</td>
-                                    <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
+                                    <td><a href="{{ route('treatments.show', $chart) }}" class="btn btn-sm btn-outline-primary">View</a></td>
                                 </tr>
                             @empty
                                 <tr><td colspan="4" class="text-center text-muted py-3">No treatment records.</td></tr>

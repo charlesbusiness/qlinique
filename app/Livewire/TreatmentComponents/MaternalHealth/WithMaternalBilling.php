@@ -48,6 +48,16 @@ trait WithMaternalBilling
 
     public function autoFillMedicalBill(): void
     {
+        $this->medical_bill['rapid_medical_examination'] = collect([
+            $this->rme_fbs_amount,
+            $this->rme_rbs_amount,
+            $this->rme_pcv_amount,
+            $this->rme_rdta_amount,
+            $this->rme_glucose_amount,
+            $this->rme_protein_amount,
+            $this->rme_leukocytes_amount,
+            $this->rme_other_amount,
+        ])->sum();
         $this->medical_bill['laboratory_test'] = collect($this->buildLabTestData())->sum('amount');
         $this->medical_bill['medical_service'] = collect($this->buildMedicationData())->sum('amount')
             + collect($this->buildIptMedicationData())->sum('amount')
