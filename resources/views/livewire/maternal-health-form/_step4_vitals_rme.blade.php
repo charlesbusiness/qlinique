@@ -110,16 +110,21 @@
 </div>
 
 <h6 class="mb-3">Rapid Medical Examination (RME)</h6>
-<div class="mb-2">
-    <select class="form-select form-select-sm" wire:model.live="rmeNewTest">
-        <option value="">Select test...</option>
-        @foreach (\App\Livewire\TreatmentForm::rmeTestOptions() as $val)
-            <option value="{{ $val }}">{{ $val }}</option>
-        @endforeach
-    </select>
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <select class="form-select form-select-sm" wire:model.live="rmeNewTest">
+            <option value="">Select test...</option>
+            @foreach (\App\Livewire\TreatmentForm::rmeTestOptions() as $val)
+                <option value="{{ $val }}">{{ $val }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="button" class="btn btn-outline-primary btn-sm" wire:click="addRmeTest">+ Add</button>
+    </div>
 </div>
 @if (count($rme_tests))
-    <div class="table-responsive mb-3">
+    <div class="table-responsive mb-4">
         <table class="table table-bordered align-middle">
             <thead class="table-light">
                 <tr>
@@ -148,9 +153,6 @@
         </table>
     </div>
 @endif
-<div class="mb-4">
-    <button type="button" class="btn btn-outline-primary btn-sm" wire:click="addRmeTest">+ Add</button>
-</div>
 <div class="mb-4">
     <label class="form-label">RME Comment</label>
     <textarea class="form-control" wire:model="rme_comment" rows="2"></textarea>
