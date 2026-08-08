@@ -110,92 +110,49 @@
 </div>
 
 <h6 class="mb-3">Rapid Medical Examination (RME)</h6>
-<div class="table-responsive mb-4">
-    <table class="table table-bordered align-middle">
-        <thead class="table-light">
-            <tr>
-                <th style="width:25%">Test</th>
-                <th>Result</th>
-                <th style="width:25%">Amount (&#8358;)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="fw-medium">FBS (mg/dl)</td>
-                <td><input type="number" step="0.1" class="form-control form-control-sm" wire:model="rme_fbs"></td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_fbs_amount" placeholder="0.00"></td>
-            </tr>
-            <tr>
-                <td class="fw-medium">RBS (mg/dl)</td>
-                <td><input type="number" step="0.1" class="form-control form-control-sm" wire:model="rme_rbs"></td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_rbs_amount" placeholder="0.00"></td>
-            </tr>
-            <tr>
-                <td class="fw-medium">PCV %</td>
-                <td><input type="number" step="0.1" class="form-control form-control-sm" wire:model="rme_pcv"></td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_pcv_amount" placeholder="0.00"></td>
-            </tr>
-            <tr>
-                <td class="fw-medium">RDTA</td>
-                <td>
-                    <select class="form-select form-select-sm" wire:model="rme_rdta">
-                        <option value="">--</option>
-                        <option value="+">+</option>
-                        <option value="-">-</option>
-                    </select>
-                </td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_rdta_amount" placeholder="0.00"></td>
-            </tr>
-            <tr>
-                <td class="fw-medium">Glucose</td>
-                <td>
-                    <select class="form-select form-select-sm" wire:model="rme_glucose">
-                        <option value="">--</option>
-                        <option value="+">+</option>
-                        <option value="++">++</option>
-                        <option value="+++">+++</option>
-                        <option value="-">-</option>
-                    </select>
-                </td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_glucose_amount" placeholder="0.00"></td>
-            </tr>
-            <tr>
-                <td class="fw-medium">Protein</td>
-                <td>
-                    <select class="form-select form-select-sm" wire:model="rme_protein">
-                        <option value="">--</option>
-                        <option value="+">+</option>
-                        <option value="++">++</option>
-                        <option value="+++">+++</option>
-                        <option value="-">-</option>
-                    </select>
-                </td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_protein_amount" placeholder="0.00"></td>
-            </tr>
-            <tr>
-                <td class="fw-medium">Leukocytes/Nitrites</td>
-                <td><input type="text" class="form-control form-control-sm" wire:model="rme_leukocytes"></td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_leukocytes_amount" placeholder="0.00"></td>
-            </tr>
-            <tr>
-                <td class="fw-medium">Other (Specify)</td>
-                <td>
-                    <div class="d-flex gap-2">
-                        <input type="text" class="form-control form-control-sm" wire:model="rme_other_specify" placeholder="Test name">
-                        <select class="form-select form-select-sm" style="max-width:90px" wire:model="rme_other_result">
-                            <option value="">--</option>
-                            <option value="+">+</option>
-                            <option value="++">++</option>
-                            <option value="+++">+++</option>
-                            <option value="-">-</option>
-                        </select>
-                    </div>
-                </td>
-                <td><input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_other_amount" placeholder="0.00"></td>
-            </tr>
-        </tbody>
-    </table>
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <select class="form-select form-select-sm" wire:model.live="rmeNewTest">
+            <option value="">Select test...</option>
+            @foreach (\App\Livewire\TreatmentForm::rmeTestOptions() as $val)
+                <option value="{{ $val }}">{{ $val }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="button" class="btn btn-outline-primary btn-sm" wire:click="addRmeTest">+ Add</button>
+    </div>
 </div>
+@if (count($rme_tests))
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Test</th>
+                    <th>Result</th>
+                    <th style="width:25%">Amount (&#8358;)</th>
+                    <th style="width:60px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($rme_tests as $i => $rme)
+                    <tr>
+                        <td class="fw-medium">{{ $rme['test_name'] }}</td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm" wire:model="rme_tests.{{ $i }}.result" placeholder="Result / (+/-)">
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" class="form-control form-control-sm" wire:model.blur="rme_tests.{{ $i }}.amount" placeholder="0.00">
+                        </td>
+                        <td class="align-middle text-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm" wire:click="removeRmeTest({{ $i }})">&times;</button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+@endif
 <div class="mb-4">
     <label class="form-label">RME Comment</label>
     <textarea class="form-control" wire:model="rme_comment" rows="2"></textarea>

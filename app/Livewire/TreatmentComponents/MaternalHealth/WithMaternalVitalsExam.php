@@ -31,41 +31,11 @@ trait WithMaternalVitalsExam
 
     public string $anthropometric_comment = '';
 
-    public ?float $rme_fbs = null;
-
-    public ?float $rme_fbs_amount = null;
-
-    public ?float $rme_rbs = null;
-
-    public ?float $rme_rbs_amount = null;
-
-    public ?float $rme_pcv = null;
-
-    public ?float $rme_pcv_amount = null;
-
-    public string $rme_rdta = '';
-
-    public ?float $rme_rdta_amount = null;
-
-    public string $rme_glucose = '';
-
-    public ?float $rme_glucose_amount = null;
-
-    public string $rme_protein = '';
-
-    public ?float $rme_protein_amount = null;
-
-    public string $rme_leukocytes = '';
-
-    public ?float $rme_leukocytes_amount = null;
-
-    public string $rme_other_specify = '';
-
-    public string $rme_other_result = '';
-
-    public ?float $rme_other_amount = null;
-
     public string $rme_comment = '';
+
+    public array $rme_tests = [];
+
+    public string $rmeNewTest = '';
 
     // Step 5: Physical exam + Obstetric exam
     public array $cardio_resp = [];

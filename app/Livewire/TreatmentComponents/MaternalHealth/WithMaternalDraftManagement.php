@@ -72,24 +72,9 @@ use Illuminate\Support\Facades\Auth;
  * @property-write ?float $bmi
  * @property-write string $bmi_range
  * @property-write string $anthropometric_comment
- * @property-write ?float $rme_fbs
- * @property-write ?float $rme_fbs_amount
- * @property-write ?float $rme_rbs
- * @property-write ?float $rme_rbs_amount
- * @property-write ?float $rme_pcv
- * @property-write ?float $rme_pcv_amount
- * @property-write string $rme_rdta
- * @property-write ?float $rme_rdta_amount
- * @property-write string $rme_glucose
- * @property-write ?float $rme_glucose_amount
- * @property-write string $rme_protein
- * @property-write ?float $rme_protein_amount
- * @property-write string $rme_leukocytes
- * @property-write ?float $rme_leukocytes_amount
- * @property-write string $rme_other_specify
- * @property-write string $rme_other_result
- * @property-write ?float $rme_other_amount
  * @property-write string $rme_comment
+ * @property-write array $rme_tests
+ * @property-write string $rmeNewTest
  * @property-write array $cardio_resp
  * @property-write string $cardio_resp_comment
  * @property-write array $thyroid
@@ -231,23 +216,7 @@ trait WithMaternalDraftManagement
                 'bmi' => $this->bmi,
                 'bmi_range' => $this->bmi_range ?: null,
                 'anthropometric_comment' => $this->anthropometric_comment ?: null,
-                'rme_fbs' => $this->rme_fbs,
-                'rme_fbs_amount' => $this->rme_fbs_amount,
-                'rme_rbs' => $this->rme_rbs,
-                'rme_rbs_amount' => $this->rme_rbs_amount,
-                'rme_pcv' => $this->rme_pcv,
-                'rme_pcv_amount' => $this->rme_pcv_amount,
-                'rme_rdta' => $this->rme_rdta ?: null,
-                'rme_rdta_amount' => $this->rme_rdta_amount,
-                'rme_glucose' => $this->rme_glucose ?: null,
-                'rme_glucose_amount' => $this->rme_glucose_amount,
-                'rme_protein' => $this->rme_protein ?: null,
-                'rme_protein_amount' => $this->rme_protein_amount,
-                'rme_leukocytes' => $this->rme_leukocytes ?: null,
-                'rme_leukocytes_amount' => $this->rme_leukocytes_amount,
-                'rme_other_specify' => $this->rme_other_specify ?: null,
-                'rme_other_result' => $this->rme_other_result ?: null,
-                'rme_other_amount' => $this->rme_other_amount,
+                'rme_tests' => $this->rme_tests,
                 'rme_comment' => $this->rme_comment ?: null,
             ],
             5 => [
@@ -347,6 +316,21 @@ trait WithMaternalDraftManagement
             if (property_exists($this, $key) && ! in_array($key, ['recordId', 'treatmentChartId', 'patientId', 'patient', 'sub_option', 'isDraft', 'step', 'isEditing', 'visitType'])) {
                 $this->$key = $record->$key ?? $this->$key;
             }
+        }
+
+        // Seed RME tests from the legacy fixed columns for older records
+        if (empty($this->rme_tests)) {
+            $legacyRme = [
+                ['test_name' => 'FBS', 'result' => $record->rme_fbs, 'amount' => $record->rme_fbs_amount],
+                ['test_name' => 'RBS', 'result' => $record->rme_rbs, 'amount' => $record->rme_rbs_amount],
+                ['test_name' => 'PCV', 'result' => $record->rme_pcv, 'amount' => $record->rme_pcv_amount],
+                ['test_name' => 'RDTA', 'result' => $record->rme_rdta, 'amount' => $record->rme_rdta_amount],
+                ['test_name' => 'Glucose', 'result' => $record->rme_glucose, 'amount' => $record->rme_glucose_amount],
+                ['test_name' => 'Protein', 'result' => $record->rme_protein, 'amount' => $record->rme_protein_amount],
+                ['test_name' => 'Leukocytes/Nitrites', 'result' => $record->rme_leukocytes, 'amount' => $record->rme_leukocytes_amount],
+                ['test_name' => $record->rme_other_specify ?: 'Other', 'result' => $record->rme_other_result, 'amount' => $record->rme_other_amount],
+            ];
+            $this->rme_tests = array_values(array_filter($legacyRme, fn ($r) => ($r['result'] !== null && $r['result'] !== '') || ! empty($r['amount'])));
         }
 
         $this->step = 1;

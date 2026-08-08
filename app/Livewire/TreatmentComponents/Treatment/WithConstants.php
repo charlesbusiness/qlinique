@@ -136,6 +136,6 @@ trait WithConstants
 
     public static function rmeTestOptions(): array
     {
-        return ['FBS', 'RBS', 'SPO2', 'P.T', 'Cholesterol', 'P.C.V', 'RDTA', 'XYZ', 'Other'];
+        return ['FBS', 'RBS', 'SPO2', 'P.T', 'Cholesterol', 'P.C.V', 'RDTA', 'Glucose', 'Protein', 'Leukocytes/Nitrites', 'XYZ', 'Other'];
     }
 }

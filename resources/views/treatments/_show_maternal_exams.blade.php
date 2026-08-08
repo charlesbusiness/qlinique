@@ -33,17 +33,26 @@
             <div class="card-header"><strong>Rapid Medical Examination (RME)</strong></div>
             <div class="card-body p-0">
                 @php
-                    $rmeRows = [
-                        ['label' => 'FBS', 'value' => $record->rme_fbs, 'suffix' => '', 'amount' => $record->rme_fbs_amount],
-                        ['label' => 'RBS', 'value' => $record->rme_rbs, 'suffix' => '', 'amount' => $record->rme_rbs_amount],
-                        ['label' => 'PCV', 'value' => $record->rme_pcv, 'suffix' => '%', 'amount' => $record->rme_pcv_amount],
-                        ['label' => 'RDT-A', 'value' => $record->rme_rdta, 'suffix' => '', 'amount' => $record->rme_rdta_amount],
-                        ['label' => 'Glucose', 'value' => $record->rme_glucose, 'suffix' => '', 'amount' => $record->rme_glucose_amount],
-                        ['label' => 'Protein', 'value' => $record->rme_protein, 'suffix' => '', 'amount' => $record->rme_protein_amount],
-                        ['label' => 'Leukocytes', 'value' => $record->rme_leukocytes, 'suffix' => '', 'amount' => $record->rme_leukocytes_amount],
-                        ['label' => $record->rme_other_specify ?: 'Other', 'value' => $record->rme_other_result, 'suffix' => '', 'amount' => $record->rme_other_amount],
-                    ];
-                    $hasRme = collect($rmeRows)->contains(fn ($r) => $r['value'] !== null && $r['value'] !== '');
+                    if (! empty($record->rme_tests)) {
+                        $rmeRows = collect($record->rme_tests)->map(fn ($t) => [
+                            'label' => $t['test_name'] ?? 'Other',
+                            'value' => $t['result'] ?? '',
+                            'suffix' => '',
+                            'amount' => $t['amount'] ?? 0,
+                        ])->all();
+                    } else {
+                        $rmeRows = [
+                            ['label' => 'FBS', 'value' => $record->rme_fbs, 'suffix' => '', 'amount' => $record->rme_fbs_amount],
+                            ['label' => 'RBS', 'value' => $record->rme_rbs, 'suffix' => '', 'amount' => $record->rme_rbs_amount],
+                            ['label' => 'PCV', 'value' => $record->rme_pcv, 'suffix' => '%', 'amount' => $record->rme_pcv_amount],
+                            ['label' => 'RDT-A', 'value' => $record->rme_rdta, 'suffix' => '', 'amount' => $record->rme_rdta_amount],
+                            ['label' => 'Glucose', 'value' => $record->rme_glucose, 'suffix' => '', 'amount' => $record->rme_glucose_amount],
+                            ['label' => 'Protein', 'value' => $record->rme_protein, 'suffix' => '', 'amount' => $record->rme_protein_amount],
+                            ['label' => 'Leukocytes', 'value' => $record->rme_leukocytes, 'suffix' => '', 'amount' => $record->rme_leukocytes_amount],
+                            ['label' => $record->rme_other_specify ?: 'Other', 'value' => $record->rme_other_result, 'suffix' => '', 'amount' => $record->rme_other_amount],
+                        ];
+                    }
+                    $hasRme = collect($rmeRows)->contains(fn ($r) => ($r['value'] ?? null) !== null && $r['value'] !== '' || ! empty($r['amount']));
                 @endphp
                 @if ($hasRme)
                     <table class="table table-sm mb-0">
@@ -52,10 +61,10 @@
                         </thead>
                         <tbody>
                             @foreach ($rmeRows as $r)
-                                @if ($r['value'] !== null && $r['value'] !== '')
+                                @if (($r['value'] ?? null) !== null && $r['value'] !== '' || ! empty($r['amount']))
                                     <tr>
                                         <td>{{ $r['label'] }}</td>
-                                        <td>{{ $r['value'] }}{{ $r['suffix'] }}</td>
+                                        <td>{{ $r['value'] ?: '—' }}{{ $r['suffix'] }}</td>
                                         <td>{{ number_format($r['amount'] ?? 0, 2) }}</td>
                                     </tr>
                                 @endif
@@ -243,16 +252,19 @@
                     @php
                         $labTotal = collect($record->lab_tests ?? [])->sum('amount');
                         $medTotal = collect($record->medications ?? [])->sum('amount');
-                        $rmeTotal = collect([
-                            $record->rme_fbs_amount,
-                            $record->rme_rbs_amount,
-                            $record->rme_pcv_amount,
-                            $record->rme_rdta_amount,
-                            $record->rme_glucose_amount,
-                            $record->rme_protein_amount,
-                            $record->rme_leukocytes_amount,
-                            $record->rme_other_amount,
-                        ])->sum();
+                        $rmeTotal = collect($record->rme_tests ?? [])->sum('amount');
+                        if (! $record->rme_tests) {
+                            $rmeTotal = collect([
+                                $record->rme_fbs_amount,
+                                $record->rme_rbs_amount,
+                                $record->rme_pcv_amount,
+                                $record->rme_rdta_amount,
+                                $record->rme_glucose_amount,
+                                $record->rme_protein_amount,
+                                $record->rme_leukocytes_amount,
+                                $record->rme_other_amount,
+                            ])->sum();
+                        }
                         $manualItems = collect($record->medical_bill ?? [])->only(['registration', 'consultation', 'admission', 'logistics', 'maintenance', 'surgical_procedure']);
                         $billTotal = $labTotal + $medTotal + $rmeTotal + $manualItems->sum();
                         $billPaid = $record->bill_paid ?? 0;

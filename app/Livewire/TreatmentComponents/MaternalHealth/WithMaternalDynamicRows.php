@@ -8,6 +8,8 @@ namespace App\Livewire\TreatmentComponents\MaternalHealth;
  * @property-write array $medications
  * @property-write array $ipt_medications
  * @property-write array $immunization_medications
+ * @property-write array $rme_tests
+ * @property-write string $rmeNewTest
  */
 trait WithMaternalDynamicRows
 {
@@ -67,5 +69,28 @@ trait WithMaternalDynamicRows
     {
         unset($this->immunization_medications[$index]);
         $this->immunization_medications = array_values($this->immunization_medications);
+    }
+
+    public function addRmeTest(): void
+    {
+        if (! $this->rmeNewTest) {
+            return;
+        }
+
+        $exists = collect($this->rme_tests)->contains('test_name', $this->rmeNewTest);
+        if (! $exists) {
+            $this->rme_tests[] = [
+                'test_name' => $this->rmeNewTest,
+                'result' => '',
+                'amount' => 0,
+            ];
+        }
+        $this->rmeNewTest = '';
+    }
+
+    public function removeRmeTest(int $index): void
+    {
+        unset($this->rme_tests[$index]);
+        $this->rme_tests = array_values($this->rme_tests);
     }
 }

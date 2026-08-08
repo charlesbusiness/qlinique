@@ -86,6 +86,7 @@ class MaternalHealthRecord extends Model
         'rme_other_result',
         'rme_other_amount',
         'rme_comment',
+        'rme_tests',
         'cardio_resp',
         'cardio_resp_comment',
         'thyroid',
@@ -140,6 +141,7 @@ class MaternalHealthRecord extends Model
             'lab_tests' => 'array',
             'medications' => 'array',
             'medical_bill' => 'array',
+            'rme_tests' => 'array',
             'consent_enabled' => 'boolean',
             'referral_letter' => 'boolean',
         ];
